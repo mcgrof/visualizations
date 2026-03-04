@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Revisiting the Caucasus as a kernel hacker — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2012-08-29">Aug 29, 2012</time>
+                    <span class="category-badge badge-travel">Travel / Outdoors</span>
+                </div>
+                <h1>Revisiting the Caucasus as a kernel hacker</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2012/08/revisiting-caucasus-as-kernel-hacker.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <table style="width: auto">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a
+                                    href="https://picasaweb.google.com/lh/photo/2FisfZO6EXn2PogiWLEkatMTjNZETYmyPJy0liipFm0?feat=embedwebsite"
+                                >
+                                    <img
+                                        height="400"
+                                        src="https://lh3.googleusercontent.com/-WY6feiWiC9E/UDy0b2w7icI/AAAAAAAA6-s/gEPLjYmZ3Mc/s400/IMG_20120827_092820.jpg"
+                                        width="400"
+                                    />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: arial, sans-serif; font-size: 11px; text-align: right">
+                                From
+                                <a
+                                    href="https://picasaweb.google.com/101487746899672598413/Instagram?authuser=0&amp;feat=embedwebsite"
+                                >
+                                    Instagram
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <div>
+                    <div>
+                        I intend on visiting Armenia again some time. I learned quite a lot&nbsp;about Armenian and
+                        about the
+                        <a href="http://en.wikipedia.org/wiki/Caucasus">Caucasus</a>
+                        but that left me wanting to learn&nbsp;more and experience more. I've been told a lot of great
+                        things about not only Armenia but also about other countries nearby. I'm left to think about the
+                        possibility of visiting Armenia again and next time climbing the rocks there, and with the idea
+                        of even extending this trip to explore Turkey, Iran and going to climb rocks there. As a hacker,
+                        I cannot also help but wonder as well about the
+                        <a href="http://en.wikipedia.org/wiki/Caucasus">Caucasus's</a>
+                        own position on free software and Linux. Do we have active Free Software hackers? I know
+                        of&nbsp;
+                        <a href="https://www.ohloh.net/accounts/ozancaglayan">Ozan Çağlayan</a>
+                        's work from Turkey, but what else? Do we have any Linux kernel hackers out there? How about
+                        companies looking to fund this work? I need a good excuse to go climb rocks int he
+                        <a href="http://en.wikipedia.org/wiki/Caucasus">Caucasus</a>
+                        &nbsp;:D
+                    </div>
+                    <div>
+                        <br />
+                    </div>
+                </div>
+                <table style="width: auto">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a
+                                    href="https://picasaweb.google.com/lh/photo/yJpy_Pa3cm9I53eM8_WJtNMTjNZETYmyPJy0liipFm0?feat=embedwebsite"
+                                >
+                                    <img
+                                        height="400"
+                                        src="https://lh6.googleusercontent.com/-eZi6A90m6Do/UDzHfSXAyhI/AAAAAAAA7CQ/18pGzp6KmLc/s400/IMG_20120824_225211.jpg"
+                                        width="400"
+                                    />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: arial, sans-serif; font-size: 11px; text-align: right">
+                                From
+                                <a
+                                    href="https://picasaweb.google.com/101487746899672598413/Instagram?authuser=0&amp;feat=embedwebsite"
+                                >
+                                    Instagram
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

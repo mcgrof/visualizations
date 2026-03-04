@@ -1,0 +1,1943 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Automatic kernel backporting with Coccinelle — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">← back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2014-04-05">Apr 5, 2014</time>
+                    <span class="category-badge badge-linux">Linux / Kernel</span>
+                </div>
+                <h1>Automatic kernel backporting with Coccinelle</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2014/04/automatic-linux-kernel-backporting-with-coccinelle.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="https://web.archive.org/web/20160328182852im_/http://4.bp.blogspot.com/-_fFlmDEmVXg/Uqs4c1oYUTI/AAAAAAABhbc/xA50Bjk4Yfg/s1600/IMG_20131213_143529.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="https://web.archive.org/web/20160328182852im_/http://4.bp.blogspot.com/-_fFlmDEmVXg/Uqs4c1oYUTI/AAAAAAABhbc/xA50Bjk4Yfg/s1600/IMG_20131213_143529.jpg"
+                            height="300"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                <div class="separator" style="clear: both; text-align: center"></div>
+                Exponential growth does not only apply to technology and biology, it applies to software too. We need to
+                adapt and scale better. I've written before on the implications on
+                <a href="http://www.do-not-panic.com/2014/03/free-software-patents-surveillance-and.html">
+                    rapid software growth and freedoms
+                </a>
+                , this post addresses the pure technical implications of accelerated software growth specifically on the
+                <a href="https://www.kernel.org/">Linux kernel</a>
+                in consideration of backporting. Tools to help rapid software growth are huge assets to large software
+                projects.
+                <a href="http://en.wikipedia.org/wiki/Git_%28software%29">git</a>
+                is one example, and let's recall that Linus refused to use anything other than
+                <a href="http://en.wikipedia.org/wiki/BitKeeper">BitKeeper</a>
+                to maintain the
+                <a href="https://www.kernel.org/">Linux kernel</a>
+                until he replaced it with
+                <a href="http://en.wikipedia.org/wiki/Git_%28software%29">git</a>
+                . Its not only important, these tools are
+                <b>required</b>
+                . Its best if you already have Free Software tools available to help software evolve though. Another
+                good example, but one which
+                <b>has</b>
+                been Free Software since the start, is
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                , which came about through the research and development spearheaded by
+                <a href="http://www.diku.dk/hjemmesider/ansatte/julia/">Julia Lawall</a>
+                and her team in trying to address the concept of
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                to help the
+                <a href="https://www.kernel.org/">Linux</a>
+                kernel grow faster, safely, and to make us lazier. I've written before on
+                <a href="http://www.do-not-panic.com/2012/08/optimizing-backporting-collateral.html">
+                    my conjecture on usage of Coccinelle for automatically backporting Linux
+                </a>
+                . I looked at this as the Linux kernel and
+                <a href="https://backports.wiki.kernel.org/">Linux kernel backports</a>
+                project grew, to the point I could not stop it, even if I wanted to --
+                <i>I've tried twice now</i>
+                . I've tested my conjecture recently and
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                has
+                <b>exceeded</b>
+                my expectations both on what it is already capable of and also on what
+                <b>might be possible in the future</b>
+                . We have been grooming a slew of techniques within the
+                <a href="https://backports.wiki.kernel.org/">Linux backports</a>
+                project to do backporting automatically for a series of years now and I'm happy to report that
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                will be one of those technologies that we embrace that will help us scale faster. In light of the high
+                pace of evolution on hardware,
+                <a href="https://www.kernel.org/">Linux</a>
+                and
+                <a href="https://backports.wiki.kernel.org/">Linux backports</a>
+                I'm convinced now that striving to backport the Linux kernel automatically is the only reasonable way to
+                do backporting.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="https://web.archive.org/web/20160328195020im_/http://1.bp.blogspot.com/-8tg1q4pet8Q/UqcR27jB56I/AAAAAAABhO8/iqDmM1H99Eg/s1600/IMG_20131017_091535.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="https://web.archive.org/web/20160328195020im_/http://1.bp.blogspot.com/-8tg1q4pet8Q/UqcR27jB56I/AAAAAAABhO8/iqDmM1H99Eg/s1600/IMG_20131017_091535.jpg"
+                            height="300"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                Before I dive into details I'll have to dedicate one paragraph to provide context under which evaluation
+                of
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                took place. One of the
+                <b>many</b>
+                reasons
+                <a href="http://www.do-not-panic.com/2013/11/i-quit-qualcomm-today-whoohoo.html">
+                    I left my job at Qualcomm
+                </a>
+                was I found out some folks were using backports, a project
+                <a href="http://www.winlab.rutgers.edu/~mcgrof/accomplishments-2006-2007.pdf">
+                    I started
+                    <b>with the community</b>
+                    since way before
+                </a>
+                I joined
+                <a href="http://en.wikipedia.org/wiki/Qualcomm_Atheros">Atheros</a>
+                , with a proprietary driver. It gave me great reason to focus more on strengthening backports' core
+                architecture, but also making it crystal clear that since our project's inception we are nothing more
+                than a
+                <i>derivative works of the Linux kernel</i>
+                but we're also making it crystal clear that proprietary drivers are not allowed when you use backports.
+                In case you haven't gotten any of the memos:
+                <b>proprietary drivers on backports are not allowed</b>
+                . Our documentation cannot be any more clearer I think. Since I
+                <u>strongly suspected</u>
+                we could help
+                <b>evolve backports more efficiently with Coccinelle</b>
+                I decided to reach out to
+                <a href="http://www.diku.dk/hjemmesider/ansatte/julia/">Julia Lawall</a>
+                . I had met Julia at the 2011 Linux Plumbers conference during my talk on
+                <a href="http://www.linuxplumbersconf.org/2011/ocw/sessions/771">
+                    Backporting the Linux kernel for good
+                </a>
+                where she provided to me a high level architectural hope on the ability to further automatically
+                backport the Linux kernel. Julia happens to be the main research scientists leading
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                research and development. I'm forever grateful that Julia managed to secure funding for me to do a
+                2-month research collaboration effort with her team and folks at
+                <a href="http://www.lip6.fr/">LIP6</a>
+                and
+                <a href="http://en.wikipedia.org/wiki/IRILL">IRILL</a>
+                , in Paris. Part of the work was seeing how we can better integrate and grow
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                with the backports project and also collaborate on ideas at both
+                <a href="http://www.lip6.fr/">LIP6</a>
+                and
+                <a href="http://en.wikipedia.org/wiki/IRILL">IRILL</a>
+                . Given the lack of good faith I saw at Qualcomm, like dragging their feat on my own legal employee
+                agreement for over one year and even being told to my face that they claimed to own copyright even on my
+                <b>personal public blog posts</b>
+                over
+                <a href="https://backports.wiki.kernel.org/">backports</a>
+                , I also knew I couldn't continue there and had to eventually quit. I also couldn't let any work I do
+                fall into the cracks of questionable gray area, specially if it was going to be of use for the community
+                -- I didn't want my contributions to be used by proprietary drivers on Linux. I decided to spend one
+                month learning as much as I could with the
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                folks and pushing out a slew of enhancements for work on
+                <a href="http://wireless.kernel.org/en/developers/Regulatory/CRDA">CRDA</a>
+                . I decided then it would also be a great idea to relicense
+                <a href="http://wireless.kernel.org/en/developers/Regulatory/CRDA">CRDA</a>
+                to
+                <a href="https://gitorious.org/copyleft-next/">copyleft-next</a>
+                , of course. I knew I had to quit though so that I could do some work without it being skewed or used in
+                some other proprietary
+                <a href="http://www.do-not-panic.com/2014/03/the-dangers-of-free-software.html">PHB project</a>
+                . I was prepared to quit without a job at hand, if anything I could just go to Costa Rica and live by
+                the beach for a while and sell bananas, or something. I was very fortunate that by the time I took a
+                trip to Germany to visit some friends I was negotiating with two companies which seemed to respect
+                everything I cared about. I decided to join
+                <a href="http://en.wikipedia.org/wiki/SUSE_Linux_distributions">SUSE</a>
+                , I'd start with them in January -- this was a huge relief -- I could quit my job early in my trip which
+                gave me the perfect chance to focus on solid research and development my last month in Paris. None of
+                this was planned. Even though I was doing research and development in Paris the first month was tough as
+                I still had my other job and I was working late nights to be able to focus my attention on both. This
+                also meant I didn't have much time to even keep
+                <a href="https://backports.wiki.kernel.org/">backports</a>
+                up to date... I'm forever gratIeful
+                <a href="http://www.hauke-m.de/">Hauke Mehrtens</a>
+                was willing to step up and take on maintainership over the project while as I was in
+                <a href="http://en.wikipedia.org/wiki/Limbo">Limbo</a>
+                . Things turned out well.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="https://web.archive.org/web/20160328183354im_/http://2.bp.blogspot.com/-JzGA0mHEaSY/Uoj9bwYKlAI/AAAAAAABgVM/HN-xIBPs9tY/s1600/IMG_20131111_123149.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="https://web.archive.org/web/20160328183354im_/http://2.bp.blogspot.com/-JzGA0mHEaSY/Uoj9bwYKlAI/AAAAAAABgVM/HN-xIBPs9tY/s1600/IMG_20131111_123149.jpg"
+                            height="300"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                I'd like to prefix the technical details that I will provide below by also thanking everyone in France
+                -- the Atheros France office which despite the circumstances were simply awesome, folks at
+                <a href="http://www.lip6.fr/">LIP6</a>
+                ,
+                <a href="http://en.wikipedia.org/wiki/IRILL">IRILL</a>
+                , and specially Julia, for the warm welcome and great time both on research, development, and simply an
+                amazing time. Specifically at
+                <a href="http://en.wikipedia.org/wiki/IRILL">IRILL</a>
+                --
+                <a href="http://www.dicosmo.org/index.en.html">Roberto Di Cosmo</a>
+                and
+                <a href="https://identi.ca/zack">Stefano Zacchiroli</a>
+                . At
+                <a href="http://www.lip6.fr/">LIP6</a>
+                --
+                <a href="http://pagesperso-systeme.lip6.fr/Gilles.Muller/">Gilles Muller</a>
+                ,
+                <a href="http://www.mysmu.edu/faculty/davidlo/">David Lo</a>
+                . And then my strong French coffee buddies
+                <a href="https://plus.google.com/+PeterSenna/posts">Peter Senna Tschudin</a>
+                (
+                <a href="http://blog.parahard.com/">blog</a>
+                ) and
+                <a href="http://www.lip6.fr/actualite/personnes-fiche.php?ident=D1334">Lisong Guo</a>
+                . I hope to be back some time for some more strong good French coffee. Recruiters, researchers, and
+                kernel developers, pay close attention to what these folks are doing and will be doing, they're
+                <b>bad ass</b>
+                . Now that the context is all fleshed lets dive into the technical details, I'll provide a status update
+                of where were we stand with regards to
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                integration on backports and what you can expect in the near future.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://1.bp.blogspot.com/-GsSwb9ijog4/Uz_NN8Bsu5I/AAAAAAABlKU/S7kCnwqlteQ/s1600/IMG_20131215_022139.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://1.bp.blogspot.com/-GsSwb9ijog4/Uz_NN8Bsu5I/AAAAAAABlKU/S7kCnwqlteQ/s1600/IMG_20131215_022139.jpg"
+                            height="400"
+                            width="300"
+                        />
+                    </a>
+                </div>
+                <br />
+                Let's start by reviewing the development flow on
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                -- its a research project and as such the work flow of ideas are pretty flexible. Although
+                <a href="http://www.diku.dk/hjemmesider/ansatte/julia/">Julia Lawall</a>
+                leads its research and development she's also incredibly busy giving students feedback, reading /
+                evaluating papers, giving talks, or traveling, and of course, hacking on the Linux kernel. I'm surprised
+                she manages to get so much done. All this means that the way that code flows in
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                is to do most of the evolution loosely within an internal tree and full releases get pushed out to
+                <a href="https://github.com/coccinelle/coccinelle">coccinelle's repo on github</a>
+                . My hope is that with a bit of volunteering we can strive to change this to follow a more linear work
+                flow, as with the Linux kernel, but we'd have to prioritizing not disrupting any existing evolutions by
+                its researchers. It'd also require learning
+                <a href="http://en.wikipedia.org/wiki/OCaml">OCaml</a>
+                -- eek. This is only required if you don't have access to the internal repository, which I do now, and
+                if you're expected to try test patches as features or issues are addressed. If you're in that situation
+                you might as well create an account and request read access to the
+                <a href="https://gforge.inria.fr/projects/coccinelle/">Coccinelle INRIA gforge repository</a>
+                . As I'll explain below, we might be able to live without a linear tree on
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                .
+                <br />
+                <br />
+                <br />
+                Now go get
+                <a href="https://github.com/coccinelle/coccinelle">Coccinelle code on github</a>
+                . At this point you likely want the latest and greatest from github, you want to compile it yourself as
+                any distro release right now is probably too old. If you're like me and use vim, go get
+                <a href="https://github.com/ahf/cocci-syntax">Coccinelle vim syntax highlighting</a>
+                .
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                is written in
+                <a href="http://en.wikipedia.org/wiki/OCaml">OCaml</a>
+                , a functional programming language. Although I tried to pick it up,&nbsp;
+                <a href="http://www.diku.dk/hjemmesider/ansatte/julia/">Julia</a>
+                expressed that kernel developers should not have to pick it up, she'd be happy to receive feedback as
+                problems or new ideas are found and address them. That made me happy :) Fortunately
+                <a href="https://plus.google.com/101449330804536230754/posts">Johannes Berg</a>
+                had added the first SmPL (Semantic Patch Language) patch to backports and it was merged by the time I
+                was in Paris. The code generation recipe backports follows is to copy a target set of code listed in a
+                copy-list, copy over our backports module, its header files, and throw in some Kconfig logic. The last
+                step involves patching the code. Any patch in the patches/ directory will be applied linearly in
+                alphabetical order. If any patch happens to end with a .cocci file extension we treat it as a
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                SmPL patch and call out on spatch to apply it. The first performance concerns expressed were spotted by
+                <a href="https://plus.google.com/101449330804536230754/posts">Johannes</a>
+                , you see once you use
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                within backports you use it at the very least once a day, and the Intel folks were already using
+                backports in production deployments and relying on it. Johannes noted that using the
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                spatch --dir option, which we use to specify applying a cocci file to the entire kernel, triggers a '
+                <i>sh -c egrep -q</i>
+                ' call for every file. In short Johannes' feedback was that calling out to the shell just to call
+                another binary was pretty expensive. The alternatives that are documented for
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                support are to use software indexing utilities, one is called Glimpse, and the other ideutils. Glimpse
+                unfortunately is not free software so not even sure why that is supported, and one issue with using
+                ideutils in a kernel development work flow is you are always updating your trees and not everyone may
+                wish to be updating indexes with additional software. I personally never use ideutils or regular grep on
+                git trees, I use '
+                <i>git grep</i>
+                ' as it skips tons files you don't care over. The issue spotted by Johannes can be seen with an example:
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">&nbsp;</span>
+                <br />
+                <br />
+                <pre><span style="font-family: &quot;Courier New&quot;,Courier,monospace; font-size: x-small;">sys/wireless$ time (find . -name *.c | xargs <span class="il">egrep</span> -q '(\bgenl_ops\b)')
+real &nbsp; &nbsp;0m0.239s
+user &nbsp; &nbsp;0m0.208s
+sys &nbsp; &nbsp; 0m0.088s
+
+sys/wireless$ time (find . -name *.c | xargs -n1 sh -c "<span class="il">egrep</span> -q '(\bgenl_ops\b)'")
+real &nbsp; &nbsp;0m20.120s
+user &nbsp; &nbsp;0m0.216s
+sys &nbsp; &nbsp; 0m1.072s</span></pre>
+                <br />
+                Julia experimented with a few things, even using '
+                <i>git grep</i>
+                ' but that resulted in slower code evaluation, in the end an internal Cocci_grep was used and that in
+                turn ended up speeding things quite significantly for both the cases where you are indexing code and
+                where you are not. This change made it into the
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                1.0.0-rc19 release, you want to have at least 1.0.0-rc20 right now though. Hat tip to Johannes Berg for
+                reporting this with great detail and Julia for fixing it like a speed daemon.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="https://web.archive.org/web/20160328185805im_/http://4.bp.blogspot.com/-JnpCqQUXabY/UpnhkB7C4sI/AAAAAAABg4g/r6URMcLWv30/s1600/IMG_20131129_122946.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="https://web.archive.org/web/20160328185805im_/http://4.bp.blogspot.com/-JnpCqQUXabY/UpnhkB7C4sI/AAAAAAABg4g/r6URMcLWv30/s1600/IMG_20131129_122946.jpg"
+                            height="300"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                The
+                <a href="https://backports.wiki.kernel.org/">Linux backports</a>
+                project backports automatically through a few strategies.It's main objective is to keep code it takes
+                from upstream as-is as much as possible and only as as last resort does it use legacy patches and now
+                SmPL patches. Patches are used typically to address core data structure changes which we cannot carry
+                over, or to address complex functionality which we simply cannot tuck away under headers or newly
+                exported symbols. All these changes are addressed typically with #ifdefs but as it turns out those pesky
+                things are actually quite a bit problematic if you want to ensure you keep style using grammar rules. I
+                remember there's at least one old mailing list thread (but I can't find it now) that had actually
+                encouraged folks to not consider using
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                for #ifdef'ing code. This is the next area I explored with Julia, mainly because #ifdef'ing is a huge
+                part of what backports does on its patches, and keeping code usable and sane to read is of utmost
+                importance to us.&nbsp;In so far as style -- you can end up with functional code that compiles and works
+                but if it looks odd can you easily debug it? Helping with
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                in this area has consisted in doing transformation of legacy patches to SmPL form and providing feedback
+                where I don't see
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                respecting the expected style / form. This work is
+                <b>ongoing</b>
+                on
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                but
+                <b>a lot of fixes have been done already</b>
+                .
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://4.bp.blogspot.com/-9M5RkraRJOk/Uz_MTc4uxdI/AAAAAAABlKE/z5HmP1rYpUU/s1600/IMG_20131201_230302.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://4.bp.blogspot.com/-9M5RkraRJOk/Uz_MTc4uxdI/AAAAAAABlKE/z5HmP1rYpUU/s1600/IMG_20131201_230302.jpg"
+                            height="300"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                Once we have #ifdef style being respected perfectly, for all corner cases, it should be feasible to
+                perform a proof that an SmPL patch can replace a series of legacy patches. This can also be useful for
+                folks who may want to test converting an upstream patch into SmPL form as an exercise or to become an
+                even lazier developer and only do a
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                for one driver, test an SmPL grammar replacement and prove that it yields the same change, and then kick
+                it of to generate the full patch for the entire Linux kernel. Maintainers who do not trust SmPL patches
+                from people can use this to prove the provided SmPL patch also matches the provided full patch supplied.
+                Doing an SmPL proof means you have to start reformatting legacy patches into a consistent form, as that
+                is how you will need to write your SmPL rules and how
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                will generate patches. Remember, we're now trying to work with computers doing code modifications for
+                us, not just patches, we need to be precise. There are several strategies that can be used to do a proof
+                of SmPL patch replacement correctness. We could evaluate code compilation but that would take long.
+                Another strategy is to see if we can infer the SmPL grammar from the patches and check for isomorphism
+                using
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                somehow, but if we had the ability do do that we wouldn't really need to write rules, right? Even so if
+                we're replacing legacy patches we may wish to not trust SmPL patch inference or at least desire to want
+                proof of correctness. For backports's sake once we have all the #ifdef spacing / style respected we can
+                use the following strategy to prove an SmPL patch can replace a series of legacy patches. If you don't
+                need to work with #ifdefs then you likely can already use this general approach.
+                <br />
+                <ol>
+                    <li>
+                        Use one tree, g1, and another base tree, b1, without git - and on each import all code before
+                        applying any patches
+                    </li>
+                    <li>Apply all legacy patches to g1 and commit</li>
+                    <li>Apply SmPL patches to b1</li>
+                    <li>rm -rf all code on g1 and replace it with all code in b1</li>
+                    <li>git diff --stat</li>
+                </ol>
+                I have this all implemented in Python and will be sending it soon for integration, but onto the
+                backports project. If a generalized tool is desired we could consider doing that and merging it into
+                Coccinelle. The 'git diff --stat' should yield 0 results if you have a proper SmPL replacement, it will
+                show extra code additions if the SmPL patch actually added more code than what you had originally, and
+                will show code removal for areas that perhaps the SmPL did not manage to address. It turns out though
+                that you typically end up with more code changes but in files you hadn't addressed before. The reason
+                for this is you have generalized a backport for a
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                and are using
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                to perform the backport for
+                <b>all</b>
+                code, not just the target code you originally had addressed the
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                for. This is exactly why I have been cleaning up patches over time on the backports project into
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                . It makes you think of backports as atomic pieces, each addressing one
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                , one or a few series of commits upstream. Since
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                lets you peg grammar rules to a structure granularity it means you can strictly localize a change,
+                therefore avoiding similar structural changes in other parts of code for data structures that resemble
+                the structure you are trying to change. Because of this there is no harm to having the additional
+                changes applied since if a driver didn't have the change in place it meant that the driver was not
+                enabled to be compiled for an older kernel, so
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                was just extending
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                backport to more code and you won't use it where it wasn't there before. In the case that a driver was
+                not enabled for older kernels the additional code will simply never run, although it will increase the
+                binary mildly. This could however mean enabling drivers for older kernels. Getting
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                to generate more backport code is a great examples of taking automatic backporting further. It also
+                means that you have to do less work. Since we don't yet have SmPL grammar patch inferences, or support
+                for the inverse of an SmPL patch, it means we have to translate
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                to SmPL form manually today. In the future this will change though and my hope is that we also get
+                developers to write new
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                with SmPL, so that we can simply backport it with SmPL.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-wT3bueBhO1w/Uz_Myf8snbI/AAAAAAABlKM/xB3oDsOHgJI/s1600/IMG_20131123_160828.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://2.bp.blogspot.com/-wT3bueBhO1w/Uz_Myf8snbI/AAAAAAABlKM/xB3oDsOHgJI/s1600/IMG_20131123_160828.jpg"
+                            height="400"
+                            width="300"
+                        />
+                    </a>
+                </div>
+                <br />
+                To what extent can we use
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                ? Can we backport everything with
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                ? I wanted to explore the limits of what we could do with
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                . My original goal was to categorize
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                by types, and try to see which ones
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                could not address. I started this by reviewing the list of
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                backports we had, and looking for the
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolution</a>
+                series of patches that had the largest amount of code or that I thought was more complex to address.
+                Turns out that the more complex
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                that do have #ifefs are exactly what
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                can be used to backport. Remember that backports already does most of its backport work by using a
+                series of header files and exported symbols that implements backport functionality not available on
+                older kernels. The series of legacy patches simply address the corner cases, things that we cannot
+                backport through helpers or through exported symbols, and these typically require #ifdef'ing code.
+                There's really only a few types of changes left then. Patches for
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                are split by the subsystem that they affect and then for each specific
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                by labeling it to describe the change backported. For networking we currently have 76 collateral
+                evolutions. Of those only about 10 have extensive series of changes and the rest are really small. Using
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                for small changes doesn't make sense -- specially if all we're doing is carrying over the patch as the
+                kernel evolves and simply updating its hunks.
+                <b>
+                    Its the long patches, the complex patches, which are error prone, which are a bitch to backport, and
+                    that are applicable to a lot of drivers which we want to address with
+                    <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                </b>
+                . This lets us simplify maintenance with a simple set of grammar rules and removes the nightmare of
+                complex patch management. I decided to test the limits of
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                by working on the craziest patch I could find that I was sure could not be backported. Obviously I was
+                wrong. Here's what this looks like.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-NLiXqtQOVQE/Uz_OU8jDNUI/AAAAAAABlKc/E8F7fWSRRic/s1600/IMG_20131019_194922.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://2.bp.blogspot.com/-NLiXqtQOVQE/Uz_OU8jDNUI/AAAAAAABlKc/E8F7fWSRRic/s1600/IMG_20131019_194922.jpg"
+                            height="400"
+                            width="300"
+                        />
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://1.bp.blogspot.com/-GsSwb9ijog4/Uz_NN8Bsu5I/AAAAAAABlKU/S7kCnwqlteQ/s1600/IMG_20131215_022139.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    ></a>
+                </div>
+                <br />
+                Thread IRQ support is an option that lets drivers let their IRQ context be run in a thread, which let it
+                sleep. In order to backported threaded IRQ support
+                <a href="http://michael%20buesch/">Michael Buesch</a>
+                decided in 2009 to build our own struct compat_threaded_irq&nbsp; that older kernels can use to
+                queue_work() onto as the kernel thread will be running in process context, all the magic is dealt with
+                behind the scenes through a header file that older kernels use, go check out the
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/backports/backports.git/tree/backport/backport-include/linux/interrupt.h"
+                >
+                    interrupt.h
+                </a>
+                file. For now its required that each driver that wants to use this helper must extend one of their own
+                private data structures with a struct compat_threaded_irq, to be later used on older kernels when a
+                driver uses
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">
+                    request_threaded_irq()
+                </span>
+                , for older kernels we call
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">
+                    compat_request_threaded_irq()
+                </span>
+                instead. Then other IRQ calls for older kernels must call the respective backported IRQ version call, so
+                when synchronize_irq(dev-&gt;dev-&gt;irq) is called on newer kernels older kernels must call
+                compat_synchronize_threaded_irq(&amp;dev-&gt;irq_compat). Likewise when free_irq() is called two helpers
+                are now needed, compat_free_threaded_irq() and compat_destroy_threaded_irq(). All this is addressed in
+                the
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/backports/backports.git/tree/patches/collateral-evolutions/network/09-threaded-irq?h=linux-3.13.y"
+                >
+                    09-thread-irq
+                </a>
+                series of legacy patches. I'm providing links to the code in place on the linux-3.13.y branch of
+                backports as this code will soon disappear from the master branch.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://1.bp.blogspot.com/-o72c80c3Jv0/Uz_OU7PimGI/AAAAAAABlKc/XamLWW3cG4A/s1600/IMG_20131111_155549-ERASER.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://1.bp.blogspot.com/-o72c80c3Jv0/Uz_OU7PimGI/AAAAAAABlKc/XamLWW3cG4A/s1600/IMG_20131111_155549-ERASER.jpg"
+                            height="300"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                To replace this series we end up with 4 SmPL rules, each rule has a name, pegged in between @ symbols.
+                So @ rule_name @ is an example for a rule named rule_name. For complex examples we may want to tell
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                only to proceed if a series of rules match on the expressed expressions or types declared. Lets review
+                each rule separately.
+                <br />
+                <br />
+                Let's take a look at one change on a driver through the legacy patch approach. We'll review first the
+                extension which I figured would be hard to generalize through grammar.
+                <br />
+                <br />
+                <pre><span style="background-color: black; font-size: small;"><span style="font-family: &quot;Courier New&quot;, Courier, monospace;"><span style="color: lime;">--- a/drivers/net/wireless/b43/b43.h
++++ b/drivers/net/wireless/b43/b43.h</span>
+<span style="color: white;"><span style="color: yellow;">@@ -805,6 +805,9 @@</span> <span style="color: blue;">enum {</span>
+
+&nbsp;/* Data structure for one wireless device (802.11 core) */
+&nbsp;struct b43_wldev {
+<span style="color: cyan;">+#if LINUX_VERSION_CODE &lt; KERNEL_VERSION(2,6,31)
++&nbsp;&nbsp;&nbsp; struct compat_threaded_irq irq_compat;
++#endif</span>
+&nbsp;&nbsp;&nbsp;&nbsp; struct b43_bus_dev *dev;
+&nbsp;&nbsp;&nbsp;&nbsp; struct b43_wl *wl;
+&nbsp;&nbsp;&nbsp;&nbsp; /* a completion event structure needed if this call is asynchronous */ </span></span></span>
+
+</pre>
+                This change should be pretty straight forward, but consider figuring out somehow telling
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                that what we need to do is modify this specific data structure. How can we give a hint to
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                that this is the exact data structure? Remember that we don't want to make a grammar rule only for this
+                driver, we want to generalize this change, this is the purpose of breaking things out with
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                , they are not specific to a driver but rather a change was done to them as a collateral to an evolution
+                on the Linux kernel. To get a better idea of what we should tell
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                we should change we must look at where this data structure is used in the series of patches.
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">&nbsp;</span>
+                <br />
+                <pre><span style="color: white;"><span style="background-color: black;"><span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small;"><span style="color: lime;">--- a/drivers/net/wireless/b43/main.c
++++ b/drivers/net/wireless/b43/main.c</span>
+<span style="color: yellow;">@@ -4290,9 +4299,17 @@</span> <span style="color: blue;">static int b43_wireless_core_start(struc</span>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;goto out;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;}
+&nbsp;&nbsp;&nbsp; &nbsp;} else {
+<span style="color: cyan;">+#if LINUX_VERSION_CODE &gt;= KERNEL_VERSION(2,6,31)</span>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;err = request_threaded_irq(dev-&gt;dev-&gt;irq,</span>
+
+<span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b43_interrupt_handler,
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; b43_interrupt_thread_handler,
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; IRQF_SHARED, KBUILD_MODNAME, dev);</span>&nbsp; <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small;">&nbsp;</span>
+
+<span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small;"><span style="color: cyan;">+#else
++&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;err = compat_request_threaded_irq(&amp;dev-&gt;irq_compat,
++&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; dev-&gt;dev-&gt;irq,
++&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; b43_interrupt_handler,
++&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; b43_interrupt_thread_handler,
++&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; IRQF_SHARED, KBUILD_MODNAME, dev);
++#endif</span>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;if (err) {
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;b43err(dev-&gt;wl, "Cannot request IRQ-%d\n",
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dev-&gt;dev-&gt;irq);</span></span></span>
+
+</pre>
+                <span style="font-family: inherit">
+                    The&nbsp; struct b43_wldev is used for the dev variable above, its declared in its entry routine as
+                    an argument as struct b43_wldev *dev. So we know we can tell
+                    <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                    somehow that the target data structure we want to modify is used on request_threaded_irq(), but we
+                    also have to add our own #ifdef there for the older kernel's case as well.
+                </span>
+                <br />
+                <span style="font-family: inherit"><br /></span>
+                <span style="font-family: inherit">
+                    The trick to getting this change in is using the generic type, and referencing it as a pointer, and
+                    later using that
+                    <span style="font-size: small">
+                        to tell
+                        <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                        which data structure you want modified. Pay close attention to the type T and T *private
+                        declarations.&nbsp;
+                    </span>
+                </span>
+                <br />
+                <span style="color: #3d85c6"><br /></span>
+                <br />
+                <pre><span style="color: white;"><span style="background-color: black;"><span style="font-size: x-small;"><span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><span style="color: #3d85c6;">@ threaded_irq @</span>
+<span style="color: yellow;">identifier</span> ret;
+<span style="color: yellow;">expression</span> irq, irq_handler, irq_thread_handler, flags, name;
+<span style="color: yellow;">type</span> T;
+T *private;
+<span style="color: #3d85c6;">@@</span>
+
+<span style="color: cyan;">+#if LINUX_VERSION_CODE &gt;= KERNEL_VERSION(2,6,31)</span>
+ret = request_threaded_irq(irq,
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; irq_handler,
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; irq_thread_handler,
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; flags,
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; name,
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; private);
+<span style="color: cyan;">+#else
++ret = compat_request_threaded_irq(&amp;private-&gt;irq_compat,
++&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; irq,
++&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; irq_handler,
++&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; irq_thread_handler,
++&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; flags,
++&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; name,
++&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; private);
++#endif</span></span></span></span></span></pre>
+                <br />
+                By using Type T and then T *private we are telling
+                <span style="font-family: inherit">
+                    <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                    that private is a pointer, and that we want its type declared as T. This lets us later reference
+                    that type and if we want to extend it, which is exactly what we want to do! Let's look at the last
+                    piece that does this magic.
+                    <span style="font-size: x-small">
+                        <span style="font-family: &quot;Courier New&quot;, Courier, monospace">&nbsp;</span>
+                    </span>
+                </span>
+                <br />
+                <br />
+                <span style="color: white">
+                    <span style="background-color: black">
+                        <span style="font-family: inherit">
+                            <span style="font-size: x-small">
+                                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                                    <span style="color: #3d85c6">
+                                        @ modify_private_header depends on threaded_irq @
+                                    </span>
+                                    <br />
+                                    <span style="color: yellow">type</span>
+                                    threaded_irq.T;
+                                    <br />
+                                    <span style="color: #3d85c6">@@</span>
+                                    <br />
+                                    <br />
+                                    T {
+                                    <br />
+                                    <span style="color: cyan">
+                                        +#if LINUX_VERSION_CODE &lt; KERNEL_VERSION(2,6,31)
+                                        <br />
+                                        +&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct compat_threaded_irq irq_compat;
+                                        <br />
+                                        +#endif
+                                    </span>
+                                    <br />
+                                    <span style="color: red">...</span>
+                                    <br />
+                                    };
+                                </span>
+                            </span>
+                        </span>
+                    </span>
+                </span>
+                <br />
+                <br />
+                <span style="font-family: inherit">
+                    The key is to notice the usage of threaded_irq on the type on this rule, that is actually the name
+                    of the first rule, the name is put in between the two @ symbols. Delcaring it as type threaded_irq.T
+                    means that we want to use whatever Coccinelle picked up on the threaded_irq rule for T. This is
+                    actually the last rule, and the first one I showed is the first in the series. I decided that if
+                    we're going to extend driver data structure it'd be best to do that in the beginning as the end of a
+                    data structure at times can be used for
+                    <a href="http://en.wikipedia.org/wiki/Dynamic_array">dynamic arrays</a>
+                    of variable size. The full thing looks as follow:
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        <span style="font-size: xx-small">&nbsp;</span>
+                    </span>
+                </span>
+                <br />
+                <br />
+                <pre><span style="color: white;"><span style="background-color: black;"><span style="font-family: inherit;"><span style="font-family: &quot;Courier New&quot;, Courier, monospace;"><span style="font-size: xx-small;">/*
+Backports threaded IRQ support
+The 2.6.31 kernel introduced threaded IRQ support, in order to
+backport threaded IRSs on older kernels we built our own struct
+compat_threaded_irq to queue_work() onto it as the kernel thread
+will be running the thread in process context as well.
+For now each driver's private data structure is modified to add
+the their own struct compat_threaded_irq, and that is used by
+the backports module to queue_work() onto it. We can likely avoid
+having to backport this feature by requiring to modify the private
+driver's data structure by relying on an internal worker thread
+within the backports module, this should be revised later.
+*/
+<span style="color: #3d85c6;"><span style="background-color: black;">@ threaded_irq @</span></span>
+<span style="color: yellow;">identifier</span> ret;
+<span style="color: yellow;">expression</span> irq, irq_handler, irq_thread_handler, flags, name;
+<span style="color: yellow;">type</span> T;
+T *private;
+<span style="color: #3d85c6;">@@</span>
+<span style="color: cyan;">+#if LINUX_VERSION_CODE &gt;= KERNEL_VERSION(2,6,31)</span>
+ret = request_threaded_irq(irq,
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; irq_handler,
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; irq_thread_handler,
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; flags,
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; name,
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; private);
+<span style="color: cyan;">+#else
++ret = compat_request_threaded_irq(&amp;private-&gt;irq_compat,
++&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; irq,
++&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; irq_handler,
++&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; irq_thread_handler,
++&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; flags,
++&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; name,
++&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; private);
++#endif</span>
+<span style="color: #3d85c6;">@ sync_irq depends on threaded_irq @</span>
+<span style="color: lime;">expression</span> irq;
+<span style="color: lime;">type</span> threaded_irq.T;
+T *threaded_irq.private;
+<span style="color: #3d85c6;">@@</span>
+<span style="color: cyan;">+#if LINUX_VERSION_CODE &gt;= KERNEL_VERSION(2,6,31)</span>
+synchronize_irq(irq);
+<span style="color: cyan;">+#else
++compat_synchronize_threaded_irq(&amp;private-&gt;irq_compat);
++#endif</span>
+<span style="color: #3d85c6;">@ free depends on threaded_irq @</span>
+<span style="color: lime;">expression</span> irq, dev;
+<span style="color: lime;">type</span> threaded_irq.T;
+T *threaded_irq.private;
+<span style="color: #3d85c6;">@@</span>
+<span style="color: cyan;">+#if LINUX_VERSION_CODE &gt;= KERNEL_VERSION(2,6,31)</span>
+free_irq(irq, dev);
+<span style="color: cyan;">+#else
++compat_free_threaded_irq(&amp;private-&gt;irq_compat);
++compat_destroy_threaded_irq(&amp;dev-&gt;irq_compat);
++#endif</span><span style="color: #3d85c6;">
+@ modify_private_header depends on threaded_irq @</span>
+<span style="color: lime;">type</span> threaded_irq.T;
+<span style="color: #3d85c6;">@@</span>
+T {
+<span style="color: cyan;">+#if LINUX_VERSION_CODE &lt; KERNEL_VERSION(2,6,31)
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct compat_threaded_irq irq_compat;
++#endif</span>
+...
+};</span></span></span></span></span></pre>
+                <br />
+                The beautiful thing about this is that
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/backports/backports.git/tree/patches/collateral-evolutions/network/09-threaded-irq?h=linux-3.13.y"
+                >
+                    09-thread-irq
+                </a>
+                collateral evolution backport only addressed 3 drivers and that using the above SmPL patch in backports
+                means we can transpose this backport onto all of the drivers that we are carrying, 13 of which are using
+                request_threaded_irq(), so 10 new drivers get this collateral evolution backported,
+                <b>automatically</b>
+                . This is simply
+                <b>one</b>
+                of the architectural backport gain of backporting collateral evolutions with
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                . There's a few other interesting things worth mentioning that converting the
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/backports/backports.git/tree/patches/collateral-evolutions/network/09-threaded-irq?h=linux-3.13.y"
+                >
+                    09-thread-irq
+                </a>
+                legacy patch to SmPL revealed:
+                <br />
+                <ol>
+                    <li>
+                        The backport was inconsistently programmed. This was revealed when
+                        <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                        ended up adding the
+                        <span style="font-family: inherit">
+                            <span style="font-size: x-small">
+                                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                                    struct compat_threaded_irq
+                                </span>
+                            </span>
+                        </span>
+                        <br />
+                        on the struct iwl_trans data structure rather than the struct iwl_trans_pcie! The reason this
+                        worked however was that it didn't matter which data structure we used in the driver, so long as
+                        it was consistent.
+                        <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                        deserves a brownie point here, security programmers should be excited about the prospects about
+                        precision here (also check out the
+                        <a href="http://blog.parahard.com/2012/12/httpcoccinelleryorg.html">Coccinelle library</a>
+                        maintained by Peter).
+                    </li>
+                    <li>
+                        The
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/backports/backports.git/tree/patches/collateral-evolutions/network/09-threaded-irq?h=linux-3.13.y"
+                        >
+                            09-thread-irq
+                        </a>
+                        backport was mildly sloppy -- it backported two
+                        <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                        not one! We tuck this way under a new series, in case other drivers wish to backport this. Its
+                        important to do this to document and track why things are done. This new series backports commit
+                        b25c340c1 added by Thomas Gleixner through kernel v2.6.32 which added support for IRQF_ONESHOT.
+                        This lets drivers that use threaded IRQ support to request that the IRQ is not masked after the
+                        hard interrupt handler completes as this requires device access in hard IRQ context and for
+                        buses such as i2c and spi this at times is not possible. The TI driver uses this when a platform
+                        quirk with
+                        <br />
+                        WL12XX_PLATFORM_QUIRK_EDGE_IRQ is detected. In retrospect this quirk
+                        <br />
+                        does not seem backportable unless IRQF_ONESHOT is really not a requirement, but desired. If
+                        WL12XX_PLATFORM_QUIRK_EDGE_IRQ is indeed a requirement for IRQF_ONESHOT then we should not probe
+                        complete. Its unclear if this is a universal thing or not.
+                    </li>
+                    <li>
+                        The amount of time to generate the backports target code is reduced by embracing this new SmPL
+                        patch, even though it actually automatically backported the collateral evolution to 10 other
+                        drivers. The run time used to be 1 minute and 33 seconds, so it turns out 27 seconds were shaved
+                        off somehow magically. The new run time after this patch:
+                    </li>
+                </ol>
+                <blockquote class="tr_bq">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        real&nbsp;&nbsp;&nbsp; 1m6.023s
+                    </span>
+                    <br />
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        user&nbsp;&nbsp;&nbsp; 10m0.276s
+                    </span>
+                    <br />
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        sys&nbsp;&nbsp;&nbsp;&nbsp; 0m26.196s
+                    </span>
+                </blockquote>
+                Now how wicked cool would it be if you didn't have to write SmPL grammar patches in the first place,
+                you'd instead get
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                to
+                <b>infer</b>
+                the SmPL grammar patch for you by giving it a series of legacy patches? Theoretically this is possible
+                and I have hinted in the past that this is what drove me to consider
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                more seriously as I found it hard to believe we could get a lot of developers to pick up a language for
+                a grammar, which at this point seems rather important do embrace anyway, much like learning C. Another
+                interesting prospect is getting
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                to grok an -R option similar to patch -R, which would tell
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                to apply the inverse of the patch. This way if we could get some kernel developers to write collateral
+                evolutions with SmPL it would mean we wouldn't even have to infer the SmPL patch but instead extract it
+                from the commit git log which could be used to keep record of the SmPL grammar rule. This is the ideal
+                situation we need to strive to to perform automatic Linux kernel backporting. During my trip in Paris I
+                found out though that the above two sets of objectives require a bit more research and development,
+                however there is hope that this is achievable. Computer science students: if the above sounds
+                interesting to you reach out to Julia, you might be able to help advance Linux with helping with
+                research and development in this area.
+                <br />
+                <div class="separator" style="clear: both; text-align: center"></div>
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://3.bp.blogspot.com/-n4u76kuKwNQ/Uz_QgDiElCI/AAAAAAABlKs/4iUx_hUpbHw/s1600/IMG_20131111_142417-MOTION.gif"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://3.bp.blogspot.com/-n4u76kuKwNQ/Uz_QgDiElCI/AAAAAAABlKs/4iUx_hUpbHw/s1600/IMG_20131111_142417-MOTION.gif"
+                            height="240"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                Parallelism was the last aspect I tried to address on
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                .
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                already already has support for parallelism, it does this by splitting up all the target files it needs
+                to address into a series of buckets, and each process addresses one bucket.
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                requires you right now to specify that if you need j threads you iterate and kick it j times separately
+                and for each iteration you specify j as the max number of threads you want and keep bumping an index on
+                each run. In short it is not doing the spawning of children / threads automatically for you. As with the
+                first performance observation made by Johannes it should be clear that this incurs a performance hit,
+                requiring you to hit the shell for each spawned thread. A change to do this all internally on
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                is welcomed but Julia notes making this change poses major problems for the
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                internal structure, it can be addressed but will require a student to tackle this, and hope is that it
+                can be tackled some time in 2014, unless a daring
+                <a href="http://en.wikipedia.org/wiki/OCaml">OCaml</a>
+                guru with spare time wishes to help and jump in. In the meantime we have to work with the solution in
+                place. For shell this looks as follows:
+
+                <br />
+                <pre><span style="font-family: &quot;Courier New&quot;,Courier,monospace;">&nbsp;</span>
+<span style="font-size: small;">
+<span style="color: white;"><span style="background-color: black;"><span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><span style="color: #45818e;">#!/bin/bash
+# By Kees Cook
+# http://comments.gmane.org/gmane.comp.version-control.coccinelle/680</span>
+<span style="color: yellow;">set</span> <span style="color: #c27ba0;">-e</span>
+<span style="color: cyan;">MAX</span>=<span style="color: #3d85c6;">$(</span><span style="color: #c27ba0;">getconf _NPROCESSORS_ONLN</span><span style="color: #3d85c6;">)</span>
+<span style="color: cyan;">dir</span>=<span style="color: #3d85c6;">$(</span><span style="color: #c27ba0;">mktemp -d</span><span style="background-color: #3d85c6;">)</span>
+<span style="color: yellow;">for</span> <b>i</b> <span style="color: yellow;">in</span> $(seq 0 $(( MAX - 1 )) ); do
+&nbsp;&nbsp;&nbsp; spatch <span style="color: #c27ba0;">-max</span> <span style="color: #3d85c6;">$MAX</span> <span style="color: #c27ba0;">-index</span> <span style="color: #3d85c6;">$i</span> <span style="color: #c27ba0;">-very_quiet</span> <span style="color: red;">"</span><span style="color: #3d85c6;"><span style="background-color: black;">$@</span></span><span style="color: red;">"</span><b> &gt; </b><span style="color: #3d85c6;">$dir</span>/<span style="color: #3d85c6;">$i.out</span> <b>&amp;</b></span></span></span>
+<span style="color: white;"><span style="background-color: black;"><span style="font-family: &quot;Courier New&quot;,Courier,monospace;"><b>done</b>
+<span style="color: yellow;">wait</span>
+cat <span style="color: #3d85c6;">$dir</span>/*.out
+<span style="color: yellow;">rm</span> <span style="color: #c27ba0;">-f</span> <span style="color: #3d85c6;">$dir</span>/*.out
+<span style="color: yellow;">rmdir</span> <span style="color: #3d85c6;">$dir</span></span></span></span></span></pre>
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-b8cVdr7qM5s/Uz3CvZbJtII/AAAAAAABlIg/LKjBZyIGWCQ/s1600/before-threaded-cocci.png"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://2.bp.blogspot.com/-b8cVdr7qM5s/Uz3CvZbJtII/AAAAAAABlIg/LKjBZyIGWCQ/s1600/before-threaded-cocci.png"
+                            height="52"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center"></div>
+                <div class="separator" style="clear: both; text-align: center"></div>
+                <div class="separator" style="clear: both; text-align: center"></div>
+                <div class="separator" style="clear: both; text-align: center"></div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://4.bp.blogspot.com/-QEHG7tq_jW4/Uz-XsJ0BaxI/AAAAAAABlJ4/MsmGapGPDOo/s1600/cocci-jobless-processes.png"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://4.bp.blogspot.com/-QEHG7tq_jW4/Uz-XsJ0BaxI/AAAAAAABlJ4/MsmGapGPDOo/s1600/cocci-jobless-processes.png"
+                            height="57"
+                            width="400"
+                        />
+                        &nbsp;
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center"></div>
+                <div class="separator" style="clear: both; text-align: center"></div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://3.bp.blogspot.com/-85WHpiYWrZs/Uz3Cvcfox7I/AAAAAAABlIc/ypgnugHZGxo/s1600/after-threaded-cocci.png"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://3.bp.blogspot.com/-85WHpiYWrZs/Uz3Cvcfox7I/AAAAAAABlIc/ypgnugHZGxo/s1600/after-threaded-cocci.png"
+                            height="55"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                For now I've created a Linux backports python library that takes care of this for us but it still has
+                the incurred overhead of creating j number of processes if its going to use j threads. (
+                <b>Update</b>
+                : you can now download
+                <a href="http://drvbp1.linux-foundation.org/~mcgrof/coccinelle/pycocci">pycocci</a>
+                , a standalone Python wrapper with sensible default for Coccinelle and multithread support as was
+                implemented in backports, this has been submitted for inclusion into upstream Coccinelle). The overhead
+                isn't as significant as with grep though as grep was used for every file during inspection, the overhead
+                currently should therefore be
+                <b>extremely minimal</b>
+                . In practice I've observed the best performance using Linux as the target source using 3 times the
+                number of CPUs available on the
+                <a href="http://www.do-not-panic.com/2013/03/machine-slavery-compat-drivers-build-box.html">
+                    monster build box
+                </a>
+                donated by SUSE, HP, and the Linux Foundation. The explanation for this is that
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                threads that have nothing to do will bail out, leaving the CPU idle. If using
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                on the Linux kernel this can happen quite a bit as an SmPL patch only has rules that should apply to
+                certain files. If you are not using indexing this happens quite a bit. On this system embracing
+                parallelism on
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                as of backports-20140311
+                <b>yields for a gain of 94.38% on run time at code generation time</b>
+                ! On this system it meant reducing the amount of time at code generation time from 19 minutes 34 second
+                to 1 minute and 6 second, after the new threaded IRQ SmPL patch! For those interested further in
+                performance it is worth mentioning that all of the statistics provided, as well as statistics reported
+                on the backports commit log are from
+                <a href="http://www.do-not-panic.com/2013/03/machine-slavery-compat-drivers-build-box.html">
+                    monster build box
+                </a>
+                that we use, and that we have all of our code and git trees in RAM. I suspect we can do better, maybe by
+                using RCU. I've socialized a few other ideas as well but Julia recently expressed interest in exploring
+                usage of
+                <a href="http://www.do-not-panic.com/2012/02/gnu-things-are-gnu-simplicity-of-gnu.html">
+                    GNU make's jobserver
+                </a>
+                which I have written about before. Let's see!
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-EfK6Se4X038/Uz_QgHDMkQI/AAAAAAABlKs/lpMnYvBgttg/s1600/IMG_20131112_010326.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://2.bp.blogspot.com/-EfK6Se4X038/Uz_QgHDMkQI/AAAAAAABlKs/lpMnYvBgttg/s1600/IMG_20131112_010326.jpg"
+                            height="300"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                Can using
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                scale? The answer is yes, specially with parallelism in place. And let's remember that the current
+                performance improvement is without software indexing. Recall that we've now determined that you won't be
+                using
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                for every single backport. You only want to use
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                for long series of patches backport
+                <a href="http://coccinelle.lip6.fr/ce.php">collateral evolutions</a>
+                . My focus in Paris was to use my time efficiently and review these and only bug Julia about the series
+                which I deemed likely impossible for
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                to address. The only patches
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                can't address are the obvious ones, where there is no form that can be expressed. Its also not worth it
+                to use
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                for tiny changes too.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-O1MOptG-ITY/Uz_QgB2sP2I/AAAAAAABlKs/5BWa_pUJK2E/s1600/IMG_20131111_144914.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://2.bp.blogspot.com/-O1MOptG-ITY/Uz_QgB2sP2I/AAAAAAABlKs/5BWa_pUJK2E/s1600/IMG_20131111_144914.jpg"
+                            height="400"
+                            width="300"
+                        />
+                    </a>
+                </div>
+                <br />
+                Do you want to test a
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                patch? You can either use spatch directly with the above bash script for parallelism (note I use 3 num
+                CPUs threads, the above just uses the number of CPU threads). If using backports you can use gentree.py
+                within backports with --test-cocci. Johannes added a while ago git support into backports whereby if you
+                specify --gitdebug a git tree will be generated for the code generated. A commit will be triggered after
+                the first initial code import, and then one commit per patch, and one commit per SmPL patch. We take
+                advantage of this feature and --test-cocci will skip all legacy patches, and only applies the
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                SmPL patch specified. Can you can then just change into the directory where the code was generated and
+                issue 'git show'.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://4.bp.blogspot.com/-cx3o2K0Dp_E/Uz_QgJVzOdI/AAAAAAABlKs/HYUEZw6owmo/s1600/IMG_20131111_150441.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://4.bp.blogspot.com/-cx3o2K0Dp_E/Uz_QgJVzOdI/AAAAAAABlKs/HYUEZw6owmo/s1600/IMG_20131111_150441.jpg"
+                            height="240"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                What about profiling
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                within backports? Sure -- just use --profile-cocci for gentree.py and specify the
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                patch you want to test and profile.
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                will generate a profile report for the time spent on each routine within
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                for each process that ran. Remember that each process will only work on a bucket list of files, so at
+                times a process will yield no interesting profile results, which could likely explain why I get best
+                results with 3 * number of CPU threads -- some processes likely just die out fast. Here is an example
+                output of a profile run on the 11-dev-pm-ops.cocci collateral evolution. First the SmPL rule, this one
+                should be pretty straight forward.
+                <br />
+                <br />
+                <span style="color: white">
+                    <span style="background-color: black">
+                        <span style="font-size: x-small">
+                            <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                                // The 2.6.29 kernel has new struct dev_pm_ops [1] which are used
+                                <br />
+                                // on the pci device to distinguish power management hooks for suspend
+                                <br />
+                                // to RAM and hibernation. Older kernels don't have these so we need
+                                <br />
+                                // to resort back to the good ol' suspend/resume. Fortunately the calls
+                                <br />
+                                // are not so different so it should be possible to resuse the same
+                                <br />
+                                // calls on compat code with only slight modifications.
+                                <br />
+                                //
+                                <br />
+                                // [1] http://lxr.linux.no/#linux+v2.6.29/include/linux/pm.h#L170
+                                <br />
+                                <br />
+                                <span style="color: #3d85c6">@ module_pci @</span>
+                                <br />
+                                <span style="color: yellow">declarer</span>
+                                name MODULE_DEVICE_TABLE;
+                                <br />
+                                <span style="color: yellow">identifier</span>
+                                pci_ids;
+                                <br />
+                                <span style="color: #3d85c6">@@</span>
+                                <br />
+                                <br />
+                                MODULE_DEVICE_TABLE(pci, pci_ids);
+                                <br />
+                                <span style="color: #3d85c6">
+                                    <br />
+                                    @ simple_dev_pm depends on module_pci @
+                                </span>
+                                <br />
+                                <span style="color: yellow">identifier</span>
+                                ops, pci_suspend, pci_resume;
+                                <br />
+                                <span style="color: yellow">declarer</span>
+                                name SIMPLE_DEV_PM_OPS;
+                                <br />
+                                <span style="color: yellow">declarer</span>
+                                name compat_pci_suspend;
+                                <br />
+                                <span style="color: yellow">declarer</span>
+                                name compat_pci_resume;
+                                <br />
+                                <span style="color: #3d85c6">@@</span>
+                                <br />
+                                <br />
+                                <span style="color: cyan">
+                                    +compat_pci_suspend(pci_suspend);
+                                    <br />
+                                    +compat_pci_resume(pci_resume);
+                                </span>
+                                <br />
+                                SIMPLE_DEV_PM_OPS(ops, pci_suspend, pci_resume);
+                                <br />
+                                <br />
+                                <span style="color: #3d85c6">@@</span>
+                                <br />
+                                <span style="color: yellow">identifier</span>
+                                backport_driver;
+                                <br />
+                                <span style="color: yellow">expression</span>
+                                pm_ops;
+                                <br />
+                                <span style="color: yellow">fresh identifier</span>
+                                backports_pci_suspend = simple_dev_pm.pci_suspend ## "_compat";
+                                <br />
+                                <span style="color: yellow">fresh identifier</span>
+                                backports_pci_resume = simple_dev_pm.pci_resume ## "_compat";
+                                <br />
+                                <span style="color: #3d85c6">@@</span>
+                                <br />
+                                <br />
+                                struct pci_driver backport_driver = {
+                                <br />
+                                <span style="color: cyan">+#if (LINUX_VERSION_CODE &gt;= KERNEL_VERSION(2,6,29))</span>
+                                <br />
+                                &nbsp;&nbsp;&nbsp; .driver.pm&nbsp; = pm_ops,
+                                <br />
+                                <span style="color: cyan">
+                                    +#elif defined(CONFIG_PM_SLEEP)
+                                    <br />
+                                    +&nbsp;&nbsp;&nbsp; .suspend&nbsp;&nbsp;&nbsp; = backports_pci_suspend,
+                                    <br />
+                                    +&nbsp;&nbsp;&nbsp; .resume&nbsp;&nbsp;&nbsp;&nbsp; = backports_pci_resume,
+                                    <br />
+                                    +#endif
+                                </span>
+                                <br />
+                                };
+                            </span>
+                        </span>
+                    </span>
+                </span>
+                <br />
+                <br />
+                Although the profile support currently uses 3 * number CPU threads on
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                here&nbsp; is one example output with only 1 process. This is with an older version of
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                .
+                <br />
+                <br />
+                <pre><span style="font-size: xx-small;"><span style="font-family: &quot;Courier New&quot;, Courier, monospace;">$ ./gentree.py --clean --verbose --profile-cocci \
+&nbsp;&nbsp;&nbsp; patches/collateral-evolutions/network/11-dev-pm-ops.cocci \
+&nbsp;&nbsp;&nbsp; /home/mcgrof/linux-next/ \
+&nbsp;&nbsp;&nbsp; /home/mcgrof/build/backports-20131206
+
+On big iron backports server:
+
+---------------------
+profiling result
+---------------------
+Main total&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp; 275.327 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+Main.outfiles computation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp; 274.761 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+full_engine&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp; 272.034 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 291 count
+C parsing&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp; 158.143 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 346 count
+TOTAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp; 158.141 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 346 count
+HACK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 69.680 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 696 count
+C parsing.tokens&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 54.000 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 693 count
+Parsing: 1st pass&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 43.870 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 22728 count
+YACC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 42.921 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 22615 count
+C parsing.fix_cpp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 36.855 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 349 count
+MACRO mgmt prep 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 32.787 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 346 count
+TAC.annotate_program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 32.779 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 318 count
+flow&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 31.251 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 21004 count
+LEXING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 26.415 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 346 count
+bigloop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 15.298 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 291 count
+process_a_ctl_a_env_a_toplevel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 14.840 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 46661 count
+C parsing.lookahead&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 13.254 sec&nbsp;&nbsp;&nbsp; 1965389 count
+mysat&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 12.777 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 46661 count
+show_xxx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 11.933 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 49645 count
+C parsing.fix_define&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.957 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 693 count
+Type_c.type_of_s&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.729 sec&nbsp;&nbsp;&nbsp;&nbsp; 135896 count
+module_pci&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.653 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 291 count
+rule starting on line 28&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.630 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 291 count
+fix_flow&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.498 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20038 count
+C parsing.lex_ident&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.388 sec&nbsp;&nbsp;&nbsp; 1695857 count
+C consistencycheck&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.213 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 346 count
+Pattern3.match_re_node&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.110 sec&nbsp;&nbsp;&nbsp;&nbsp; 969235 count
+Common.full_charpos_to_pos_large&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5.684 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 693 count
+C parsing.mk_info_item&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.556 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 22728 count
+worth_trying&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.683 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1902 count
+Parsing: multi pass&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.574 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 206 count
+simple_dev_pm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.011 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 291 count
+TAC.unwrap_unfold_env&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.007 sec&nbsp;&nbsp;&nbsp;&nbsp; 171026 count
+TAC.typedef_fix&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.948 sec&nbsp;&nbsp;&nbsp;&nbsp; 273295 count
+TAC.lookup_env&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.583 sec&nbsp;&nbsp;&nbsp;&nbsp; 236568 count
+TAC.add_binding&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.896 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 57620 count
+MACRO managment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.439 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 118 count
+Main.result analysis&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.418 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+Common.=~&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.305 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 80558 count
+C unparsing&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.168 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 41 count
+MACRO mgmt prep 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.148 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 346 count
+parse cocci&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.115 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+pre_engine&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.115 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+Common.info_from_charpos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.102 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 54 count
+Main.infiles computation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.033 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+ctl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.019 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 94 count
+Transformation3.transform&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.006 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 27 count
+TAC.lookup_typedef&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.004 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 332 count
+check_duplicate&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.003 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+Common.group_assoc_bykey_eff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.003 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+merge_env&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.003 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 649 count
+post_engine&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+get_glimpse_constants&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+Common.full_charpos_to_pos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 count
+asttoctl2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+
+On a Chromebook Pixel:
+
+---------------------
+profiling result
+---------------------
+Main total&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp; 379.349 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+Main.outfiles computation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp; 379.139 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+full_engine&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp; 372.905 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1902 count
+HACK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 96.134 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2785 count
+C parsing.tokens&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 76.053 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2769 count
+Parsing: 1st pass&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 57.708 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 82287 count
+YACC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 56.033 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 81918 count
+C parsing.fix_cpp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 52.167 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1400 count
+TAC.annotate_program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 46.560 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1356 count
+MACRO mgmt prep 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 43.976 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1384 count
+flow&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 41.027 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 80563 count
+LEXING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 38.111 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1384 count
+bigloop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 17.631 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1329 count
+process_a_ctl_a_env_a_toplevel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 17.174 sec&nbsp;&nbsp;&nbsp;&nbsp; 161123 count
+C parsing.lookahead&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 15.138 sec&nbsp;&nbsp;&nbsp; 6737589 count
+mysat&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 14.537 sec&nbsp;&nbsp;&nbsp;&nbsp; 161123 count
+Type_c.type_of_s&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; 11.815 sec&nbsp;&nbsp;&nbsp;&nbsp; 675989 count
+Common.full_charpos_to_pos_large&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.507 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2769 count
+fix_flow&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8.685 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 77269 count
+module_pci&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8.459 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1329 count
+rule starting on line 28&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8.400 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1329 count
+C consistencycheck&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8.137 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1384 count
+C parsing.lex_ident&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7.810 sec&nbsp;&nbsp;&nbsp; 5665983 count
+C parsing.fix_define&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7.343 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2769 count
+Pattern3.match_re_node&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.827 sec&nbsp;&nbsp;&nbsp; 3046889 count
+C parsing.mk_info_item&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5.787 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 82287 count
+show_xxx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.825 sec&nbsp;&nbsp;&nbsp;&nbsp; 174022 count
+Parsing: multi pass&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.802 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 679 count
+TAC.lookup_env&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.556 sec&nbsp;&nbsp;&nbsp;&nbsp; 858456 count
+TAC.typedef_fix&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.540 sec&nbsp;&nbsp;&nbsp;&nbsp; 976842 count
+TAC.unwrap_unfold_env&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.278 sec&nbsp;&nbsp;&nbsp;&nbsp; 587709 count
+TAC.add_binding&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.157 sec&nbsp;&nbsp;&nbsp;&nbsp; 204618 count
+simple_dev_pm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.762 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1329 count
+MACRO managment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.610 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 394 count
+Common.=~&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.377 sec&nbsp;&nbsp;&nbsp;&nbsp; 253422 count
+MACRO mgmt prep 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.299 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1384 count
+Main.result analysis&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.200 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+Common.info_from_charpos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.135 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 248 count
+C unparsing&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.132 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 41 count
+pre_engine&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.050 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+parse cocci&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.050 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+C parsing&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.016 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1384 count
+check_duplicate&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.012 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+Common.group_assoc_bykey_eff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.012 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+TAC.lookup_typedef&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.011 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1314 count
+Main.infiles computation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.010 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+ctl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.009 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 94 count
+merge_env&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.005 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2725 count
+TOTAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.004 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1384 count
+Transformation3.transform&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.003 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 27 count
+Common.full_charpos_to_pos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.002 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2 count
+C unparsing.new_tabbing&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 149 count
+get_glimpse_constants&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+asttoctl2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count
+post_engine&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000 sec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 count</span></span></pre>
+                <br />
+                <br />
+                OK one last SmPL example, this one was added by Johannes:
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">&nbsp;</span>
+                </span>
+                <br />
+                <br />
+                <span style="color: white">
+                    <span style="background-color: black">
+                        <span style="font-size: x-small">
+                            <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                                <span style="color: #3d85c6">@@</span>
+                                <br />
+                                <span style="color: yellow">expression</span>
+                                dev;
+                                <br />
+                                <span style="color: yellow">expression</span>
+                                ops;
+                                <br />
+                                <span style="color: #3d85c6">@@</span>
+                                <br />
+                                <span style="color: #a64d79">-dev-&gt;netdev_ops = ops;</span>
+                                <br />
+                                <span style="color: cyan">+netdev_attach_ops(dev, ops);</span>
+                            </span>
+                        </span>
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">&nbsp;</span>
+                </span>
+                <br />
+                We do all the dirty trickery of backporting the net_device data structure changes for device operation
+                callbacks into a helper, this is an example of how we minimize code changes. I documented how and why we
+                do this in my last post on
+                <a href="http://www.do-not-panic.com/2012/08/automatically-backporting-linux-kernel.html">
+                    automatically backporting the Linux kernel
+                </a>
+                , go read that to learn how we backport this. I stated above that you can use data structures to ask
+                <a href="http://coccinelle.lip6.fr/">Coccinelle</a>
+                to only make changes specific to the data structure you are interested in modifying, therefore reducing
+                the namespace for changes. This SmPL patch can be modified to be data structure specific.
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">&nbsp;</span>
+                </span>
+                <br />
+                <br />
+                <span style="background-color: black">
+                    <span style="font-size: x-small">
+                        <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                            <span style="color: #3d85c6">@@</span>
+                            <br />
+                            <span style="color: white">
+                                <span style="color: yellow">struct</span>
+                                net_device *dev;
+                                <br />
+                                <span style="color: yellow">struct</span>
+                                net_device_ops ops;
+                                <br />
+                                <span style="color: #3d85c6">@@</span>
+                                <br />
+                                <span style="color: #c27ba0">-dev-&gt;netdev_ops = &amp;ops;</span>
+                                <br />
+                                <span style="color: cyan">+netdev_attach_ops(dev, &amp;ops);</span>
+                            </span>
+                        </span>
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">&nbsp;</span>
+                </span>
+                <br />
+                To see what I mean let me give you an example simple code snippet we can use to test this on, I've also
+                put this on github on a
+                <a href="https://github.com/mcgrof/netdev-ops">netdev-ops git tree</a>
+                . After installing Coccinelle, you just want to run:
+                <br />
+                <ol>
+                    <li>make test1</li>
+                    <li>git checkout -f</li>
+                    <li>make test2</li>
+                </ol>
+                The difference in output should be enough to provide clarity for what I'm about to explain. Below is the
+                netdev.c code snippet that we deal to test transformations.
+                <br />
+                <br />
+                <span style="color: white">
+                    <span style="background-color: black">
+                        <span style="font-size: x-small">
+                            <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                                <span style="color: #3d85c6">#include</span>
+                                <span style="color: #c27ba0"><stdlib .h=""></stdlib></span>
+                                <stdlib .h="">
+                                    <br />
+                                    <br />
+                                    <span style="color: lime">struct</span>
+                                    net_device_ops {
+                                    <br />
+                                    };
+                                </stdlib>
+                            </span>
+                        </span>
+                    </span>
+                </span>
+                <br />
+                <span style="color: white">
+                    <span style="background-color: black">
+                        <span style="font-size: x-small">
+                            <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                                <stdlib .h="">
+                                    <br />
+                                    <span style="color: lime">struct</span>
+                                    net_device {
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; struct net_device_ops *netdev_ops;
+                                    <br />
+                                    };
+                                    <br />
+                                    <br />
+                                    <span style="color: lime">struct</span>
+                                    bubble_ops {
+                                    <br />
+                                    };
+                                    <br />
+                                    <br />
+                                    <span style="color: lime">struct</span>
+                                    bubbles {
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; struct bubble_ops *netdev_ops;
+                                    <br />
+                                    };
+                                    <br />
+                                    <br />
+                                    <span style="color: lime">static</span>
+                                    struct net_device_ops my_netdev_ops = {
+                                    <br />
+                                    };
+                                    <br />
+                                    <br />
+                                    <span style="color: lime">static</span>
+                                    struct bubble_ops my_bubble_ops = {
+                                    <br />
+                                    };
+                                    <br />
+                                    <br />
+                                    <span style="color: lime">static struct</span>
+                                    parent {
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; struct net_device *dev;
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; int b;
+                                    <br />
+                                    };
+                                    <br />
+                                    <br />
+                                    <span style="color: lime">static struct</span>
+                                    parent_usb {
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; struct net_device *net;
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; int b;
+                                    <br />
+                                    };
+                                    <br />
+                                    <br />
+                                    <span style="color: lime">int</span>
+                                    main(
+                                    <span style="color: lime">void</span>
+                                    )
+                                    <br />
+                                    {
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp;
+                                    <span style="color: lime">struct</span>
+                                    parent *p = malloc(
+                                    <span style="color: red">sizeof</span>
+                                    (
+                                    <span style="color: lime">struct</span>
+                                    parent));
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp;
+                                    <span style="color: lime">struct</span>
+                                    parent_usb *p_usb = malloc(
+                                    <span style="color: red">sizeof</span>
+                                    (
+                                    <span style="color: lime">struct</span>
+                                    parent));
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp;
+                                    <span style="color: lime">struct</span>
+                                    net_device *dev = malloc(
+                                    <span style="color: red">sizeof</span>
+                                    (
+                                    <span style="color: lime">struct</span>
+                                    net_device));
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp;
+                                    <span style="color: lime">struct</span>
+                                    bubbles *bubble = malloc(
+                                    <span style="color: red">sizeof</span>
+                                    (
+                                    <span style="color: lime">struct</span>
+                                    bubbles));
+                                    <br />
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; dev-&gt;netdev_ops = &amp;my_netdev_ops;
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; bubble-&gt;netdev_ops = &amp;my_bubble_ops;
+                                    <br />
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; free(dev);
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; free(bubble);
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; free(p);
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; free(p_usb);
+                                    <br />
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; p-&gt;dev = dev;
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; p-&gt;dev-&gt;netdev_ops = &amp;my_netdev_ops;
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp; p_usb-&gt;net-&gt;netdev_ops = &amp;my_netdev_ops;
+                                    <br />
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp;
+                                    <span style="color: yellow">return</span>
+                                    <span style="color: #c27ba0">0</span>
+                                    ;
+                                    <br />
+                                    }
+                                </stdlib>
+                            </span>
+                        </span>
+                    </span>
+                </span>
+                <br />
+                <br />
+                Using the second version of the SmPL rules file will ensure
+                <b>we do not modify</b>
+                bubble-&gt;netdev_ops, and we only change&nbsp; the dev-&gt;netdev_ops line. The p_usb case was added as
+                an example where the dev name was not used but it still works. Notice that for the Linux kernel source
+                it does however mean that you should use --recursive-includes on Coccinelle. Security folks should be
+                excited about this though. The reason why this works is that the code generation and inspection is
+                happening on the latest upstream code always. The above change to the SmPL rule actually incurs an added
+                50 second penalty but that is because of the --recursive-includes flag. Now, the interesting thing about
+                this specific collateral evolution, and why I've dedicated so much attention to it in previous posts and
+                in this post is that if we added a static inline upstream on the Linux kernel we can get rid of this
+                SmPL file completely and the backport would just be done automatically through the backports module. I'm
+                trying to do as much homework as I can to ensure that before I send a patch upstream its well understood
+                and documented exactly why I believe an upstream change should be considered in light of the gains of
+                automatically backporting Linux. Even though we'd end up removing that SmPL patch using SmPL however
+                helps formalize this entire process, and we likely wouldn't end up removing all SmPL patches.
+                <br />
+                <br />
+                Our SmPL patch count per backports release so far:
+                <br />
+                <ul>
+                    <li>linux-3.13.y - 3 SmPL patches (all thanks to Johannes!):</li>
+                    <ul>
+                        <li><span style="color: cyan">25-multicast.cocci</span></li>
+                        <li><span style="color: cyan">0005-netlink-portid.cocci</span></li>
+                        <li><span style="color: cyan">0001-netdev_ops.cocci</span></li>
+                    </ul>
+                    <li>&nbsp;linux-3.14.y - 5 SmPL patches:</li>
+                    <ul>
+                        <li><span style="color: #3d85c6">25-multicast.cocci</span></li>
+                        <li><span style="color: #3d85c6">0005-netlink-portid.cocci</span></li>
+                        <li><span style="color: #3d85c6">0001-netdev_ops.cocci</span></li>
+                        <li><span style="color: cyan">11-dev-pm-ops.cocci</span></li>
+                        <li><span style="color: cyan">62-usb_driver_lpm.cocci</span></li>
+                    </ul>
+                    <li>master - 6 SmPL patches</li>
+                    <ul>
+                        <li><span style="color: #3d85c6">25-multicast.cocci</span></li>
+                        <li><span style="color: #3d85c6">0005-netlink-portid.cocci</span></li>
+                        <li><span style="color: #3d85c6">0001-netdev_ops.cocci</span></li>
+                        <li><span style="color: #3d85c6">11-dev-pm-ops.cocci</span></li>
+                        <li><span style="color: #3d85c6">62-usb_driver_lpm.cocci</span></li>
+                        <li><span style="color: cyan">0015-threaded-irq.cocci</span></li>
+                    </ul>
+                </ul>
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-uiXtGubpfqc/Uz_QgE7UzEI/AAAAAAABlKs/2HvJrrATqYs/s1600/IMG_20131111_150748.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://2.bp.blogspot.com/-uiXtGubpfqc/Uz_QgE7UzEI/AAAAAAABlKs/2HvJrrATqYs/s1600/IMG_20131111_150748.jpg"
+                            height="320"
+                            width="240"
+                        />
+                    </a>
+                </div>
+                <br />
+                The last thing we'll need to address somehow is to ensure that we don't provide support for a ton of
+                kernels. That just doesn't scale. We currently provide backports down to the last 30 kernels. Before we
+                make a release we test compile each release against 30 kernels. We need to shave that down but the
+                reason we haven't been doing much of this is that most silicon industry have customers using tons of
+                ancient random kernels and they never upgrade. It should be clear this is a
+                <b>security concern</b>
+                and I hope that with education, and perhaps using backports as a carrot, we can streamline only getting
+                the entire industry to work on and embrace usage of only the kernels listed on kernel.org.
+                <b>Folks -- if we want to scale, we gotta do this</b>
+                .
+                <br />
+                <br />
+                <br />
+                In so far as my new role at SUSE is concerned, we'll be primarily focusing only on kernels greater than
+                3.0. We will also need to start being pickier about what drivers we backport. We should not backport /
+                compile / test carry anything ancient. There is simply no point. You should expect a good cleaning on
+                backports soon to address all this. We should strive so that kernel developers never have to do
+                backporting -- in order to help with this maintainers can help be considerate of software architecture
+                strategies that can be embraced to help do backporting efficiently.
+                <i>We're still figuring out what those things are</i>
+                , but you will soon see some example patches posted by me upstream that try to help with this. One
+                example will be to introduce usage of static inlines for usage on data structure assignment. We should
+                be conservative about what things make sense though. We're still learning the ropes as to what can help,
+                but we're on our way.
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">← back to timeline</a>
+        </footer>
+    </body>
+</html>

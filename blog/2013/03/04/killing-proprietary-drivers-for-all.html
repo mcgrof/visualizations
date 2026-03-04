@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Killing proprietary drivers for all Operating Systems — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2013-03-04">Mar 4, 2013</time>
+                    <span class="category-badge badge-linux">Linux / Kernel</span>
+                </div>
+                <h1>Killing proprietary drivers for all Operating Systems</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2013/03/killing-proprietary-drivers-for-all.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <a
+                    href="https://web.archive.org/web/20161201180245im_/http://2.bp.blogspot.com/-6llRdcyVVzY/UI8whfE4foI/AAAAAAABBSw/TyQ326E6Rzk/s1600/304424_10151281854796265_1517141487_n.jpg"
+                >
+                    <img
+                        src="https://web.archive.org/web/20161130230742im_/http://2.bp.blogspot.com/-6llRdcyVVzY/UI8whfE4foI/AAAAAAABBSw/TyQ326E6Rzk/s400/304424_10151281854796265_1517141487_n.jpg"
+                    />
+                </a>
+                <br />
+                Be sure to read my
+                <a href="http://www.do-not-panic.com/p/legal-disclaimer.html">legal disclaimer</a>
+                . Great. Now, if you've been hacking on the Linux kernel, FreeBSD, NetBSD, OpenBSD or any other open
+                public Operating System kernel project you may at times have reached a point where you have had to deal
+                with code written by a random silicon company. You'd have had to either review it, rewrite it, or
+                massage it to conform to your groups' views of
+                <b>good code</b>
+                , a non trivial daunting task. Now,
+                <i>good code</i>
+                 
+                <b>can</b>
+                be
+                <i>subjective</i>
+                but I argue that's a
+                <b>bullshit lame claim</b>
+                and one can mathematically prove what shit code is. Showing what bad code is through mathematics
+                <i>can be used</i>
+                to help alleviate yourself from the
+                <b><a href="https://twitter.com/fuckcode">politics</a></b>
+                that you likely will be pegged for calling out bullshit nasty piece of shit code. When working with a
+                large community you get used to people lashing out on your code, you need to grow a thick skin and grow
+                comfortable with accepting public criticism to your work. Some companies have required code review
+                policies but I don't think that these efforts will ever compete with the level of public scrutiny a
+                <b>good engaged community</b>
+                can provide. There is simply not enough resources, passion, and drive from corporate code review to
+                compete, not matter what any
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                may say. Getting a community engaged is
+                <u>difficult</u>
+                however and the claim that
+                <u>all open code is good is simply false</u>
+                . What helps make a community engaged is difficult to iron out but its easy to spot. This post is not
+                about what makes these communities well engaged or measuring them but simply to make the case that when
+                you do have a good engaged community you will not be able to compete with the level of scrutiny of that
+                community at your company.
+                <p></p>
+                <p>
+                    <a
+                        href="http://1.bp.blogspot.com/-Az0UQHL0tJ8/UI9UGc69U_I/AAAAAAABBTo/BlpNwhytNwQ/s1600/20121028_225239.jpg"
+                    >
+                        <img
+                            src="http://1.bp.blogspot.com/-Az0UQHL0tJ8/UI9UGc69U_I/AAAAAAABBTo/BlpNwhytNwQ/s400/20121028_225239.jpg"
+                        />
+                    </a>
+                    <br />
+                    I've dealt with reviewing / massaging company code a lot, not only for 802.11 but for video and
+                    random hardware concoctions. Given that I am part of a public community I can also engage with
+                    developers from other subsystems and also other public Operating Systems and from what I have talked
+                    about with every single developer its all the same: they agree, most company corporate code tends to
+                    suck. Guess who has to deal with fixing all that crap? Us. Its all shit and I'm tired of it and I
+                    want to put an end to this mess. On December 9, 2011 I declared war against proprietary drivers.
+                    Such a claim is easy to make but its really hard to fix this issue. There are a 
+                    <a href="https://twitter.com/fuckcode">slew of politics in the middle</a>
+                    , a bunch of historical baggage, and a huge set of legal misconceptions, and lets not forget
+                    community tensions around the idea of 'free software' and stupid claims of what operating system is
+                    better. Making the assumption that you will have the solution yourself to a complex problem requires
+                    serious delusions of grandeur and politicians keep failing at this same mistake and its why so many
+                    political promises end up not being met. This problem is best illustrated by Tim Hardford on his Ted
+                    Talk '
+                    <a href="http://www.ted.com/talks/tim_harford.html">Trial error and the God complex</a>
+                    '. My strategy then is to accept I cannot come up with the solution to the problem myself but
+                    instead start by reviewing the issue at hand with different parties both in the community leaders
+                    and anyone at companies who would lend me an ear to discuss and try to take a very different
+                    strategy, by first reviewing carefully existing failed strategies. Getting people to accept existing
+                    strategies as failed is difficult due to a huge slew of politics and frankly a line of
+                    <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHBs</a>
+                     in the way but also a plague of archaic cultural practices instilled in the industry in ways to
+                    support hardware and tensions around public community projects and legal
+                    <a href="http://en.wikipedia.org/wiki/Fear,_uncertainty_and_doubt">FUD</a>
+                    .
+                </p>
+                <div>
+                    <a href="http://www.flickr.com/photos/tippy/245562070/" title="吉祥物大集合 by tutchiio, on Flickr">
+                        <img alt="吉祥物大集合" src="http://farm1.staticflickr.com/96/245562070_82e8d5aef4.jpg" />
+                    </a>
+                </div>
+                <div>
+                    <br />
+                </div>
+                To even begin to try to address these issues would require engaging with folks that likely disagree with
+                me philosophically and who would never be afraid to make claims that disagree with your own points of
+                view. I joined forces with
+                <a href="http://adrianchadd.blogspot.com/">Adrian Chadd</a>
+                , a FreeBSD developer, and we started trying to look at this problem from all angles possible from both
+                the Linux, FreeBSD and corporate world. We made our first public outcry of the problem at the
+                <a href="https://events.linuxfoundation.org/events/collaboration-summit/rodriguez-chadd">
+                    2012 Linux Collaboration summit
+                </a>
+                and explained the general issues in the current assembly line of hardware and software production. Our
+                hope was mostly to educate the public development community and corporations about general issues in the
+                existing assembly line of hardware and software production and to get feedback on our initial proposed
+                strategy. You can see the
+                <a href="https://docs.google.com/presentation/d/1jam4v4MZ-fnVxA9-VmnQYd5Z4_Qqp-GP9_GSw0SyU7M/edit">
+                    slides here
+                </a>
+                , and
+                <a href="http://www.youtube.com/watch?v=9P-r3H0bY8c">video here</a>
+                .
+                <p></p>
+                <p>
+                    <a
+                        href="http://2.bp.blogspot.com/-bv9VYR7e8vY/UTUXWziMDcI/AAAAAAABP4E/MfI-w5IP_yw/s1600/bsd-linux-present.jpg"
+                    >
+                        <img
+                            src="http://2.bp.blogspot.com/-bv9VYR7e8vY/UTUXWziMDcI/AAAAAAABP4E/MfI-w5IP_yw/s400/bsd-linux-present.jpg"
+                        />
+                    </a>
+                    <br />
+                    This post is a follow up to that talk, tell you where we're at, provide references to the legal
+                    foundations of our efforts and to bring together interested parties to start participating by
+                    keeping in mind we are open to change our strategies and all this is up to public scrutiny and
+                    review. First we'll give the idea of 'driver unification'
+                    <u>one last shot</u>
+                    , mostly because some people keep dreaming this might be possible and we figured we'd look into this
+                    from a community perspective. Some large companies have already given up on the idea of driver
+                    unification but that also has some interesting side consequences. We figured if there can exist any
+                    such unification strategy it should be defined by the community, not corporations. The technical
+                    strategy for our work is work is to start out with something as simple as possible and to try to
+                    support just two Operating Systems: FreeBSD and Linux but to never make any compromises to our
+                    community development tenets on quality / style. If unification is not possible at least we'd end up
+                    trying to create a base repository for development that is public for community developers to pick
+                    up and integrate into their OS. That is, we'd end up killing proprietary drivers anyway and make
+                    public development the only way to do driver development. Our legal foundation was to follow the
+                    path set out by SFLC for doing collaboration between Linux and the BSD family learned through the
+                    ath5k wars: we'd use the ISC license to
+                    <a href="https://lkml.org/lkml/2012/4/6/371">share between BSD and Linux</a>
+                     and we'd stick to the strengths of the
+                    <a href="https://github.com/wking/signed-off-by">Developer Certificate of Origin</a>
+                    to help ensure changes are intended to be kept under that license. This is implies a call to use a
+                    permissive license for Linux device drivers to help with sharing with the BSD community, I
+                    formalized this on my
+                    <a href="http://mcgrof.blogspot.com/2012/04/localizing-gpl.html">localizing the GPL post</a>
+                    . I'll note that there are some interpretations on intent on the sharing code between BSD/ Linux,
+                    for example the intent behind some Linux developers is that although we allow for sharing we do not
+                    intend to enable extracting permissive licensed components from Linux, GPL larger project, and for
+                    you to go and make non-GPL compatible modifications of that extracted content to the same Linux GPL
+                    project given that
+                    <a href="https://lkml.org/lkml/2012/4/7/119">
+                        the license at run time of the individual components are all GPL
+                    </a>
+                    ; in short you should not extract BSD licensed code from the Linux kernel and make proprietary Linux
+                    kernel code.To be clear I am not calling out for the end of copyleft, quite the contrary,
+                    <a href="http://mcgrof.blogspot.com/2012/03/importance-of-gpl.html">
+                        I acknowledge the importance of the GPL
+                    </a>
+                    , but I'm calling it useless if we are to kill the larger plague of proprietary driver development
+                    in the industry given that we have no alternative as it stands and that archaic legal strategies
+                    should be reconsidered to help us find the areas where copyleft can best be used. If we want to
+                    share code simply use a permissive license for those components. We then needed to pick a pet
+                    project, something simple, the simpler the better. With agreement to participate in this effort we
+                    joined forces with the
+                    <a href="http://www.linuxfoundation.org/collaborate/workgroups/networking/alx">
+                        alx Ethernet driver
+                    </a>
+                     and we set out to address FreeBSD and Linux support.
+                </p>
+                <p>
+                    <a
+                        href="http://2.bp.blogspot.com/-ithrwvTTz_8/UAbzGufkkgI/AAAAAAAA2d4/Da93UCJbsAk/s1600/IMG_20120714_153452.jpg"
+                    >
+                        <img
+                            src="http://2.bp.blogspot.com/-ithrwvTTz_8/UAbzGufkkgI/AAAAAAAA2d4/Da93UCJbsAk/s400/IMG_20120714_153452.jpg"
+                        />
+                    </a>
+                    <br />
+                    As it stands the alx Ethernet driver is being
+                    <a href="https://github.com/erikarn/alx">developed in a standalone tree</a>
+                    maintained by Adrian. We currently have addressed only Linux support. You can either clone the git
+                    tree or use
+                    <a href="https://backports.wiki.kernel.org/">compat-drivers</a>
+                     "-u" releases to get this driver for Linux. Admittedly there is a cost here: the driver is not yet
+                    upstream. It doesn't matter, the quality of the driver is not yet ready anyway, the team tried to
+                    get it upstream about 4 times now.  We also didn't go through staging given that we wanted to have
+                    the flexibility to make huge changes without the cumbersome requirements for the Linux kernel but
+                    the same time rope in the teams to get used to the same quality / bar. The next phase of development
+                    is to address FreeBSD support without making compromises to style / quality for both OSes while the
+                    other teams keep on working on fixing bugs and addressing general style requirements on our way to
+                    get the driver ready for a new submission upstream into the Linux kernel and FreeBSD project. We
+                    have a mailing list for
+                    <a href="http://lists.infradead.org/mailman/listinfo/unified-drivers">unified-drivers</a>
+                     where we request all patch submitters and interested parties to subscribe to help review strategies
+                    and patches. If you're interested in helping us review these strategies please join the mailing list
+                    and effort. The more critical review we get the better, specially if you disagree with us. If you're
+                    skeptical please consider the fact that I received similar skepticism over the ability to
+                    automatically backport the Linux kernel. As it stands
+                    <a href="https://backports.wiki.kernel.org/">compat-drivers</a>
+                    , the project to
+                    <a href="http://www.do-not-panic.com/2012/08/automatically-backporting-linux-kernel.html">
+                        automatically backport the Linux kernel
+                    </a>
+                    , now backports four subsystems across 26 kernel revisions. For that project we've looked at ways to
+                    even further
+                    <a href="http://www.do-not-panic.com/2012/08/optimizing-backporting-collateral.html">
+                        optimize backporting collateral evolutions
+                    </a>
+                     and tools such as
+                    <a href="http://coccinelle.lip6.fr/">Coccinelle SmPL</a>
+                    are being seriously considered, and guess what? Its usage may likely also be easily applicable here
+                    to help with porting code from one OS to another, its no different than porting driver code from one
+                    OS to another, and we have never made a single compromise to style / quality upstream. As Adrian
+                    notes though -- please be aware that 
+                    <a href="http://coccinelle.lip6.fr/">Coccinelle SmPL</a>
+                     should not be considered the "silver bullet" here to the problem, its just one of the tools we are
+                    evaluating.
+                </p>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

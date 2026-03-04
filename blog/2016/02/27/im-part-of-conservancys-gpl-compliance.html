@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>I'm part of Conservancy's GPL Compliance Project for Linux — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2016-02-27">Feb 27, 2016</time>
+                    <span class="category-badge badge-opensource">Open Source</span>
+                </div>
+                <h1>I'm part of Conservancy's GPL Compliance Project for Linux</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2016/02/im-part-of-conservancys-gpl-compliance.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source &#8599;
+                </a>
+            </header>
+            <div class="post-content">
+                <p>
+                    I am one of the Linux copyright holders who has signed an agreement for the Software Freedom
+                    Conservancy to enforce the GPL on my behalf, as part of the 
+                    <a href="https://sfconservancy.org/copyleft-compliance/">
+                        Conservancy's GPL Compliance Project For Linux Developers
+                    </a>
+                    . I’m also a financial supporter of Conservancy. We're a group of Linux kernel developers that give
+                    input and guidance on Conservancy's strategy in dealing with compliance issues on the Linux kernel.
+                </p>
+                <p>
+                    <a
+                        href="https://4.bp.blogspot.com/-doA0ZmOibvc/VtDbojQndtI/AAAAAAACvw0/B9JOM9wsXY0/s1600/20151201_123621.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="130"
+                            src="https://4.bp.blogspot.com/-doA0ZmOibvc/VtDbojQndtI/AAAAAAACvw0/B9JOM9wsXY0/s400/20151201_123621.jpg"
+                            width="400"
+                        />
+                    </a>
+                    <br />
+                </p>
+                <ol>
+                    <li>I don't take this lightly</li>
+                    <li>"Don't be evil" is hard</li>
+                    <li>Why things are hairy when it comes to the Linux kernel and GPL enforcement</li>
+                    <li>Why we need GPL enforcement</li>
+                    <li>How can we enforce the GPL responsibly</li>
+                    <li>Evolving copyleft</li>
+                </ol>
+                <br />
+                <h3>I don't take this lightly</h3>
+                <p>
+                    Joining was not something I took lightly, when I started hacking on Linux I was at ends with
+                    arguments over morality on free software put forward by the FSF and simply felt the GPLv2 on Linux
+                    was a nice coincidence; I felt I just wanted to hack and be productive. It 
+                    <a href="http://www.do-not-panic.com/2012/07/gay-boring-gay-google-and-copyleft-next.html">
+                        took me over 10 years in philosophical thought
+                    </a>
+                     to make a final decision about where I stand with regards to software freedom. I've made
+                    <a href="http://www.do-not-panic.com/2012/03/connecting-dots.html">my motivation and intent</a>
+                    in the community clear before, but its worth reiterating now: work harder always in spirit of what I
+                    believe is right, and accept no compromises on shit engineering.
+                </p>
+                <h3>"Don't be evil" is hard</h3>
+                <div>
+                    <br />
+                </div>
+                I've been hacking on Linux since I was in college, after doing kernel development in the industry for a
+                while I have learned the hard way that "
+                <a href="https://en.wikipedia.org/wiki/Don%27t_be_evil">Don't be evil</a>
+                " or "Do the right thing" is easier said than done for companies, specially with regards to software
+                freedom. I've determined that without a
+                <a href="http://www.do-not-panic.com/2013/08/evolving-capitalism-with-ethical.html">
+                    mathematical and economics framework that takes into consideration and appreciates freedom
+                </a>
+                it will take a lot of foresight, or for Free and Open Source software principles to be part of your
+                company DNA in order for a company to appreciate the freedoms behind free software. To help companies
+                embrace copyleft, within the community we really need to figure out how copyleft can affect and help
+                businesses, the complexities it brings about, and work with both the community and companies on helping
+                evolve both copyleft and businesses in amicable ways. Its easier said than done.
+                <h3>Why things are hairy when it comes to the Linux kernel and GPL enforcement</h3>
+                <p>
+                    <a
+                        href="https://3.bp.blogspot.com/-ZdX63bU9eZE/Uy_eoHH7D9I/AAAAAAABlCk/xeaRCRpsi_4/s1600/patent-paradox.png"
+                        style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em; text-align: center"
+                    >
+                        <img
+                            border="0"
+                            height="388"
+                            src="https://3.bp.blogspot.com/-ZdX63bU9eZE/Uy_eoHH7D9I/AAAAAAABlCk/xeaRCRpsi_4/s400/patent-paradox.png"
+                            width="400"
+                        />
+                    </a>
+                </p>
+                <p>
+                    Consider answering these questions in today's business world when contributing to Linux.
+                    <br />
+                </p>
+                <ul>
+                    <li>
+                        ￼Who owns the copyrights or patents to the software that Joe Hacker wrote prior to joining
+                        Yoyodyne, Inc?
+                    </li>
+                    <li>
+                        Who owns the copyrights or patents to the software that Joe Hacker will write for Yoyodyne Inc?
+                    </li>
+                    <li>What software projects can Joe Hacker contribute to while at Yoyodyne Inc?</li>
+                </ul>
+                <p>
+                    There are four challenges that the above complexities bring about for businesses that affect their
+                    capacity to contribute to the Linux kernel and participate in GPL enforcement:
+                </p>
+                <ol>
+                    <li>How to replace proprietary solutions</li>
+                    <li>The Linux kernel is licensed under GPLv2 and as such only gets implicit patent grants</li>
+                    <li>These days companies have no option but to address patents considerations</li>
+                    <li>Addressing possible company conflict of interests</li>
+                </ol>
+                <br />
+                <a href="http://www.do-not-panic.com/2014/03/free-software-patents-surveillance-and.html">
+                    I've covered these issues before
+                </a>
+                , what follows is a terse summary. Copyleft obviously is an imminent threat to proprietary software that
+                relies on copylefted software such that the proprietary software is arguably subject to the conditions
+                of the license that the copylefted software is distributed under. An implicit requirement however is
+                that copyright holders of the copylefted software are both
+                <b>willing to and capable</b>
+                of seeking legal remedies against distributors of the proprietary software. In this light, if a business
+                does not know how to phase out proprietary software it can be affected, short term, or long term.
+                Patents can be implicated by some free software licenses. Paying for patent licensing also adds up.
+                Patents can also be used to sue people. If you have signed conflict of interest agreement with business
+                partners, things can get really hairy, and puts the industry at ends when it comes to free and open
+                source software even if you're an "open source company". Since we lack the
+                <a href="http://www.do-not-panic.com/2013/08/evolving-capitalism-with-ethical.html">
+                    mathematical and economics framework to tangibly appreciate freedoms
+                </a>
+                over patents and since patents can ultimately be endangered by certain free software licenses its only
+                natural corporate interests will want to undermine certain free software licenses.
+                <p>
+                    <br />
+
+                    <a
+                        href="https://docs.google.com/drawings/d/1-LnC6065LlOILu0AnkwXnbAvkR_oTUdJSHMtm8a45MU/pub?w=331&h=230"
+                        style="clear: right; float: right; margin-bottom: 1em; margin-left: 1em; text-align: center"
+                    >
+                        <img
+                            border="0"
+                            height="278"
+                            src="https://docs.google.com/drawings/d/1-LnC6065LlOILu0AnkwXnbAvkR_oTUdJSHMtm8a45MU/pub?w=331&h=230"
+                            width="400"
+                        />
+                    </a>
+                </p>
+                <p>
+                    As businesses evolve, copyleft evolves. Patents were one of the latest additions to free software
+                    licenses, both through the GPLv3 and the Apache 2.0 license. I consider the Apache 2.0 license one
+                    of the best legal innovations in our arsenal in the free software world: if you want to really test
+                    what seems to be claim of only opposition to copyleft, ask if the Apache 2.0 license can be used
+                    instead. Now in the Linux kernel though we have an issue, since its GPLv2 and it only provides an
+                    implicit patent grant, and since we can't add GPLv3 or Apache 2.0 licensed material to the Linux
+                    kernel -- it still leaves the patent question open for businesses to address. To help with this, its
+                    why 
+                    <a
+                        href="https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git/commit/?id=d3cf09a9765672a7f67991ec4fb64f3d92b387ba"
+                    >
+                        linux-firmware now also requires an explicit or implicit patent grant requirement
+                    </a>
+                    . We need to close all the gaps that prevent copyleft evolution.  And sure, we can use permissive
+                    licenses on Linux, but that should only be used as a compromise -- not a de-facto practice. For
+                    instance getting
+                    <a href="http://www.do-not-panic.com/2016/02/zfs-linux-and-illumos-and-isc-license.html">
+                        ZFS relicensed to the ISC license
+                    </a>
+                    might be a great compromise for all parties involved. 
+                    <b>Fully permissive licenses without patent provisions should be our last resort and compromise</b>
+                    . Since patents are prevalent everywhere this means businesses have to deal with a lot of issues
+                    implicitly behind the scenes.
+                </p>
+                <p>
+                    Case in point, as covered recently by lwn,
+                    <a href="https://lwn.net/Articles/675232/">
+                        at linux.conf.au 2016 Bradley talked about corporate opposition to copyleft
+                    </a>
+                    . He explained how corporations will typically not do GPL enforcement in the name of the community,
+                    unless of course it fits your business model. He gave the example where Red Hat was sued by a patent
+                    troll, and in response Red Hat then alleged GPL infringement against Twin Peaks, with this Red Hat
+                    got a patent license but Twin Peaks software remained proprietary. Red Hat is an example that has
+                    Open Source software built-in to its business DNA, and even they seem to walk on eggshells when it
+                    comes to GPL enforcement. They are not to blame though, doing GPL enforcement for the community
+                    responsibly is hard, specially these days in such a complex, technology business sector, where
+                    anyone can be your partner and business contracts typically forbid you from engaging in actions that
+                    may harm any of your business partners.
+                </p>
+                <h3>Why we need GPL enforcement</h3>
+                <br />
+                Because of the challenges explained above even the best of Free and Open Source companies are walking on
+                egg shells when it comes to GPL enforcement. By now you should have a sense of why some corporate
+                interests may be trying to undermine copyleft licenses to effectively be as good as permissive licenses.
+                We can't let that happen. Evidence shows the number of GPL violations has skyrocketed over the years to
+                the extent that we cannot deal with them. There were only a few community groups dealing with GPL
+                violations as well, this was outside of the Linux kernel, Linux kernel GPL violations remain common and
+                unenforced. For this reason GPL enforcement is critical for the Linux kernel and community.
+                <h3>How can we enforce the GPL responsibly?</h3>
+                <br />
+                To address this Conservancy published a
+                <a href="https://sfconservancy.org/copyleft-compliance/principles.html">
+                    set of principles that should govern GPL enforcement
+                </a>
+                , 
+                <b>the primary objective is simply to bring about license compliance</b>
+                . We are not out for money, or blood, simply compliance to the license to strengthen the commons. We
+                give input and guidance on Conservancy's strategy in dealing with compliance issues on the Linux kernel.
+                Responsibly enforcing the GPL
+                <b>for the community, within the community</b>
+                with due care should be of utmost interest to any business contributing to Linux. If you're a Linux
+                developer and would like to chime in and help us with these efforts you should consider joining the 
+                <a href="https://sfconservancy.org/copyleft-compliance/">
+                    Conservancy's GPL Compliance Project For Linux Developers
+                </a>
+                , please contact <
+                <a href="mailto:linux-services@sfconservancy.org">linux-services@sfconservancy.org</a>
+                > for more details.
+                <br />
+                <h3>
+                    <br />
+                    Evolving copyleft
+                </h3>
+                <br />
+                On the post where I describe my epiphany which after over 10 years allowed me to finally cope with
+                software freedom philosophy I explained how
+                <a href="http://www.do-not-panic.com/2012/07/gay-boring-gay-google-and-copyleft-next.html">
+                    helping evolve copyleft is important
+                </a>
+                , I'll provide a summary of that in light of the Linux kernel and its GPLv2 license. I believe some of
+                the challenges described above are self inflicted as we were not able to move to GPLv3, given that we
+                have all these patent considerations. I don't necessarily think we should move to GPLv3, but do consider
+                the tensions that arose from those discussions really unfortunate. Lesson learned: we should consider
+                evolving copyleft openly, in the community, with the community. If you'd like to help with that I invite
+                you to take a look at copyleft-next, there is a
+                <a href="https://github.com/richardfontana/copyleft-next">github</a>
+                tree and
+                <a href="https://lists.fedorahosted.org/admin/lists/copyleft-next.lists.fedorahosted.org/">
+                    mailing list
+                </a>
+                . Copyleft-next is GPLv2 compatible.
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </footer>
+    </body>
+</html>

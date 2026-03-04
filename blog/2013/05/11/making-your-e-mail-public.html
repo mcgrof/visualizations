@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Making your e-mail public — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">&larr; back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2013-05-11">May 11, 2013</time>
+                    <span class="category-badge badge-philosophy">Philosophy</span>
+                </div>
+                <h1>Making your e-mail public</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2013/05/making-your-e-mail-public.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source &nearr;
+                </a>
+            </header>
+            <div class="post-content">
+                <div>
+                    <a
+                        href="http://1.bp.blogspot.com/-ALzi5DqqATs/UZC06mijBcI/AAAAAAABUgA/2hqc1y6ytrs/s1600/nakota.png"
+                    >
+                        <img
+                            src="http://1.bp.blogspot.com/-ALzi5DqqATs/UZC06mijBcI/AAAAAAABUgA/2hqc1y6ytrs/s400/nakota.png"
+                        />
+                    </a>
+                    <br />
+                </div>
+                <div>
+                    <br />
+                </div>
+                An idea has been brewing between me and my neighbor
+                <a href="http://freevolutiondom.blogspot.com/">Vahe</a>
+                : make your e-mail public. Now, initial reactions of this idea on Twitter, and later in person when
+                pitching it to folks has been radically negative. There are a few reasons. First, the technical
+                argument: you can't do it easily and securely. Second: Why would you ever do that? I have stated before
+                I was confident that this would be technically possible and I hoped my friend
+                <a href="https://twitter.com/fdawg4l">Faiyaz</a>
+                &nbsp;was serious when he said he'd help review the technical aspects and hack this up one evening.
+                Turns out
+                <a href="https://twitter.com/fdawg4l">Faiyaz</a>
+                thought I was joking and when we met we failed to even review the idea. Today I decided it was time to
+                get this fleshed out and I now have a proof of concept. I'll explain how I did this silly little
+                experiment and also explain why I personally think its important.
+                <br />
+                <div>
+                    <br />
+                </div>
+                <div>Why would make your e-mail public?</div>
+                <div>
+                    <ul>
+                        <li>Try to get public political figures to voluntarily follow to help address corruption</li>
+                        <li>Make a technical statement against e-mail today being as good as being public</li>
+                    </ul>
+                    Let me go into a little depth on each of these and then I'll explain how I did what I did. I'm just
+                    a free software developer, this means I hack only on free and open source software. I do not write
+                    any proprietary software. Doing this grows on you a thick skin, specially if you're dealing with
+                    large projects where people at times want to express throwing a toilet at you from a different
+                    continent. I'm comfortable with the idea as most of my e-mail already is public. Most of my work
+                    e-mail is public given that I get paid to work on public projects which already means I post to
+                    public mailing lists to accomplish a lot of what I need to get done. I'm &nbsp;therefore a sort of
+                    public developer. I'm no political political figure but
+                    <b>I wish political figures did take on more of a public role</b>
+                    when they are in office. Now, not all of my e-mail needs to be public and I also understand
+                    political figures at times may need to keep e-mail private, even while on office. But can their
+                    e-mail become public at a later point in time? Can we get assurance that this will happen as well?
+                    I'm not the protest type of guy, I rather lead by example and I want to encourage public office
+                    figures to consider opening up at least some of their e-mail as a way to help eliminate corruption.
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    When it comes to global super powers, your e-mail is as good as if it were public anyway. I can
+                    provide a few examples of this. First is project Aurora where Google and others got
+                    hacked,&nbsp;allegedly&nbsp;to gain access to gmail accounts from Chinese&nbsp;dissidents. At times
+                    your own country can turn on you as well, in the case of the US this obviously became possible
+                    because of all the terrorism security FUD of all the silly laws being passed that enables US to do a
+                    lot of nutty things. For an example go read
+                    <a href="https://www.eff.org/">EFF's</a>
+                    account on the&nbsp;
+                    <a href="https://www.eff.org/nsa-spying">NSA syping on Americans</a>
+                    . While at it go read the EFF's page on&nbsp;
+                    <a href="https://ssd.eff.org/">Surveillance&nbsp;Self Defense</a>
+                    . We can surely continue to fight for our rights and also help increase security. For example I
+                    applaud Google for enabling users to opt in for
+                    <a
+                        href="http://support.google.com/accounts/bin/answer.py?hl=en&amp;answer=180744&amp;ctx=cbo&amp;cbid=671267638&amp;cbrank=0"
+                    >
+                        two-step authentication
+                    </a>
+                    . They also have developed
+                    <a
+                        href="http://support.google.com/accounts/bin/answer.py?hl=en&amp;ctx=ch_b%2F0%2FSmsAuthSettings&amp;answer=185833"
+                    >
+                        application specific password support
+                    </a>
+                    to let your applications get a random password for specific tasks instead of using your password.
+                    This is all good, but it still leaves open the issue of our e-mail being good as public to our own
+                    government. I obviously don't have anything to hide but its a matter of principle as to why this
+                    situation outrages me. If I want to also help
+                    <b>fight corruption</b>
+                    through example
+                    <b>what if</b>
+                    ... I could open up certain aspects of my e-mail sent to a specific address? This way I give people
+                    a heads up that if they use a specific address it will be public. If I want to to receive private
+                    e-mails I could simply ask the recipient to encrypt the message with my public key. If I want to
+                    open encrypted e-mails I can give away my private key and its password after a certain amount of
+                    time.
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    Sold? I provided a diagram of how I did my little proof of concept. I'm lazy to create a new fancy
+                    cool domain name for this purpose but perhaps you might want to for your setup if you want to
+                    replicate. To&nbsp;illustrate&nbsp;and provide a proof of concept test case I decided to use my
+                    mcgrof@kernel.org e-mail address given that e-mail sent to that address is public anyway and any
+                    private data is encrypted by kernel.org admins. The short verbal recipe for the impatient hacker:
+                    gmail, a gmail filter for all e-mail sent to mcgrof@kernel.org and add a label for it,&nbsp;two
+                    personal boxes -- one public box and another private box, IMAP,&nbsp;
+                    <a
+                        href="http://support.google.com/accounts/bin/answer.py?hl=en&amp;answer=180744&amp;ctx=cbo&amp;cbid=671267638&amp;cbrank=0"
+                    >
+                        two-step authentication
+                    </a>
+                    ,&nbsp;
+                    <a
+                        href="http://support.google.com/accounts/bin/answer.py?hl=en&amp;ctx=ch_b%2F0%2FSmsAuthSettings&amp;answer=185833"
+                    >
+                        application specific password
+                    </a>
+                    &nbsp;for IMAP, and a modified&nbsp;
+                    <a href="https://github.com/RaymiiOrg/NoPriv">NoPriv</a>
+                    &nbsp;for Maildir to html converter, git over ssh for transfering only public html data to the
+                    public box.&nbsp;
+                    <a href="https://github.com/RaymiiOrg/NoPriv">NoPriv</a>
+                    &nbsp;is a nice little GPLv3 python script does IMAP for you, and then converts Maildir format
+                    mailboxes to html, Kudos to
+                    <a href="https://raymii.org/s/">Remy</a>
+                    for this project, it was the only one I could find using a reasonable language under a reasonable
+                    license. I do intent on sending my small set of changes to Remy soon. Thanks to
+                    <a href="https://twitter.com/salmendoza">Salvandor Mendoza</a>
+                    for letting me use one of his virtual private servers to test this.
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    OK so
+                    <a href="http://192.210.142.74/openemail/mcgrof/">now go read my mcgrof@kernel.org&nbsp;e-mail.</a>
+                </div>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">&larr; back to timeline</a></footer>
+    </body>
+</html>

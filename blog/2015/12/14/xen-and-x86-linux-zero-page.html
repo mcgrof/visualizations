@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Xen and the x86 Linux zero page — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2015-12-14">Dec 14, 2015</time>
+                    <span class="category-badge badge-linux">Linux / Kernel</span>
+                </div>
+                <h1>Xen and the x86 Linux zero page</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2015/12/xen-and-x86-linux-zero-page.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source &#8599;
+                </a>
+            </header>
+            <div class="post-content">
+                <br />
+                This is part II, for part I - refer to "
+                <a href="http://www.do-not-panic.com/2015/12/avoiding-dead-code-pvops-not-silver-bullet.html">
+                    Avoiding dead code: pv_ops is not the silver bullet
+                </a>
+                ".
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Xen_project_logo.svg/635px-Xen_project_logo.svg.png"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="125"
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Xen_project_logo.svg/635px-Xen_project_logo.svg.png"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                <br />
+                On x86 Linux the boot sequence is rather complicated, so much so that it has its own dedicated boot
+                protocol. This is documented upstream on
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/x86/boot.txt"
+                >
+                    Documentation/x86/boot.txt
+                </a>
+                . The protocol tends to evolve as the x86 architecture evolves, in order to compensate for new features
+                or extensions which could we need to learn about at boot time. Of interest to this post is the "zero
+                page". The first step when loading a Linux kernel is to load the "zero page", this consists of a the
+                structure struct&nbsp;boot_params, defined in&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/arch/x86/include/uapi/asm/bootparam.h"
+                >
+                    arch/x86/include/uapi/asm/bootparam.h
+                </a>
+                . Its called zero page as unless you're relocating data around, the the zero page is the first physical
+                page of the operating system. The x86 boot protocol originally only had to support 16-bit boot protocol,
+                to do this it required first to load the real-mode code (boot sector and setup code). For modern
+                bootloaders what needs to be loaded is a bit larger, but new bootloaders must still load the same
+                original real-mode code. The struct&nbsp;boot_params accounts for this evolution in requirements, the
+                real-mode section is what is defined in the struct setup_header. The zero page is not only something
+                which we must load, its also part of the actual bzImage we build on x86. One can therefore read a kernel
+                file's struct boot_params as well to extract some details of the kernel. To try this you can play around
+                with parse-bzimage, part of the
+                <a href="https://github.com/mcgrof/table-init">table-init tree on github</a>
+                . All this sort of stuff is what bootloaders end up working with. Since hypervisors can also boot Linux
+                they must also somehow do the same. This post is about how Xen's zero-page setup design, we'll contrast
+                it to lguest's zero page setup. lguest is a demo 32-bit hypervisor on Linux.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://1.bp.blogspot.com/-TeYQmCPR6iY/VkoZFzZZZvI/AAAAAAACdO4/ooOqoohMI5M/s1600/20151115_161220.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="222"
+                            src="http://1.bp.blogspot.com/-TeYQmCPR6iY/VkoZFzZZZvI/AAAAAAACdO4/ooOqoohMI5M/s400/20151115_161220.jpg"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                If a hypervisor boots Linux it must also set up the zero page. We'll disect Xen's set up of the zero
+                page backwards, from tracing what we see on Linux down to Xen's setup of the zero page. Xen's entry into
+                Linux x86 for PV type guests (PV, PVH) is set up and annotated on the ELF binary as an ELF note, in
+                particular the&nbsp;XEN_ELFNOTE_ENTRY. On Linux this is visible on&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/arch/x86/xen/xen-head.S#n110"
+                >
+                    arch/x86/xen/xen-head.S
+                </a>
+                &nbsp;as follows:
+                <br />
+                <br />
+                <pre class="prettyprint">
+ELFNOTE(Xen, XEN_ELFNOTE_ENTRY,          _ASM_PTR startup_xen)
+</pre
+                >
+                <div>
+                    <br />
+                    startup_xen is the respective first entry point of code used on Linux by Xen PV guest types, its
+                    defined earlier above in the asm code on the same file. Its implementation is rather simple, enough
+                    so we can include it here:
+                    <br />
+                    <br />
+                    <pre class="prettyprint">
+ENTRY(startup_xen)
+   cld
+#ifdef CONFIG_X86_32
+   mov %esi,xen_start_info
+   mov $init_thread_union+THREAD_SIZE,%esp
+#else
+   mov %rsi,xen_start_info
+   mov $init_thread_union+THREAD_SIZE,%rsp
+#endif
+   jmp xen_start_kernel
+</pre
+                    >
+                    <br />
+                    On x86-64 this sets up what was in rsi to xen_start_info, it then uses what was on rsp to set up the
+                    stack before jumping to the first C Linux entry point, xen_start_kernel. The Xen hypervisor must
+                    have set up rsi and rsp. This is a bit different than what we expected...
+                    <br />
+                    <br />
+                    <div class="separator" style="clear: both; text-align: center">
+                        <a
+                            href="http://3.bp.blogspot.com/-qFbzcJRZX4g/VWyJ0P5089I/AAAAAAACCOw/WR4gZ5SRt9A/s1600/20150530_152523.jpg"
+                            imageanchor="1"
+                            style="margin-left: 1em; margin-right: 1em"
+                        >
+                            <img
+                                border="0"
+                                height="400"
+                                src="http://3.bp.blogspot.com/-qFbzcJRZX4g/VWyJ0P5089I/AAAAAAACCOw/WR4gZ5SRt9A/s400/20150530_152523.jpg"
+                                width="225"
+                            />
+                        </a>
+                    </div>
+                    <br />
+                    <br />
+                    Let's backtrack and show you what perhaps a sane Linux kernel developer expected you to set up, to
+                    do this let's look at how lguest loads Linux. lguest's launcher is implemented on&nbsp;
+                    <a
+                        href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/tools/lguest/lguest.c"
+                    >
+                        tools/lguest/lguest.c
+                    </a>
+                    . Of interest to us it parses the file we pass it as a Linux kernel binary and tries to launch it
+                    via&nbsp;load_kernel(). Read&nbsp;load_bzimage(), it reads the kernel passed, checks the magic
+                    string is present and loads the zero page from the file onto its own memory's zero page, finally
+                    returning&nbsp;boot.hdr.code32_start. This later part is used to kick off control into the kernel as
+                    its starting entry point. But of importance as well to us is that the zero page was read from the
+                    file, and used as a base to set up the "zero page". The lguest zero-page is further customized after
+                    load_kernel(), lets see a few entries below.
+                    <br />
+                    <span style="background-color: black"><br /></span>
+
+                    <br />
+                    <pre class="prettyprint">
+int main(int argc, char *argv[])
+{                                                                               
+  ...
+  /* Boot information is stashed at physical address 0 */
+  boot = from_guest_phys(0);
+
+  /*
+   * Map the initrd image if requested
+   * (at top of physical memory)
+   */
+  if (initrd_name) { 
+    initrd_size = load_initrd(initrd_name, mem);
+
+    /* start and size of the initrd are expected to be found */
+    boot-&gt;hdr.ramdisk_image = mem - initrd_size;
+    boot-&gt;hdr.ramdisk_size = initrd_size;
+
+    /* The bootloader type 0xFF means "unknown"; that's OK. */
+    boot-&gt;hdr.type_of_loader = 0xFF;
+  }
+     
+  /*
+   * The Linux boot header contains an "E820" memory
+   * map: ours is a simple, single region.
+   */
+  boot-&gt;e820_entries = 1;
+  boot-&gt;e820_map[0] = ((struct e820entry) { 0, mem, E820_RAM });
+
+  /*
+   * The boot header contains a command line pointer:
+   * we put the command line after the boot header.
+   */
+  boot-&gt;hdr.cmd_line_ptr = to_guest_phys(boot + 1);
+
+  /*
+   * We use a simple helper to copy the arguments
+   * separated by spaces.
+   */
+  concat((char *)(boot + 1), argv+optind+2);
+
+  /* Set kernel alignment to 16M (CONFIG_PHYSICAL_ALIGN) */
+  boot-&gt;hdr.kernel_alignment = 0x1000000;
+
+  /*
+   * Boot protocol version: 2.07 supports the
+   * fields for lguest.
+   */
+  boot-&gt;hdr.version = 0x207;
+
+  /*
+   * The hardware_subarch value of "1" tells the
+   * Guest it's an lguest.
+   */
+  boot-&gt;hdr.hardware_subarch = 1;
+</pre
+                    >
+                    And that's how sane Linux kernel developers expected you to do Linux kernel loading. Why does Xen's
+                    setup look so odd? What's this xen_start_info crap? Let's brace ourselves and dare to have a look at
+                    the Xen hypervisor setup code.
+                    <br />
+                    <br />
+                    <div class="separator" style="clear: both; text-align: center">
+                        <a
+                            href="http://4.bp.blogspot.com/-BvMJxx7mq0Y/Vm9c2R7IbSI/AAAAAAACfIM/AphIrV7AUd0/s1600/20151212_170715.jpg"
+                            imageanchor="1"
+                            style="margin-left: 1em; margin-right: 1em"
+                        >
+                            <img
+                                border="0"
+                                height="400"
+                                src="http://4.bp.blogspot.com/-BvMJxx7mq0Y/Vm9c2R7IbSI/AAAAAAACfIM/AphIrV7AUd0/s400/20151212_170715.jpg"
+                                width="371"
+                            />
+                        </a>
+                    </div>
+                    <br />
+                    <br />
+                    Xen defines what it ends up putting into the "xen_start_info" through a data structure it calls
+                    struct start_info, defined in&nbsp;
+                    <a
+                        href="http://xenbits.xen.org/gitweb/?p=xen.git;a=blob;f=xen/include/public/xen.h;h=ff5547eb2458905727f460858207b0d0af0face4;hb=HEAD"
+                    >
+                        xen/include/public/xen.h
+                    </a>
+                    , it refers to this as the "
+                    <i>Start-of-day memory layout</i>
+                    ". Of interest to us is who sets this up, for x86-64 this is done via&nbsp;vcpu_x86_64(), the
+                    relevant parts for is are listed below.
+                    <br />
+                    <br />
+                    <pre class="prettyprint">
+memset(ctxt, 0, sizeof(*ctxt));
+ctxt-&gt;user_regs.rip = dom-&gt;parms.virt_entry;
+ctxt-&gt;user_regs.rsp = dom-&gt;parms.virt_base +
+  (dom-&gt;bootstack_pfn + 1) * PAGE_SIZE_X86;  
+ctxt-&gt;user_regs.rsi = dom-&gt;parms.virt_base +
+  (dom-&gt;start_info_pfn) * PAGE_SIZE_X86;
+</pre
+                    >
+                    <br />
+                    The dom's params are set up via&nbsp;xc_dom_parse_bin_kernel(), as with lguest it has a file parser
+                    and uses this to set up some information, and it also extends some information, but
+                    <b>it never really sets up the zero-page</b>
+                    . Instead it actually sets up its own set of data structures representing the struct start_info. It
+                    turns out the setting of the zero-page for PV guests is done once running Linux inside Linux kernel
+                    code on the first Xen C entry point for Linux, on&nbsp;xen_start_kernel() on&nbsp;
+                    <a
+                        href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/arch/x86/xen/enlighten.c"
+                    >
+                        arch/x86/xen/enlighten.c
+                    </a>
+                    !
+                    <br />
+                    <br />
+                    <pre class="prettyprint">
+/* First C function to be called on Xen boot */
+asmlinkage __visible void __init xen_start_kernel(void)
+{
+...
+  if (!xen_start_info)
+     return;
+...
+  /* Poke various useful things into boot_params */
+  boot_params.hdr.type_of_loader = (9 &lt;&lt; 4) | 0;
+  boot_params.hdr.ramdisk_image = initrd_start;
+  boot_params.hdr.ramdisk_size = xen_start_info-&gt;mod_len;
+  boot_params.hdr.cmd_line_ptr = __pa(xen_start_info-&gt;cmd_line);
+...
+}
+</pre
+                    >
+                    <br />
+                    Its not documented so I can only infer that the architectural reason for this was to account for the
+                    different operating systems that Xen has to support, its perhaps easier to work with a generic data
+                    structure, populate that, and then have the kernel specific solution parse it out. While this might
+                    have been an original design consideration, it also has implicated a diverging entry point solution
+                    for Linux, which as I've highlighted recently in
+                    <a href="http://www.do-not-panic.com/2015/12/avoiding-dead-code-pvops-not-silver-bullet.html">
+                        my last post on dead code on pv_ops
+                    </a>
+                    , isn't ideal for Linux. The challenge to any alternative is to not be disruptive and remain
+                    compatible, not extend pv_ops, and providing a generic solution which might be useful elsewhere.
+                </div>
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Machine slavery — compat-drivers build box — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2013-03-11">Mar 11, 2013</time>
+                    <span class="category-badge badge-linux">Linux / Kernel</span>
+                </div>
+                <h1>Machine slavery — compat-drivers build box</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2013/03/machine-slavery-compat-drivers-build-box.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <a
+                    href="http://2.bp.blogspot.com/-Wn7kf63F3tA/UKgC2mtNEYI/AAAAAAABC3U/r0kUrm19U40/s1600/compat-stats.png"
+                >
+                    <img
+                        src="http://2.bp.blogspot.com/-Wn7kf63F3tA/UKgC2mtNEYI/AAAAAAABC3U/r0kUrm19U40/s400/compat-stats.png"
+                    />
+                </a>
+                <br />
+                I've
+                <a href="http://www.do-not-panic.com/2012/08/automatically-backporting-linux-kernel.html">
+                    written before
+                </a>
+                on how the
+                <a href="https://backports.wiki.kernel.org/">compat-drivers</a>
+                 project got started, designed to help
+                <a href="http://www.do-not-panic.com/2012/08/automatically-backporting-linux-kernel.html">
+                    automatically backport the Linux kernel
+                </a>
+                , and our ideas to help
+                <a href="http://www.do-not-panic.com/2012/08/optimizing-backporting-collateral.html">
+                    optimize backporting collateral evolutions
+                </a>
+                , and of our move of releases onto
+                <a href="https://www.kernel.org/pub/linux/kernel/projects/backports/">kernel.org</a>
+                . I now want to thank the
+                <a href="http://www.linuxfoundation.org/">Linux Foundation</a>
+                ,
+                <a href="http://h71028.www7.hp.com/enterprise/cache/309906-0-0-0-121.html">HP</a>
+                and
+                <a href="https://www.suse.com/">SUSE</a>
+                for providing to the project with a build box to help us do our build tests prior to making releases.
+                After a few years of making releases I determined it didn't make sense to make any releases to the
+                community that were not at least build tested over a slew of supported kernels. As it is right now we
+                support building compat-drivers down to the 2.6.24 kernel, Linus is now on v3.9 so that means we have 31
+                kernels to test against. Our builds tests used to take approximately 120 minutes, thanks to the server
+                our builds were reduced to 23 minutes. The above picture is of
+                <a href="http://htop.sourceforge.net/">htop</a>
+                running first on my laptop running ckmake, then on an 8-core build box I built at home to help with the
+                project, and later the monster 32-core build box supplied by HP for the project. This thing has 32 cores
+                and 236 GiB of RAM.
+                <p></p>
+                <div>
+                    <b>Thanks HP!</b>
+                </div>
+                <blockquote class="tr_bq">
+                    <br />
+                    mcgrof@drvbp1 ~ $ df -h /pub/mem/*
+                    <br />
+                    Filesystem      Size  Used Avail Use% Mounted on
+                    <br />
+                    tmpfs            20G  5.4G   15G  27% /pub/mem/hauke
+                    <br />
+                    tmpfs            20G  6.3G   14G  32% /pub/mem/mcgrof
+                    <br />
+                    tmpfs            20G  5.4G   15G  27% /pub/mem/ozancag
+                </blockquote>
+                <br />
+
+                <a href="http://1.bp.blogspot.com/-cJeYmj5ZQr8/UT6U9kVD4VI/AAAAAAABQII/f4lMU1nyP1I/s1600/ckmake.jpg">
+                    <img
+                        src="http://1.bp.blogspot.com/-cJeYmj5ZQr8/UT6U9kVD4VI/AAAAAAABQII/f4lMU1nyP1I/s400/ckmake.jpg"
+                    />
+                </a>
+                <br />
+                <div>
+                    Given that we have so much RAM the build system allows
+                    <b>each of our developers</b>
+                    to run their entire work space in RAM: linux-next, linux-stable, compat, compat-drivers, ccache.
+                    This means we skip all the IO on a slow disk. To take advantage of the number of cores available and
+                    use as much RAM as possible
+                    <a href="https://git.kernel.org/cgit/linux/kernel/git/mcgrof/compat.git/tree/bin/ckmake">ckmake</a>
+                    , our cross kernel compilation utility, is now multithreaded and runs a build for each kernel on its
+                    own thread. It was rewritten to Python and uses ncurses to allow us to get an update of each compile
+                    as it completes.
+                </div>
+                <div>
+                    <br />
+                </div>
+
+                <a href="http://drvbp1.linux-foundation.org/~mcgrof/rel-html/compat-drivers/">
+                    <img
+                        src="http://1.bp.blogspot.com/-63uuP9VhJmw/UT6V3QJaFSI/AAAAAAABQIQ/n8JeldLhdb0/s400/compat-drivers-release-page.png"
+                    />
+                </a>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    You may have heared
+                    <a href="http://kernel.org/">kernel.org</a>
+                    has a shiny new page now, its using
+                    <a href="http://docs.getpelican.com/en/3.1.1/">Pelican</a>
+                    for its new face lift. compat-drivers is no different, but Pelican is far too complex for what we
+                    need, so I wrote a small Python script called 
+                    <a href="https://github.com/mcgrof/rel-html">rel-html</a>
+                     that parses naked project pages and generates an HTML5 release page for you based on
+                    <a href="https://github.com/mcgrof/rel-html/blob/master/projects/compat-drivers.cfg">
+                        simple configuration file
+                    </a>
+                    . As with other new HTML5 pages the rel-html HTML5 code is based on the HTML5
+                    <a href="http://www.initializr.com/">initializr</a>
+                    boilerplate project. Right now we have the
+                    <a href="http://drvbp1.linux-foundation.org/~mcgrof/rel-html/compat-drivers/">
+                        release page on a temporary page
+                    </a>
+                     but with time hope to coordinate a release page somewhere to be hosted on kernel.org that aligns
+                    itself with the current  
+                    <a href="http://docs.getpelican.com/en/3.1.1/">Pelican</a>
+                     usage. The 
+                    <a href="https://github.com/mcgrof/rel-html">rel-html</a>
+                     code also currently supports others projects, including the Linux kernel releases. What this has
+                    made obvious is how many projects lack digitally signing releases in a secure manner.  Sample
+                    release pages for the different rel-html supported projects below. Whether or not each project
+                    embraces the tool, its up to them. Oh yeah, and rel-html is licensed under the
+                    <a href="http://www.gnu.org/licenses/agpl-3.0.html">AGPL</a>
+                    , patches welcomed ;)
+                </div>
+                <div>
+                    <ul>
+                        <li><a href="http://drvbp1.linux-foundation.org/~mcgrof/rel-html/linux/">linux</a></li>
+                        <li><a href="http://drvbp1.linux-foundation.org/~mcgrof/rel-html/crda/">compat-drivers</a></li>
+                        <li><a href="http://drvbp1.linux-foundation.org/~mcgrof/rel-html/crda/">crda</a></li>
+                        <li><a href="http://drvbp1.linux-foundation.org/~mcgrof/rel-html/iw/">iw</a></li>
+                        <li><a href="http://drvbp1.linux-foundation.org/~mcgrof/rel-html/hostapd/">hostapd</a></li>
+                    </ul>
+                </div>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

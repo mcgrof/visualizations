@@ -1,0 +1,3305 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Interactive deep dive into Parallel Token Prediction (PTP) — how normalizing flows fix the independence flaw in multi-token prediction."
+        />
+        <meta name="theme-color" content="#0b1120" />
+        <title>PTP: Resolving the Independence Flaw</title>
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #0b1120;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #243052;
+                border-radius: 3px;
+            }
+
+            body {
+                background: #0b1120;
+                color: #f8fafc;
+                min-height: 100vh;
+                font-family: Menlo, Consolas, "Courier New", monospace;
+                padding: 20px 14px;
+                line-height: 1.6;
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 24px;
+            }
+
+            .header-kicker {
+                font-size: 9px;
+                color: #7b8faa;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                margin-bottom: 6px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+                font-weight: 700;
+                line-height: 1.2;
+                letter-spacing: -0.03em;
+                margin-bottom: 6px;
+            }
+
+            .header-sub {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                font-size: 12px;
+                color: #c8d6e5;
+                max-width: 560px;
+                margin: 0 auto;
+            }
+
+            .header-links {
+                margin-top: 8px;
+                display: flex;
+                gap: 14px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .header-links a {
+                font-size: 10px;
+                color: #3b82f6;
+                text-decoration: none;
+            }
+
+            .card {
+                background: #131b2e;
+                border: 1px solid #243052;
+                border-radius: 10px;
+                padding: 24px;
+                margin-bottom: 18px;
+            }
+
+            .section-title {
+                font-size: 16px;
+                margin: 0 0 8px 0;
+                letter-spacing: -0.02em;
+            }
+
+            .section-title .num {
+                color: #7b8faa;
+            }
+
+            .tab-bar {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin-bottom: 16px;
+            }
+
+            .tab-btn {
+                padding: 8px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                border: 1px solid #243052;
+                background: transparent;
+                color: #7b8faa;
+                font-family: inherit;
+                font-size: 11px;
+                font-weight: 500;
+                transition: all 0.15s;
+            }
+
+            .tab-btn:hover {
+                color: #c8d6e5;
+            }
+
+            .tab-btn.active {
+                font-weight: 700;
+            }
+
+            .tab-panel {
+                display: none;
+            }
+
+            .tab-panel.active {
+                display: block;
+            }
+
+            .desc {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                font-size: 13px;
+                color: #c8d6e5;
+                line-height: 1.7;
+                margin: 0 0 14px;
+            }
+
+            .dia-wrap {
+                background: #0b1120;
+                border-radius: 8px;
+                padding: 16px;
+                border: 1px solid #243052;
+                overflow: hidden;
+            }
+
+            .dia-wrap svg {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+
+            .badge {
+                display: inline-block;
+                padding: 2px 10px;
+                border-radius: 4px;
+                font-family: inherit;
+                font-size: 10px;
+                font-weight: 700;
+            }
+
+            .timeline {
+                position: relative;
+                padding-left: 30px;
+                margin-top: 16px;
+            }
+
+            .timeline-line {
+                position: absolute;
+                left: 8px;
+                top: 4px;
+                bottom: 4px;
+                width: 2px;
+                background: linear-gradient(to bottom, #ef4444, #eab308, #22c55e);
+            }
+
+            .timeline-entry {
+                position: relative;
+                margin-bottom: 18px;
+                padding-left: 18px;
+            }
+
+            .timeline-entry:last-child {
+                margin-bottom: 0;
+            }
+
+            .timeline-dot {
+                position: absolute;
+                left: -26px;
+                top: 5px;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+            }
+
+            .timeline-head {
+                display: flex;
+                align-items: baseline;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-bottom: 4px;
+            }
+
+            .timeline-yr {
+                font-size: 10px;
+                color: #7b8faa;
+            }
+
+            .timeline-name {
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+            .timeline-style {
+                font-size: 10px;
+                color: #7b8faa;
+                margin-bottom: 4px;
+            }
+
+            .timeline-detail {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                font-size: 12px;
+                color: #c8d6e5;
+                line-height: 1.6;
+                margin: 0;
+            }
+
+            .info-box {
+                margin-top: 12px;
+                padding: 14px;
+                border-radius: 8px;
+            }
+
+            .info-box p {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                font-size: 12px;
+                color: #c8d6e5;
+                line-height: 1.6;
+                margin: 0;
+            }
+
+            .training-content {
+                background: #0b1120;
+                border-radius: 8px;
+                padding: 20px;
+                border: 1px solid #243052;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                font-size: 12px;
+                color: #c8d6e5;
+                line-height: 1.8;
+            }
+
+            .comparison-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 11px;
+            }
+
+            .comparison-table th {
+                padding: 8px 12px;
+                text-align: left;
+                color: #7b8faa;
+                font-weight: 600;
+                font-size: 9px;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                border-bottom: 2px solid #243052;
+            }
+
+            .comparison-table td {
+                padding: 10px 12px;
+                color: #c8d6e5;
+                border-bottom: 1px solid rgba(36, 48, 82, 0.2);
+            }
+
+            .caveats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 12px;
+            }
+
+            .caveat-item {
+                background: #0b1120;
+                border-radius: 8px;
+                padding: 16px;
+            }
+
+            .caveat-head {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+            }
+
+            .caveat-head .icon {
+                font-size: 15px;
+            }
+
+            .caveat-head .title {
+                font-size: 11px;
+                font-weight: 700;
+            }
+
+            .caveat-text {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                font-size: 11px;
+                color: #c8d6e5;
+                line-height: 1.65;
+                margin: 0;
+            }
+
+            .footer {
+                text-align: center;
+                padding: 12px 0;
+                font-size: 8px;
+                color: #7b8faa;
+            }
+
+            @media (max-width: 600px) {
+                .caveats-grid {
+                    grid-template-columns: 1fr;
+                }
+                .tab-btn {
+                    font-size: 10px;
+                    padding: 6px 10px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-kicker">PARALLEL TOKEN GENERATION DEEP DIVE</div>
+                <h1>PTP: Resolving the Independence Flaw</h1>
+                <p class="header-sub">
+                    From ProphetNet's broken joints through DeepSeek's partial chains to Draxler et al.'s full joint
+                    prediction via normalizing flows
+                </p>
+                <div class="header-links">
+                    <a href="https://arxiv.org/abs/2512.21323" target="_blank" rel="noopener noreferrer">[PTP Paper]</a>
+                    <a href="https://arxiv.org/abs/2404.19737" target="_blank" rel="noopener noreferrer">
+                        [Gloeckle/Meta MTP]
+                    </a>
+                    <a href="https://arxiv.org/abs/2512.20856" target="_blank" rel="noopener noreferrer">
+                        [Nemotron 3]
+                    </a>
+                </div>
+            </div>
+
+            <!-- Section 1: The Independence Flaw -->
+            <div class="card">
+                <h2 class="section-title" style="color: #ef4444">
+                    <span class="num">01</span>
+                    THE INDEPENDENCE FLAW
+                </h2>
+                <div class="tab-bar" data-group="sec1">
+                    <button
+                        class="tab-btn active"
+                        data-tab="sec1-0"
+                        style="border-color: #ef4444; background: rgba(239, 68, 68, 0.094); color: #ef4444"
+                    >
+                        AR Sampling
+                    </button>
+                    <button class="tab-btn" data-tab="sec1-1">Independent Heads = Broken Joint</button>
+                    <button class="tab-btn" data-tab="sec1-2">The Cretoria Problem</button>
+                </div>
+
+                <!-- Tab 0: AR Sampling -->
+                <div id="sec1-0" class="tab-panel active" data-group="sec1" data-color="#ef4444">
+                    <p class="desc">
+                        In standard autoregressive decoding, the model produces a distribution
+                        <b style="color: #a78bfa">&pi;</b>
+                        over the vocabulary, then a uniform random variable
+                        <b style="color: #eab308">u ~ U[0,1]</b>
+                        is drawn
+                        <em>after</em>
+                        the forward pass and fed into the inverse CDF ("Pick" function) to select a token. That
+                        <b style="color: #eab308">u</b>
+                        just floats there, sampled outside the model's reasoning.
+                    </p>
+                    <div class="dia-wrap">
+                        <svg viewBox="0 0 680 160">
+                            <defs>
+                                <marker
+                                    id="a1"
+                                    viewBox="0 0 10 6"
+                                    refX="9"
+                                    refY="3"
+                                    markerWidth="7"
+                                    markerHeight="5"
+                                    orient="auto"
+                                >
+                                    <path d="M0,0 L10,3 L0,6" fill="#3b82f6" />
+                                </marker>
+                            </defs>
+                            <rect x="10" y="55" width="85" height="45" rx="6" fill="#192340" stroke="#243052" />
+                            <text
+                                x="52"
+                                y="82"
+                                text-anchor="middle"
+                                fill="#f8fafc"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                            >
+                                t&#x2081; &#x2026; t&#x1D62;&#x208B;&#x2081;
+                            </text>
+                            <text
+                                x="52"
+                                y="42"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                            >
+                                context
+                            </text>
+
+                            <line
+                                x1="100"
+                                y1="78"
+                                x2="145"
+                                y2="78"
+                                stroke="#3b82f6"
+                                stroke-width="1.5"
+                                marker-end="url(#a1)"
+                            />
+
+                            <rect
+                                x="150"
+                                y="42"
+                                width="120"
+                                height="70"
+                                rx="8"
+                                fill="rgba(59,130,246,0.12)"
+                                stroke="#3b82f6"
+                                stroke-dasharray="4 2"
+                            />
+                            <text
+                                x="210"
+                                y="72"
+                                text-anchor="middle"
+                                fill="#3b82f6"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                Transformer
+                            </text>
+                            <text
+                                x="210"
+                                y="90"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                            >
+                                forward pass
+                            </text>
+
+                            <line
+                                x1="275"
+                                y1="78"
+                                x2="310"
+                                y2="78"
+                                stroke="#3b82f6"
+                                stroke-width="1.5"
+                                marker-end="url(#a1)"
+                            />
+
+                            <rect
+                                x="315"
+                                y="48"
+                                width="80"
+                                height="56"
+                                rx="6"
+                                fill="rgba(167,139,250,0.1)"
+                                stroke="#a78bfa"
+                            />
+                            <text
+                                x="355"
+                                y="72"
+                                text-anchor="middle"
+                                fill="#a78bfa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="13"
+                                font-weight="700"
+                            >
+                                &#x03C0;&#x1D62;
+                            </text>
+                            <text
+                                x="355"
+                                y="90"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                P(t&#x1D62;|t&lt;&#x1D62;)
+                            </text>
+
+                            <rect
+                                x="420"
+                                y="8"
+                                width="80"
+                                height="32"
+                                rx="5"
+                                fill="rgba(234,179,8,0.1)"
+                                stroke="#eab308"
+                            />
+                            <text
+                                x="460"
+                                y="28"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                                font-weight="700"
+                            >
+                                u&#x1D62; ~ U[0,1]
+                            </text>
+                            <text
+                                x="460"
+                                y="0"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                                font-weight="700"
+                            >
+                                AFTER PASS!
+                            </text>
+                            <line
+                                x1="460"
+                                y1="42"
+                                x2="460"
+                                y2="60"
+                                stroke="#eab308"
+                                stroke-width="1.2"
+                                stroke-dasharray="3 2"
+                                marker-end="url(#a1)"
+                            />
+
+                            <line
+                                x1="400"
+                                y1="78"
+                                x2="430"
+                                y2="78"
+                                stroke="#3b82f6"
+                                stroke-width="1.5"
+                                marker-end="url(#a1)"
+                            />
+                            <rect
+                                x="435"
+                                y="54"
+                                width="90"
+                                height="44"
+                                rx="6"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="480"
+                                y="73"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="700"
+                            >
+                                Pick(u&#x1D62;,&#x03C0;&#x1D62;)
+                            </text>
+                            <text
+                                x="480"
+                                y="88"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                inverse CDF
+                            </text>
+
+                            <line
+                                x1="530"
+                                y1="78"
+                                x2="565"
+                                y2="78"
+                                stroke="#3b82f6"
+                                stroke-width="1.5"
+                                marker-end="url(#a1)"
+                            />
+                            <rect
+                                x="570"
+                                y="58"
+                                width="55"
+                                height="38"
+                                rx="6"
+                                fill="rgba(59,130,246,0.12)"
+                                stroke="#3b82f6"
+                            />
+                            <text
+                                x="597"
+                                y="82"
+                                text-anchor="middle"
+                                fill="#3b82f6"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="13"
+                                font-weight="700"
+                            >
+                                t&#x1D62;
+                            </text>
+
+                            <text
+                                x="340"
+                                y="140"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="-apple-system, sans-serif"
+                                font-size="9"
+                            >
+                                Sequential: must finish one token before starting the next. u is external to the model.
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Tab 1: Independent Heads -->
+                <div id="sec1-1" class="tab-panel" data-group="sec1" data-color="#ef4444">
+                    <p class="desc">
+                        When ProphetNet, Medusa, or Gloeckle/Meta MTP try to predict multiple tokens at once, each head
+                        independently predicts its token given only the shared trunk. They model P(t2|z) and P(t3|z)
+                        separately &#x2014; but the true target is
+                        <b style="color: #ef4444">P(t2,t3|context)</b>
+                        , a joint.
+                    </p>
+                    <div class="dia-wrap">
+                        <svg viewBox="0 0 680 230">
+                            <defs>
+                                <marker
+                                    id="a2"
+                                    viewBox="0 0 10 6"
+                                    refX="9"
+                                    refY="3"
+                                    markerWidth="7"
+                                    markerHeight="5"
+                                    orient="auto"
+                                >
+                                    <path d="M0,0 L10,3 L0,6" fill="#7b8faa" />
+                                </marker>
+                            </defs>
+                            <rect
+                                x="20"
+                                y="75"
+                                width="145"
+                                height="70"
+                                rx="8"
+                                fill="rgba(59,130,246,0.12)"
+                                stroke="#3b82f6"
+                                stroke-dasharray="4 2"
+                            />
+                            <text
+                                x="92"
+                                y="105"
+                                text-anchor="middle"
+                                fill="#3b82f6"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                Shared Trunk
+                            </text>
+                            <text
+                                x="92"
+                                y="122"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                            >
+                                hidden state z
+                            </text>
+
+                            <!-- Head 1 -->
+                            <line
+                                x1="170"
+                                y1="110"
+                                x2="215"
+                                y2="50"
+                                stroke="#7b8faa"
+                                stroke-width="1"
+                                marker-end="url(#a2)"
+                            />
+                            <rect
+                                x="220"
+                                y="30"
+                                width="160"
+                                height="38"
+                                rx="5"
+                                fill="rgba(239,68,68,0.1)"
+                                stroke="#ef4444"
+                            />
+                            <text
+                                x="300"
+                                y="48"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="600"
+                            >
+                                Head1 -&gt; P(ti|z)
+                            </text>
+                            <text
+                                x="300"
+                                y="62"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                INDEPENDENT
+                            </text>
+
+                            <!-- Head 2 -->
+                            <line
+                                x1="170"
+                                y1="110"
+                                x2="215"
+                                y2="120"
+                                stroke="#7b8faa"
+                                stroke-width="1"
+                                marker-end="url(#a2)"
+                            />
+                            <rect
+                                x="220"
+                                y="100"
+                                width="160"
+                                height="38"
+                                rx="5"
+                                fill="rgba(239,68,68,0.1)"
+                                stroke="#ef4444"
+                            />
+                            <text
+                                x="300"
+                                y="118"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="600"
+                            >
+                                Head2 -&gt; P(ti+1|z)
+                            </text>
+                            <text
+                                x="300"
+                                y="132"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                INDEPENDENT
+                            </text>
+
+                            <!-- Head 3 -->
+                            <line
+                                x1="170"
+                                y1="110"
+                                x2="215"
+                                y2="190"
+                                stroke="#7b8faa"
+                                stroke-width="1"
+                                marker-end="url(#a2)"
+                            />
+                            <rect
+                                x="220"
+                                y="170"
+                                width="160"
+                                height="38"
+                                rx="5"
+                                fill="rgba(239,68,68,0.1)"
+                                stroke="#ef4444"
+                            />
+                            <text
+                                x="300"
+                                y="188"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="600"
+                            >
+                                Head3 -&gt; P(ti+2|z)
+                            </text>
+                            <text
+                                x="300"
+                                y="202"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                INDEPENDENT
+                            </text>
+
+                            <line
+                                x1="400"
+                                y1="20"
+                                x2="400"
+                                y2="210"
+                                stroke="#ef4444"
+                                stroke-width="1"
+                                stroke-dasharray="6 3"
+                            />
+
+                            <text
+                                x="540"
+                                y="55"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                No connections
+                            </text>
+                            <text
+                                x="540"
+                                y="72"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                between heads
+                            </text>
+                            <text
+                                x="540"
+                                y="100"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="10"
+                            >
+                                Head2 doesn't know which ti was picked
+                            </text>
+                            <text
+                                x="540"
+                                y="118"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="10"
+                            >
+                                Head3 doesn't know ti or ti+1
+                            </text>
+                            <text
+                                x="540"
+                                y="152"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                Models: P(ti|z) * P(ti+1|z) * P(ti+2|z)
+                            </text>
+                            <text
+                                x="540"
+                                y="175"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="700"
+                            >
+                                != P(ti, ti+1, ti+2 | context)
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Cretoria Problem -->
+                <div id="sec1-2" class="tab-panel" data-group="sec1" data-color="#ef4444">
+                    <p class="desc">
+                        "Name a capital of South Africa" &#x2014; Cape Town and Pretoria are both valid. An independent
+                        MTP model can pick "C" from Cape Town at Head1 and "retoria" from Pretoria at Head2. Result:
+                        <b style="color: #ef4444">Cretoria</b>
+                        &#x2014; token-salad with near-zero joint probability.
+                    </p>
+                    <div class="dia-wrap">
+                        <svg viewBox="0 0 680 180">
+                            <text
+                                x="100"
+                                y="22"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="700"
+                            >
+                                Correct Joint Samples
+                            </text>
+                            <!-- Cape Town -->
+                            <rect
+                                x="20"
+                                y="32"
+                                width="50"
+                                height="28"
+                                rx="4"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="45"
+                                y="50"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                            >
+                                C
+                            </text>
+                            <rect
+                                x="78"
+                                y="32"
+                                width="50"
+                                height="28"
+                                rx="4"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="103"
+                                y="50"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                            >
+                                ape
+                            </text>
+                            <rect
+                                x="136"
+                                y="32"
+                                width="50"
+                                height="28"
+                                rx="4"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="161"
+                                y="50"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                            >
+                                Town
+                            </text>
+
+                            <text
+                                x="214"
+                                y="50"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="-apple-system, sans-serif"
+                                font-size="10"
+                            >
+                                or
+                            </text>
+
+                            <!-- Pretoria -->
+                            <rect
+                                x="234"
+                                y="32"
+                                width="50"
+                                height="28"
+                                rx="4"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="259"
+                                y="50"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                            >
+                                P
+                            </text>
+                            <rect
+                                x="292"
+                                y="32"
+                                width="50"
+                                height="28"
+                                rx="4"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="317"
+                                y="50"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                            >
+                                reto
+                            </text>
+                            <rect
+                                x="350"
+                                y="32"
+                                width="50"
+                                height="28"
+                                rx="4"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="375"
+                                y="50"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                            >
+                                ria
+                            </text>
+
+                            <!-- Bad result -->
+                            <text
+                                x="150"
+                                y="96"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="700"
+                            >
+                                Independent Head Argmax
+                            </text>
+                            <rect
+                                x="20"
+                                y="106"
+                                width="50"
+                                height="28"
+                                rx="4"
+                                fill="rgba(239,68,68,0.1)"
+                                stroke="#ef4444"
+                            />
+                            <text
+                                x="45"
+                                y="124"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                C
+                            </text>
+                            <rect
+                                x="80"
+                                y="106"
+                                width="80"
+                                height="28"
+                                rx="4"
+                                fill="rgba(239,68,68,0.1)"
+                                stroke="#ef4444"
+                            />
+                            <text
+                                x="120"
+                                y="124"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                retoria
+                            </text>
+                            <text
+                                x="210"
+                                y="124"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="12"
+                            >
+                                = "Cretoria" !
+                            </text>
+
+                            <!-- Explanation -->
+                            <text
+                                x="510"
+                                y="50"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="10"
+                            >
+                                Head1 picks "C" (from Cape Town)
+                            </text>
+                            <text
+                                x="510"
+                                y="68"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="10"
+                            >
+                                Head2 picks "retoria" (from Pretoria)
+                            </text>
+                            <text
+                                x="510"
+                                y="100"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="-apple-system, sans-serif"
+                                font-size="10"
+                                font-weight="600"
+                            >
+                                Each head is correct marginally
+                            </text>
+                            <text
+                                x="510"
+                                y="118"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="-apple-system, sans-serif"
+                                font-size="10"
+                                font-weight="600"
+                            >
+                                but the joint is incoherent.
+                            </text>
+                            <text
+                                x="510"
+                                y="148"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="-apple-system, sans-serif"
+                                font-size="9"
+                            >
+                                Exponentially many token-salad
+                            </text>
+                            <text
+                                x="510"
+                                y="164"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="-apple-system, sans-serif"
+                                font-size="9"
+                            >
+                                completions become equally likely.
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Evolution -->
+            <div class="card">
+                <h2 class="section-title" style="color: #22d3ee">
+                    <span class="num">02</span>
+                    EVOLUTION OF MULTI-TOKEN PREDICTION
+                </h2>
+                <div class="timeline">
+                    <div class="timeline-line"></div>
+
+                    <div class="timeline-entry">
+                        <div
+                            class="timeline-dot"
+                            style="background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.33)"
+                        ></div>
+                        <div class="timeline-head">
+                            <span class="timeline-yr">2020</span>
+                            <span class="timeline-name" style="color: #ef4444">ProphetNet</span>
+                            <span
+                                class="badge"
+                                style="
+                                    color: #ef4444;
+                                    background: rgba(239, 68, 68, 0.1);
+                                    border: 1px solid rgba(239, 68, 68, 0.19);
+                                "
+                            >
+                                Deps: None
+                            </span>
+                        </div>
+                        <div class="timeline-style">Independent n-gram heads</div>
+                        <p class="timeline-detail">
+                            Independent heads on a shared encoder. Each future position predicted without knowledge of
+                            the others. First major MTP attempt &#x2014; fully breaks the joint distribution.
+                        </p>
+                    </div>
+
+                    <div class="timeline-entry">
+                        <div
+                            class="timeline-dot"
+                            style="background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.33)"
+                        ></div>
+                        <div class="timeline-head">
+                            <span class="timeline-yr">2024</span>
+                            <span class="timeline-name" style="color: #ef4444">Medusa (UIUC)</span>
+                            <span
+                                class="badge"
+                                style="
+                                    color: #ef4444;
+                                    background: rgba(239, 68, 68, 0.1);
+                                    border: 1px solid rgba(239, 68, 68, 0.19);
+                                "
+                            >
+                                Deps: None
+                            </span>
+                        </div>
+                        <div class="timeline-style">Independent tree-structured heads</div>
+                        <p class="timeline-detail">
+                            Tree-structured speculative heads for self-speculative decoding. Each head independently
+                            predicts a future token &#x2014; same independence flaw, arranged in a tree for
+                            verification.
+                        </p>
+                    </div>
+
+                    <div class="timeline-entry">
+                        <div
+                            class="timeline-dot"
+                            style="background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.33)"
+                        ></div>
+                        <div class="timeline-head">
+                            <span class="timeline-yr">2024</span>
+                            <span class="timeline-name" style="color: #ef4444">Gloeckle / Meta FAIR</span>
+                            <span
+                                class="badge"
+                                style="
+                                    color: #ef4444;
+                                    background: rgba(239, 68, 68, 0.1);
+                                    border: 1px solid rgba(239, 68, 68, 0.19);
+                                "
+                            >
+                                Deps: None
+                            </span>
+                        </div>
+                        <div class="timeline-style">n independent output heads on shared trunk</div>
+                        <p class="timeline-detail">
+                            n independent output heads on a shared transformer trunk. Proven gains as training signal
+                            (12&#x2013;17% on HumanEval/MBPP) &#x2014; the extra heads force richer intermediate
+                            representations. But at inference, each head is blind to the others' choices. The extra
+                            heads are valuable as training signal, not for joint prediction.
+                        </p>
+                    </div>
+
+                    <div class="timeline-entry">
+                        <div
+                            class="timeline-dot"
+                            style="background: #eab308; box-shadow: 0 0 8px rgba(234, 179, 8, 0.33)"
+                        ></div>
+                        <div class="timeline-head">
+                            <span class="timeline-yr">2024</span>
+                            <span class="timeline-name" style="color: #eab308">DeepSeek V3</span>
+                            <span
+                                class="badge"
+                                style="
+                                    color: #eab308;
+                                    background: rgba(234, 179, 8, 0.1);
+                                    border: 1px solid rgba(234, 179, 8, 0.19);
+                                "
+                            >
+                                Deps: Partial
+                            </span>
+                        </div>
+                        <div class="timeline-style">Sequential causal chain across prediction depths</div>
+                        <p class="timeline-detail">
+                            Instead of independent heads, DeepSeek chains them: the k-th MTP module takes the
+                            (k&#x2212;1)-th module's representation concatenated with the next token's embedding via
+                            linear projection. Each depth conditions on the previous. Partial &#x2014; each module is a
+                            single lightweight layer, capturing shallow conditioning.
+                        </p>
+                    </div>
+
+                    <div class="timeline-entry">
+                        <div
+                            class="timeline-dot"
+                            style="background: #eab308; box-shadow: 0 0 8px rgba(234, 179, 8, 0.33)"
+                        ></div>
+                        <div class="timeline-head">
+                            <span class="timeline-yr">2025</span>
+                            <span class="timeline-name" style="color: #eab308">Nemotron 3 (NVIDIA)</span>
+                            <span
+                                class="badge"
+                                style="
+                                    color: #eab308;
+                                    background: rgba(234, 179, 8, 0.1);
+                                    border: 1px solid rgba(234, 179, 8, 0.19);
+                                "
+                            >
+                                Deps: Partial
+                            </span>
+                        </div>
+                        <div class="timeline-style">Sequential causal chain (same as DeepSeek)</div>
+                        <p class="timeline-detail">
+                            Uses the DeepSeek-style sequential causal chain, NOT Gloeckle's independent heads. The
+                            Megatron-LM docs describe the k-th MTP module combining the representation from depth
+                            k&#x2212;1 with the embedding of the next token via linear projection. Same partial
+                            dependency structure.
+                        </p>
+                    </div>
+
+                    <div class="timeline-entry">
+                        <div
+                            class="timeline-dot"
+                            style="background: #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.33)"
+                        ></div>
+                        <div class="timeline-head">
+                            <span class="timeline-yr">2025</span>
+                            <span class="timeline-name" style="color: #22c55e">PTP / Draxler et al.</span>
+                            <span
+                                class="badge"
+                                style="
+                                    color: #22c55e;
+                                    background: rgba(34, 197, 94, 0.1);
+                                    border: 1px solid rgba(34, 197, 94, 0.19);
+                                "
+                            >
+                                Deps: Full
+                            </span>
+                        </div>
+                        <div class="timeline-style">Joint distribution via normalizing flows + auxiliary variables</div>
+                        <p class="timeline-detail">
+                            Resolves the independence flaw entirely. By feeding auxiliary random variables u ~ U[0,1]
+                            into the model alongside token embeddings, the model knows which token will be sampled at
+                            each position. Theorem 2 proves this captures the full autoregressive joint. No information
+                            is lost.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: How PTP Works -->
+            <div class="card">
+                <h2 class="section-title" style="color: #22c55e">
+                    <span class="num">03</span>
+                    HOW PTP WORKS: FEEDING RANDOMNESS INTO THE MODEL
+                </h2>
+                <p class="desc">
+                    The fundamental insight: instead of sampling u
+                    <em>after</em>
+                    the forward pass, feed it
+                    <em>into</em>
+                    the forward pass alongside the token embedding. The model no longer predicts "what token is likely
+                    next" &#x2014; it predicts "given this specific random draw, what token gets selected, and what does
+                    that imply for everything downstream."
+                </p>
+                <div class="tab-bar" data-group="sec3">
+                    <button
+                        class="tab-btn active"
+                        data-tab="sec3-0"
+                        style="border-color: #22c55e; background: rgba(34, 197, 94, 0.094); color: #22c55e"
+                    >
+                        O-PTP (Theorem 1)
+                    </button>
+                    <button class="tab-btn" data-tab="sec3-1">C-PTP (Theorem 2) &#x2014; The Key</button>
+                </div>
+
+                <!-- O-PTP -->
+                <div id="sec3-0" class="tab-panel active" data-group="sec3" data-color="#22c55e">
+                    <div class="dia-wrap">
+                        <svg viewBox="0 0 680 200">
+                            <defs>
+                                <marker
+                                    id="o1"
+                                    viewBox="0 0 10 6"
+                                    refX="9"
+                                    refY="3"
+                                    markerWidth="7"
+                                    markerHeight="5"
+                                    orient="auto"
+                                >
+                                    <path d="M0,0 L10,3 L0,6" fill="#22c55e" />
+                                </marker>
+                            </defs>
+                            <rect x="10" y="65" width="75" height="40" rx="5" fill="#192340" stroke="#243052" />
+                            <text
+                                x="47"
+                                y="88"
+                                text-anchor="middle"
+                                fill="#f8fafc"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                t1&#x2026;ti-1
+                            </text>
+
+                            <rect
+                                x="10"
+                                y="118"
+                                width="75"
+                                height="36"
+                                rx="5"
+                                fill="rgba(234,179,8,0.1)"
+                                stroke="#eab308"
+                            />
+                            <text
+                                x="47"
+                                y="140"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                ui&#x2026;uk
+                            </text>
+                            <text
+                                x="47"
+                                y="54"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                                font-weight="700"
+                            >
+                                FED IN
+                            </text>
+
+                            <line x1="90" y1="85" x2="115" y2="98" stroke="#7b8faa" stroke-width="1" />
+                            <line x1="90" y1="136" x2="115" y2="103" stroke="#7b8faa" stroke-width="1" />
+                            <circle cx="122" cy="100" r="8" fill="#192340" stroke="#3b82f6" />
+                            <text
+                                x="122"
+                                y="104"
+                                text-anchor="middle"
+                                fill="#3b82f6"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                            >
+                                +
+                            </text>
+
+                            <line
+                                x1="132"
+                                y1="100"
+                                x2="162"
+                                y2="100"
+                                stroke="#22c55e"
+                                stroke-width="1.5"
+                                marker-end="url(#o1)"
+                            />
+
+                            <rect
+                                x="167"
+                                y="65"
+                                width="155"
+                                height="70"
+                                rx="8"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                                stroke-dasharray="4 2"
+                            />
+                            <text
+                                x="244"
+                                y="95"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="12"
+                                font-weight="700"
+                            >
+                                Transformer
+                            </text>
+                            <text
+                                x="244"
+                                y="115"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                            >
+                                Single Forward Pass
+                            </text>
+
+                            <!-- Output: ti -->
+                            <line
+                                x1="327"
+                                y1="100"
+                                x2="380"
+                                y2="59"
+                                stroke="#22c55e"
+                                stroke-width="1"
+                                marker-end="url(#o1)"
+                            />
+                            <rect
+                                x="385"
+                                y="42"
+                                width="60"
+                                height="34"
+                                rx="5"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="415"
+                                y="57"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                ti
+                            </text>
+                            <text
+                                x="415"
+                                y="69"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                argmax
+                            </text>
+
+                            <!-- Output: ti+1 -->
+                            <line
+                                x1="327"
+                                y1="100"
+                                x2="380"
+                                y2="114"
+                                stroke="#22c55e"
+                                stroke-width="1"
+                                marker-end="url(#o1)"
+                            />
+                            <rect
+                                x="385"
+                                y="97"
+                                width="60"
+                                height="34"
+                                rx="5"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="415"
+                                y="112"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                ti+1
+                            </text>
+                            <text
+                                x="415"
+                                y="124"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                argmax
+                            </text>
+
+                            <!-- Output: ti+2 -->
+                            <line
+                                x1="327"
+                                y1="100"
+                                x2="380"
+                                y2="169"
+                                stroke="#22c55e"
+                                stroke-width="1"
+                                marker-end="url(#o1)"
+                            />
+                            <rect
+                                x="385"
+                                y="152"
+                                width="60"
+                                height="34"
+                                rx="5"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="415"
+                                y="167"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                ti+2
+                            </text>
+                            <text
+                                x="415"
+                                y="179"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                argmax
+                            </text>
+
+                            <text
+                                x="560"
+                                y="72"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="10"
+                            >
+                                All tokens produced in
+                            </text>
+                            <text
+                                x="560"
+                                y="90"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="10"
+                            >
+                                one forward pass because
+                            </text>
+                            <text
+                                x="560"
+                                y="108"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="700"
+                            >
+                                model knows the u's
+                            </text>
+                            <text
+                                x="560"
+                                y="132"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="-apple-system, sans-serif"
+                                font-size="9"
+                            >
+                                Each token is a deterministic
+                            </text>
+                            <text
+                                x="560"
+                                y="148"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="-apple-system, sans-serif"
+                                font-size="9"
+                            >
+                                function of the inputs.
+                            </text>
+                        </svg>
+                    </div>
+                    <div
+                        class="info-box"
+                        style="background: rgba(167, 139, 250, 0.1); border: 1px solid rgba(167, 139, 250, 0.19)"
+                    >
+                        <p>
+                            <b style="color: #a78bfa">O-PTP (Theorem 1):</b>
+                            Given context and ALL auxiliary variables ui...uk, the model deterministically outputs tk =
+                            argmax P_theta(.|context, ui,...,uk). Each token is fully determined by its u &#x2014; the
+                            model learns a one-hot mapping. Fast and simple, but doesn't expose the full probability
+                            distribution.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- C-PTP -->
+                <div id="sec3-1" class="tab-panel" data-group="sec3" data-color="#22c55e">
+                    <div class="dia-wrap">
+                        <svg viewBox="0 0 680 260">
+                            <defs>
+                                <marker
+                                    id="c1"
+                                    viewBox="0 0 10 6"
+                                    refX="9"
+                                    refY="3"
+                                    markerWidth="7"
+                                    markerHeight="5"
+                                    orient="auto"
+                                >
+                                    <path d="M0,0 L10,3 L0,6" fill="#22c55e" />
+                                </marker>
+                            </defs>
+                            <text
+                                x="340"
+                                y="18"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="700"
+                            >
+                                C-PTP: Exclude uk to preserve distribution over tk
+                            </text>
+
+                            <!-- Row 1: Position i -->
+                            <rect x="15" y="32" width="180" height="50" rx="6" fill="#192340" stroke="#243052" />
+                            <text
+                                x="105"
+                                y="50"
+                                text-anchor="middle"
+                                fill="#a78bfa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                                font-weight="700"
+                            >
+                                Position i
+                            </text>
+                            <text
+                                x="105"
+                                y="68"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                            >
+                                Input: t&lt;i (no u's)
+                            </text>
+                            <line
+                                x1="200"
+                                y1="57"
+                                x2="235"
+                                y2="57"
+                                stroke="#22c55e"
+                                stroke-width="1"
+                                marker-end="url(#c1)"
+                            />
+                            <rect
+                                x="240"
+                                y="36"
+                                width="155"
+                                height="40"
+                                rx="5"
+                                fill="rgba(167,139,250,0.1)"
+                                stroke="#a78bfa"
+                            />
+                            <text
+                                x="317"
+                                y="54"
+                                text-anchor="middle"
+                                fill="#a78bfa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                P(ti | t&lt;i)
+                            </text>
+                            <text
+                                x="317"
+                                y="69"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                                font-weight="700"
+                            >
+                                full dist
+                            </text>
+                            <line
+                                x1="400"
+                                y1="57"
+                                x2="430"
+                                y2="57"
+                                stroke="#eab308"
+                                stroke-width="1"
+                                marker-end="url(#c1)"
+                            />
+                            <rect
+                                x="435"
+                                y="38"
+                                width="85"
+                                height="36"
+                                rx="5"
+                                fill="rgba(234,179,8,0.1)"
+                                stroke="#eab308"
+                            />
+                            <text
+                                x="477"
+                                y="54"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                                font-weight="700"
+                            >
+                                Pick(ui, Pi)
+                            </text>
+                            <text
+                                x="477"
+                                y="68"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                ti fixed
+                            </text>
+
+                            <!-- Row 2: Position i+1 -->
+                            <rect x="15" y="107" width="180" height="50" rx="6" fill="#192340" stroke="#243052" />
+                            <text
+                                x="105"
+                                y="125"
+                                text-anchor="middle"
+                                fill="#a78bfa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                                font-weight="700"
+                            >
+                                Position i+1
+                            </text>
+                            <text
+                                x="105"
+                                y="143"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                            >
+                                Input: t&lt;i + ui
+                            </text>
+                            <line
+                                x1="200"
+                                y1="132"
+                                x2="235"
+                                y2="132"
+                                stroke="#22c55e"
+                                stroke-width="1"
+                                marker-end="url(#c1)"
+                            />
+                            <rect
+                                x="240"
+                                y="111"
+                                width="155"
+                                height="40"
+                                rx="5"
+                                fill="rgba(167,139,250,0.1)"
+                                stroke="#a78bfa"
+                            />
+                            <text
+                                x="317"
+                                y="129"
+                                text-anchor="middle"
+                                fill="#a78bfa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                P(ti+1 | t&lt;i, ui)
+                            </text>
+                            <text
+                                x="317"
+                                y="144"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                                font-weight="700"
+                            >
+                                = P(ti+1|t&lt;=i) Thm2!
+                            </text>
+                            <line
+                                x1="400"
+                                y1="132"
+                                x2="430"
+                                y2="132"
+                                stroke="#eab308"
+                                stroke-width="1"
+                                marker-end="url(#c1)"
+                            />
+                            <rect
+                                x="435"
+                                y="113"
+                                width="85"
+                                height="36"
+                                rx="5"
+                                fill="rgba(234,179,8,0.1)"
+                                stroke="#eab308"
+                            />
+                            <text
+                                x="477"
+                                y="129"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                                font-weight="700"
+                            >
+                                Pick(ui+1, P)
+                            </text>
+                            <text
+                                x="477"
+                                y="143"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                ti+1 fixed
+                            </text>
+
+                            <!-- Row 3: Position i+2 -->
+                            <rect x="15" y="182" width="180" height="50" rx="6" fill="#192340" stroke="#243052" />
+                            <text
+                                x="105"
+                                y="200"
+                                text-anchor="middle"
+                                fill="#a78bfa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                                font-weight="700"
+                            >
+                                Position i+2
+                            </text>
+                            <text
+                                x="105"
+                                y="218"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                            >
+                                Input: t&lt;i + ui + ui+1
+                            </text>
+                            <line
+                                x1="200"
+                                y1="207"
+                                x2="235"
+                                y2="207"
+                                stroke="#22c55e"
+                                stroke-width="1"
+                                marker-end="url(#c1)"
+                            />
+                            <rect
+                                x="240"
+                                y="186"
+                                width="155"
+                                height="40"
+                                rx="5"
+                                fill="rgba(167,139,250,0.1)"
+                                stroke="#a78bfa"
+                            />
+                            <text
+                                x="317"
+                                y="204"
+                                text-anchor="middle"
+                                fill="#a78bfa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                P(ti+2 | t&lt;i, ui, ui+1)
+                            </text>
+                            <text
+                                x="317"
+                                y="219"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                                font-weight="700"
+                            >
+                                = P(ti+2|t&lt;=i+1) Thm2!
+                            </text>
+                            <line
+                                x1="400"
+                                y1="207"
+                                x2="430"
+                                y2="207"
+                                stroke="#eab308"
+                                stroke-width="1"
+                                marker-end="url(#c1)"
+                            />
+                            <rect
+                                x="435"
+                                y="188"
+                                width="85"
+                                height="36"
+                                rx="5"
+                                fill="rgba(234,179,8,0.1)"
+                                stroke="#eab308"
+                            />
+                            <text
+                                x="477"
+                                y="204"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                                font-weight="700"
+                            >
+                                Pick(ui+2, P)
+                            </text>
+                            <text
+                                x="477"
+                                y="218"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                ti+2 fixed
+                            </text>
+
+                            <!-- Causal Masking box -->
+                            <rect
+                                x="540"
+                                y="70"
+                                width="130"
+                                height="90"
+                                rx="6"
+                                fill="#192340"
+                                stroke="#3b82f6"
+                                stroke-dasharray="4 2"
+                            />
+                            <text
+                                x="605"
+                                y="92"
+                                text-anchor="middle"
+                                fill="#3b82f6"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                                font-weight="700"
+                            >
+                                Causal Masking
+                            </text>
+                            <text
+                                x="605"
+                                y="110"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="8"
+                            >
+                                Pos k sees u1...uk-1
+                            </text>
+                            <text
+                                x="605"
+                                y="125"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="8"
+                            >
+                                but NOT uk, preserving
+                            </text>
+                            <text
+                                x="605"
+                                y="140"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="8"
+                            >
+                                distribution over tk
+                            </text>
+                            <text
+                                x="605"
+                                y="155"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                                font-weight="700"
+                            >
+                                All in ONE pass
+                            </text>
+                        </svg>
+                    </div>
+                    <div
+                        class="info-box"
+                        style="background: rgba(167, 139, 250, 0.1); border: 1px solid rgba(167, 139, 250, 0.19)"
+                    >
+                        <p>
+                            <b style="color: #a78bfa">C-PTP (Theorem 2) &#x2014; The Key Result:</b>
+                            By conditioning the prediction of token tk on context and all preceding auxiliary variables
+                            ui,...,u(k-1) but excluding uk, we get P(tk|context,ui,...,u(k-1)) = P(tk|t&lt;k).
+                            Conditioning on previous u's is equivalent to conditioning on the actual sampled tokens.
+                            This recovers the full conditional distribution while maintaining parallel computation. This
+                            is the joint prediction that Theorem 2 addresses cleanly &#x2014; and that all prior methods
+                            broke.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Architecture Comparison -->
+            <div class="card">
+                <h2 class="section-title" style="color: #3b82f6">
+                    <span class="num">04</span>
+                    MTP ARCHITECTURES COMPARED
+                </h2>
+                <div class="tab-bar" data-group="sec4">
+                    <button
+                        class="tab-btn active"
+                        data-tab="sec4-0"
+                        style="border-color: #3b82f6; background: rgba(59, 130, 246, 0.094); color: #3b82f6"
+                    >
+                        Gloeckle/Meta &#x2014; Independent
+                    </button>
+                    <button class="tab-btn" data-tab="sec4-1">DeepSeek V3 / Nemotron &#x2014; Chain</button>
+                    <button class="tab-btn" data-tab="sec4-2">PTP &#x2014; Joint via Auxiliaries</button>
+                </div>
+
+                <!-- Gloeckle -->
+                <div id="sec4-0" class="tab-panel active" data-group="sec4" data-color="#3b82f6">
+                    <div class="dia-wrap">
+                        <svg viewBox="0 0 680 220">
+                            <defs>
+                                <marker
+                                    id="g1"
+                                    viewBox="0 0 10 6"
+                                    refX="9"
+                                    refY="3"
+                                    markerWidth="7"
+                                    markerHeight="5"
+                                    orient="auto"
+                                >
+                                    <path d="M0,0 L10,3 L0,6" fill="#7b8faa" />
+                                </marker>
+                            </defs>
+                            <rect
+                                x="20"
+                                y="60"
+                                width="150"
+                                height="80"
+                                rx="8"
+                                fill="rgba(59,130,246,0.12)"
+                                stroke="#3b82f6"
+                                stroke-dasharray="4 2"
+                            />
+                            <text
+                                x="95"
+                                y="95"
+                                text-anchor="middle"
+                                fill="#3b82f6"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                Shared Trunk
+                            </text>
+                            <text
+                                x="95"
+                                y="115"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                            >
+                                z = f_s(context)
+                            </text>
+
+                            <!-- 4 independent heads -->
+                            <line
+                                x1="175"
+                                y1="100"
+                                x2="220"
+                                y2="39"
+                                stroke="#7b8faa"
+                                stroke-width="1"
+                                marker-end="url(#g1)"
+                            />
+                            <rect
+                                x="225"
+                                y="22"
+                                width="145"
+                                height="32"
+                                rx="5"
+                                fill="rgba(239,68,68,0.1)"
+                                stroke="#ef4444"
+                            />
+                            <text
+                                x="297"
+                                y="36"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                                font-weight="600"
+                            >
+                                Head1 -&gt; P(t+1|z)
+                            </text>
+                            <text
+                                x="297"
+                                y="48"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                independent
+                            </text>
+
+                            <line
+                                x1="175"
+                                y1="100"
+                                x2="220"
+                                y2="87"
+                                stroke="#7b8faa"
+                                stroke-width="1"
+                                marker-end="url(#g1)"
+                            />
+                            <rect
+                                x="225"
+                                y="70"
+                                width="145"
+                                height="32"
+                                rx="5"
+                                fill="rgba(239,68,68,0.1)"
+                                stroke="#ef4444"
+                            />
+                            <text
+                                x="297"
+                                y="84"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                                font-weight="600"
+                            >
+                                Head2 -&gt; P(t+2|z)
+                            </text>
+                            <text
+                                x="297"
+                                y="96"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                independent
+                            </text>
+
+                            <line
+                                x1="175"
+                                y1="100"
+                                x2="220"
+                                y2="135"
+                                stroke="#7b8faa"
+                                stroke-width="1"
+                                marker-end="url(#g1)"
+                            />
+                            <rect
+                                x="225"
+                                y="118"
+                                width="145"
+                                height="32"
+                                rx="5"
+                                fill="rgba(239,68,68,0.1)"
+                                stroke="#ef4444"
+                            />
+                            <text
+                                x="297"
+                                y="132"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                                font-weight="600"
+                            >
+                                Head3 -&gt; P(t+3|z)
+                            </text>
+                            <text
+                                x="297"
+                                y="144"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                independent
+                            </text>
+
+                            <line
+                                x1="175"
+                                y1="100"
+                                x2="220"
+                                y2="183"
+                                stroke="#7b8faa"
+                                stroke-width="1"
+                                marker-end="url(#g1)"
+                            />
+                            <rect
+                                x="225"
+                                y="166"
+                                width="145"
+                                height="32"
+                                rx="5"
+                                fill="rgba(239,68,68,0.1)"
+                                stroke="#ef4444"
+                            />
+                            <text
+                                x="297"
+                                y="180"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                                font-weight="600"
+                            >
+                                Head4 -&gt; P(t+4|z)
+                            </text>
+                            <text
+                                x="297"
+                                y="192"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                independent
+                            </text>
+
+                            <line
+                                x1="390"
+                                y1="15"
+                                x2="390"
+                                y2="215"
+                                stroke="#ef4444"
+                                stroke-width="0.8"
+                                stroke-dasharray="5 3"
+                            />
+                            <text
+                                x="530"
+                                y="52"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="700"
+                            >
+                                No cross-conditioning
+                            </text>
+                            <text
+                                x="530"
+                                y="80"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="10"
+                            >
+                                Each head: 1 transformer layer
+                            </text>
+                            <text
+                                x="530"
+                                y="96"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="10"
+                            >
+                                + softmax, applied to z
+                            </text>
+                            <text
+                                x="530"
+                                y="128"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="-apple-system, sans-serif"
+                                font-size="9"
+                            >
+                                Great training signal &#x2014; forces richer
+                            </text>
+                            <text
+                                x="530"
+                                y="144"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="-apple-system, sans-serif"
+                                font-size="9"
+                            >
+                                representations in the shared trunk
+                            </text>
+                            <text
+                                x="530"
+                                y="174"
+                                text-anchor="middle"
+                                fill="#ef4444"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                                font-weight="600"
+                            >
+                                Breaks joint distribution at inference
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- DeepSeek -->
+                <div id="sec4-1" class="tab-panel" data-group="sec4" data-color="#3b82f6">
+                    <div class="dia-wrap">
+                        <svg viewBox="0 0 700 230">
+                            <defs>
+                                <marker
+                                    id="d1"
+                                    viewBox="0 0 10 6"
+                                    refX="9"
+                                    refY="3"
+                                    markerWidth="7"
+                                    markerHeight="5"
+                                    orient="auto"
+                                >
+                                    <path d="M0,0 L10,3 L0,6" fill="#eab308" />
+                                </marker>
+                            </defs>
+                            <rect
+                                x="15"
+                                y="70"
+                                width="110"
+                                height="65"
+                                rx="8"
+                                fill="rgba(59,130,246,0.12)"
+                                stroke="#3b82f6"
+                                stroke-dasharray="4 2"
+                            />
+                            <text
+                                x="70"
+                                y="97"
+                                text-anchor="middle"
+                                fill="#3b82f6"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="700"
+                            >
+                                Trunk
+                            </text>
+                            <text
+                                x="70"
+                                y="115"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                            >
+                                z = f_s(ctx)
+                            </text>
+
+                            <!-- Module 1 -->
+                            <line
+                                x1="130"
+                                y1="102"
+                                x2="160"
+                                y2="102"
+                                stroke="#eab308"
+                                stroke-width="1.5"
+                                marker-end="url(#d1)"
+                            />
+                            <rect
+                                x="165"
+                                y="68"
+                                width="135"
+                                height="68"
+                                rx="6"
+                                fill="rgba(234,179,8,0.1)"
+                                stroke="#eab308"
+                            />
+                            <text
+                                x="232"
+                                y="90"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="700"
+                            >
+                                MTP Module 1
+                            </text>
+                            <text
+                                x="232"
+                                y="108"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                concat(h_0, emb(t))
+                            </text>
+                            <text
+                                x="232"
+                                y="122"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                -&gt; linproj -&gt; P(t+2)
+                            </text>
+
+                            <!-- Module 2 -->
+                            <line
+                                x1="305"
+                                y1="102"
+                                x2="330"
+                                y2="102"
+                                stroke="#eab308"
+                                stroke-width="2"
+                                marker-end="url(#d1)"
+                            />
+                            <rect
+                                x="335"
+                                y="68"
+                                width="135"
+                                height="68"
+                                rx="6"
+                                fill="rgba(234,179,8,0.1)"
+                                stroke="#eab308"
+                            />
+                            <text
+                                x="402"
+                                y="90"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="700"
+                            >
+                                MTP Module 2
+                            </text>
+                            <text
+                                x="402"
+                                y="108"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                concat(h_1, emb(t))
+                            </text>
+                            <text
+                                x="402"
+                                y="122"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                -&gt; linproj -&gt; P(t+3)
+                            </text>
+
+                            <!-- Module 3 -->
+                            <line
+                                x1="475"
+                                y1="102"
+                                x2="500"
+                                y2="102"
+                                stroke="#eab308"
+                                stroke-width="2"
+                                marker-end="url(#d1)"
+                            />
+                            <rect
+                                x="505"
+                                y="68"
+                                width="135"
+                                height="68"
+                                rx="6"
+                                fill="rgba(234,179,8,0.1)"
+                                stroke="#eab308"
+                            />
+                            <text
+                                x="572"
+                                y="90"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="700"
+                            >
+                                MTP Module 3
+                            </text>
+                            <text
+                                x="572"
+                                y="108"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                concat(h_2, emb(t))
+                            </text>
+                            <text
+                                x="572"
+                                y="122"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                -&gt; linproj -&gt; P(t+4)
+                            </text>
+
+                            <text
+                                x="350"
+                                y="42"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="700"
+                            >
+                                Sequential Causal Chain -&gt;-&gt;-&gt;
+                            </text>
+                            <text
+                                x="350"
+                                y="56"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="9"
+                            >
+                                Each module conditions on previous module's representation + next token embedding
+                            </text>
+                            <text
+                                x="350"
+                                y="168"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="10"
+                                font-weight="600"
+                            >
+                                Partial dependency
+                            </text>
+                            <text
+                                x="350"
+                                y="186"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="9"
+                            >
+                                Module 2 sees Module 1's output &#x2014; but each module is a single lightweight layer,
+                            </text>
+                            <text
+                                x="350"
+                                y="202"
+                                text-anchor="middle"
+                                fill="#c8d6e5"
+                                font-family="-apple-system, sans-serif"
+                                font-size="9"
+                            >
+                                so it captures shallow conditioning only. Both DeepSeek V3 and Nemotron 3 use this.
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- PTP -->
+                <div id="sec4-2" class="tab-panel" data-group="sec4" data-color="#3b82f6">
+                    <div class="dia-wrap">
+                        <svg viewBox="0 0 680 250">
+                            <defs>
+                                <marker
+                                    id="p1"
+                                    viewBox="0 0 10 6"
+                                    refX="9"
+                                    refY="3"
+                                    markerWidth="7"
+                                    markerHeight="5"
+                                    orient="auto"
+                                >
+                                    <path d="M0,0 L10,3 L0,6" fill="#22c55e" />
+                                </marker>
+                            </defs>
+                            <!-- Context tokens -->
+                            <rect x="20" y="30" width="48" height="26" rx="4" fill="#192340" stroke="#243052" />
+                            <text
+                                x="44"
+                                y="47"
+                                text-anchor="middle"
+                                fill="#f8fafc"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                t1
+                            </text>
+                            <rect x="76" y="30" width="48" height="26" rx="4" fill="#192340" stroke="#243052" />
+                            <text
+                                x="100"
+                                y="47"
+                                text-anchor="middle"
+                                fill="#f8fafc"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                t2
+                            </text>
+                            <rect x="132" y="30" width="48" height="26" rx="4" fill="#192340" stroke="#243052" />
+                            <text
+                                x="156"
+                                y="47"
+                                text-anchor="middle"
+                                fill="#f8fafc"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                ...
+                            </text>
+                            <rect x="188" y="30" width="48" height="26" rx="4" fill="#192340" stroke="#243052" />
+                            <text
+                                x="212"
+                                y="47"
+                                text-anchor="middle"
+                                fill="#f8fafc"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                ti-1
+                            </text>
+
+                            <!-- Auxiliary u tokens -->
+                            <rect
+                                x="252"
+                                y="30"
+                                width="48"
+                                height="26"
+                                rx="4"
+                                fill="rgba(234,179,8,0.1)"
+                                stroke="#eab308"
+                            />
+                            <text
+                                x="276"
+                                y="47"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                ui
+                            </text>
+                            <rect
+                                x="308"
+                                y="30"
+                                width="48"
+                                height="26"
+                                rx="4"
+                                fill="rgba(234,179,8,0.1)"
+                                stroke="#eab308"
+                            />
+                            <text
+                                x="332"
+                                y="47"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                ui+1
+                            </text>
+                            <rect
+                                x="364"
+                                y="30"
+                                width="48"
+                                height="26"
+                                rx="4"
+                                fill="rgba(234,179,8,0.1)"
+                                stroke="#eab308"
+                            />
+                            <text
+                                x="388"
+                                y="47"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                ui+2
+                            </text>
+                            <rect
+                                x="420"
+                                y="30"
+                                width="48"
+                                height="26"
+                                rx="4"
+                                fill="rgba(234,179,8,0.1)"
+                                stroke="#eab308"
+                            />
+                            <text
+                                x="444"
+                                y="47"
+                                text-anchor="middle"
+                                fill="#eab308"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                            >
+                                ui+3
+                            </text>
+                            <text
+                                x="510"
+                                y="47"
+                                text-anchor="start"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                            >
+                                sampled upfront
+                            </text>
+
+                            <line
+                                x1="300"
+                                y1="60"
+                                x2="300"
+                                y2="82"
+                                stroke="#22c55e"
+                                stroke-width="1.5"
+                                marker-end="url(#p1)"
+                            />
+
+                            <!-- Transformer -->
+                            <rect
+                                x="60"
+                                y="88"
+                                width="480"
+                                height="60"
+                                rx="8"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="300"
+                                y="113"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="12"
+                                font-weight="700"
+                            >
+                                Full-Depth Transformer (Causal Masking on u's)
+                            </text>
+                            <text
+                                x="300"
+                                y="132"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="8"
+                            >
+                                Pos k attends to: context, ui,...,u(k-1) | u embedded via IEEE-754 binary -&gt; linear
+                                proj
+                            </text>
+
+                            <line
+                                x1="300"
+                                y1="152"
+                                x2="300"
+                                y2="172"
+                                stroke="#22c55e"
+                                stroke-width="1.5"
+                                marker-end="url(#p1)"
+                            />
+
+                            <!-- Output tokens -->
+                            <rect
+                                x="90"
+                                y="178"
+                                width="78"
+                                height="32"
+                                rx="5"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="129"
+                                y="195"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                ti
+                            </text>
+                            <text
+                                x="129"
+                                y="207"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                Pick(u,pi)
+                            </text>
+
+                            <rect
+                                x="195"
+                                y="178"
+                                width="78"
+                                height="32"
+                                rx="5"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="234"
+                                y="195"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                ti+1
+                            </text>
+                            <text
+                                x="234"
+                                y="207"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                Pick(u,pi)
+                            </text>
+
+                            <rect
+                                x="300"
+                                y="178"
+                                width="78"
+                                height="32"
+                                rx="5"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="339"
+                                y="195"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                ti+2
+                            </text>
+                            <text
+                                x="339"
+                                y="207"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                Pick(u,pi)
+                            </text>
+
+                            <rect
+                                x="405"
+                                y="178"
+                                width="78"
+                                height="32"
+                                rx="5"
+                                fill="rgba(34,197,94,0.1)"
+                                stroke="#22c55e"
+                            />
+                            <text
+                                x="444"
+                                y="195"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="11"
+                                font-weight="700"
+                            >
+                                ti+3
+                            </text>
+                            <text
+                                x="444"
+                                y="207"
+                                text-anchor="middle"
+                                fill="#7b8faa"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="7"
+                            >
+                                Pick(u,pi)
+                            </text>
+
+                            <text
+                                x="300"
+                                y="238"
+                                text-anchor="middle"
+                                fill="#22c55e"
+                                font-family="Menlo, Consolas, monospace"
+                                font-size="9"
+                                font-weight="700"
+                            >
+                                Full joint &#x2014; all tokens in ONE pass &#x2014; all dependencies preserved
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Training -->
+            <div class="card">
+                <h2 class="section-title" style="color: #a78bfa">
+                    <span class="num">05</span>
+                    TRAINING PTP
+                </h2>
+                <p class="desc">
+                    The transformer is re-trained to predict something fundamentally different: not "what token is
+                    likely next" but "given a specific random draw, what token gets selected and what does that imply
+                    downstream."
+                </p>
+                <div class="tab-bar" data-group="sec5">
+                    <button
+                        class="tab-btn active"
+                        data-tab="sec5-0"
+                        style="border-color: #a78bfa; background: rgba(167, 139, 250, 0.094); color: #a78bfa"
+                    >
+                        (a) Distillation from Teacher
+                    </button>
+                    <button class="tab-btn" data-tab="sec5-1">(b) Inverse AR Training &#x2014; No Teacher</button>
+                </div>
+
+                <div id="sec5-0" class="tab-panel active" data-group="sec5" data-color="#a78bfa">
+                    <div class="training-content">
+                        <b style="color: #a78bfa">Step 1:</b>
+                        Generate training sequences from teacher model Q_phi.
+                        <br />
+                        <b style="color: #a78bfa">Step 2:</b>
+                        For each token tk, reverse-engineer the auxiliary variable uk that would produce tk under the
+                        teacher's CDF: uk in [F_k,tk-1 , F_k,tk).
+                        <br />
+                        <b style="color: #a78bfa">Step 3:</b>
+                        Train student P_theta with cross-entropy to predict tk given context + auxiliaries.
+                        <br />
+                        <b style="color: #a78bfa">Step 4:</b>
+                        For C-PTP, can also use KL divergence to match teacher's full distribution.
+                        <br />
+                        <br />
+                        <span style="color: #7b8faa">
+                            The Spec-Bench results use this: O-PTP distilled from Vicuna-7B with gated LoRA finetuning,
+                            achieving 4.18 avg accepted tokens per step &#x2014; state of the art on Spec-Bench.
+                        </span>
+                    </div>
+                </div>
+
+                <div id="sec5-1" class="tab-panel" data-group="sec5" data-color="#a78bfa">
+                    <div class="training-content">
+                        <b style="color: #a78bfa">The more general case</b>
+                        &#x2014; no pre-trained AR model needed to distill from.
+                        <br />
+                        <br />
+                        <b style="color: #a78bfa">Step 1:</b>
+                        Given a training sequence t, iteratively determine the auxiliary variables uk compatible with
+                        each token tk under the current student model P_theta (analogous to Inverse Autoregressive Flows
+                        &#x2014; Kingma et al. 2016).
+                        <br />
+                        <b style="color: #a78bfa">Step 2:</b>
+                        Train with standard AR cross-entropy: L(theta) = E[-Sum log P_theta(tk | context, ui, ...,
+                        u(k-1))]
+                        <br />
+                        <br />
+                        <span style="color: #7b8faa">
+                            Validated on the NYC taxi pickup task: C-PTP trained from scratch achieves perplexity nearly
+                            identical to an AR baseline. The framework bootstraps its own auxiliary variables &#x2014;
+                            self-consistent.
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6: Comparison Table -->
+            <div class="card">
+                <h2 class="section-title">
+                    <span class="num">06</span>
+                    FULL COMPARISON
+                </h2>
+                <div style="overflow-x: auto">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Approach</th>
+                                <th>Year</th>
+                                <th>Dependencies</th>
+                                <th>Architecture Style</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="color: #ef4444; font-weight: 700">ProphetNet</td>
+                                <td>2020</td>
+                                <td>
+                                    <span
+                                        class="badge"
+                                        style="
+                                            color: #ef4444;
+                                            background: rgba(239, 68, 68, 0.1);
+                                            border: 1px solid rgba(239, 68, 68, 0.19);
+                                        "
+                                    >
+                                        None
+                                    </span>
+                                </td>
+                                <td style="font-size: 10px">Independent n-gram heads</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #ef4444; font-weight: 700">Medusa</td>
+                                <td>2024</td>
+                                <td>
+                                    <span
+                                        class="badge"
+                                        style="
+                                            color: #ef4444;
+                                            background: rgba(239, 68, 68, 0.1);
+                                            border: 1px solid rgba(239, 68, 68, 0.19);
+                                        "
+                                    >
+                                        None
+                                    </span>
+                                </td>
+                                <td style="font-size: 10px">Independent tree-structured heads</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #ef4444; font-weight: 700">Gloeckle / Meta FAIR</td>
+                                <td>2024</td>
+                                <td>
+                                    <span
+                                        class="badge"
+                                        style="
+                                            color: #ef4444;
+                                            background: rgba(239, 68, 68, 0.1);
+                                            border: 1px solid rgba(239, 68, 68, 0.19);
+                                        "
+                                    >
+                                        None
+                                    </span>
+                                </td>
+                                <td style="font-size: 10px">Independent output heads (n=4)</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #eab308; font-weight: 700">DeepSeek V3</td>
+                                <td>2024</td>
+                                <td>
+                                    <span
+                                        class="badge"
+                                        style="
+                                            color: #eab308;
+                                            background: rgba(234, 179, 8, 0.1);
+                                            border: 1px solid rgba(234, 179, 8, 0.19);
+                                        "
+                                    >
+                                        Partial
+                                    </span>
+                                </td>
+                                <td style="font-size: 10px">Sequential causal chain across depths</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #eab308; font-weight: 700">Nemotron 3 (NVIDIA)</td>
+                                <td>2025</td>
+                                <td>
+                                    <span
+                                        class="badge"
+                                        style="
+                                            color: #eab308;
+                                            background: rgba(234, 179, 8, 0.1);
+                                            border: 1px solid rgba(234, 179, 8, 0.19);
+                                        "
+                                    >
+                                        Partial
+                                    </span>
+                                </td>
+                                <td style="font-size: 10px">Sequential causal chain (DeepSeek-style)</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #22c55e; font-weight: 700">PTP (Draxler et al.)</td>
+                                <td>2025</td>
+                                <td>
+                                    <span
+                                        class="badge"
+                                        style="
+                                            color: #22c55e;
+                                            background: rgba(34, 197, 94, 0.1);
+                                            border: 1px solid rgba(34, 197, 94, 0.19);
+                                        "
+                                    >
+                                        Full
+                                    </span>
+                                </td>
+                                <td style="font-size: 10px">Joint dist. via normalizing flows + aux vars</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section 7: Caveats -->
+            <div class="card">
+                <h2 class="section-title" style="color: #eab308">
+                    <span class="num">07</span>
+                    CAVEATS &amp; OPEN QUESTIONS
+                </h2>
+                <div class="caveats-grid">
+                    <div class="caveat-item" style="border: 1px solid rgba(239, 68, 68, 0.19)">
+                        <div class="caveat-head">
+                            <span class="icon">&#x26A0;</span>
+                            <span class="title" style="color: #ef4444">KV Cache Blind Spot</span>
+                        </div>
+                        <p class="caveat-text">
+                            Feeding u auxiliaries alongside token embeddings changes what the transformer processes per
+                            call. If those inputs extend the effective sequence or require additional attention
+                            positions, cache reuse patterns change. A model that reduces sequential steps but
+                            significantly increases per-step KV cache footprint may not yield practical latency gains
+                            under memory-constrained serving. The paper does not analyze this tradeoff.
+                        </p>
+                    </div>
+
+                    <div class="caveat-item" style="border: 1px solid rgba(234, 179, 8, 0.19)">
+                        <div class="caveat-head">
+                            <span class="icon">&#x1F4CF;</span>
+                            <span class="title" style="color: #eab308">Limited Evaluation Scope</span>
+                        </div>
+                        <p class="caveat-text">
+                            One single model tested (distilled from Vicuna-7B / TinyLlama-1.1B). No throughput
+                            benchmarks. The accepted deployment path is speculative decoding &#x2014; a verifier is
+                            still required &#x2014; so the speedup is bounded by verifier cost. Much more testing needed
+                            across model scales.
+                        </p>
+                    </div>
+
+                    <div class="caveat-item" style="border: 1px solid rgba(234, 179, 8, 0.19)">
+                        <div class="caveat-head">
+                            <span class="icon">&#x1F504;</span>
+                            <span class="title" style="color: #eab308">Throughput vs Latency</span>
+                        </div>
+                        <p class="caveat-text">
+                            The extra u inputs increase the effective sequence length the model must process. In
+                            memory-bandwidth-bound regimes (small batch), latency wins might hold. In compute-bound
+                            regimes (large batch), throughput impact is unclear and untested.
+                        </p>
+                    </div>
+
+                    <div class="caveat-item" style="border: 1px solid rgba(34, 197, 94, 0.19)">
+                        <div class="caveat-head">
+                            <span class="icon">&#x2705;</span>
+                            <span class="title" style="color: #22c55e">What It Gets Right</span>
+                        </div>
+                        <p class="caveat-text">
+                            Theorem 2 cleanly addresses the joint prediction problem &#x2014; conditioning on previous
+                            u's is provably equivalent to conditioning on previous tokens. First framework to achieve
+                            full joint dependency preservation in parallel token generation. The normalizing-flow bridge
+                            from IAF is elegant and the proofs are clean.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                Based on Draxler et al. (2025), Gloeckle et al. (2024), DeepSeek-AI (2024), NVIDIA Nemotron (2025)
+            </div>
+        </div>
+
+        <script>
+            // Generic tab switching for all tab groups
+            document.querySelectorAll(".tab-btn").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    var tabId = this.dataset.tab
+                    if (!tabId) return
+
+                    // Find the target panel to get the group
+                    var panel = document.getElementById(tabId)
+                    if (!panel) return
+                    var group = panel.dataset.group
+                    var color = panel.dataset.color || "#3b82f6"
+
+                    // Deactivate all tabs and panels in this group
+                    var bar = this.closest(".tab-bar")
+                    bar.querySelectorAll(".tab-btn").forEach(function (b) {
+                        b.classList.remove("active")
+                        b.style.borderColor = "#243052"
+                        b.style.background = "transparent"
+                        b.style.color = "#7b8faa"
+                    })
+
+                    document.querySelectorAll('.tab-panel[data-group="' + group + '"]').forEach(function (p) {
+                        p.classList.remove("active")
+                    })
+
+                    // Activate clicked tab and panel
+                    this.classList.add("active")
+                    this.style.borderColor = color
+                    this.style.background = color + "18"
+                    this.style.color = color
+                    panel.classList.add("active")
+                })
+            })
+        </script>
+    </body>
+</html>

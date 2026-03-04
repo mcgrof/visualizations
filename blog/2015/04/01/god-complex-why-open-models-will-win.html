@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>God complex — why open models will win — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2015-04-01">Apr 1, 2015</time>
+                    <span class="category-badge badge-opensource">Open Source</span>
+                </div>
+                <h1>God complex — why open models will win</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2015/04/god-complex-why-open-models-will-win.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source &#8599;
+                </a>
+            </header>
+            <div class="post-content">
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="https://web.archive.org/web/20161201180226im_/http://3.bp.blogspot.com/-tkBjhbzeTgw/VRWpJDaDmvI/AAAAAAAB8qM/H1NPNpskYfw/s1600/20150321_160910.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="https://web.archive.org/web/20161201180226im_/http://3.bp.blogspot.com/-tkBjhbzeTgw/VRWpJDaDmvI/AAAAAAAB8qM/H1NPNpskYfw/s1600/20150321_160910.jpg"
+                            height="225"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <b><br /></b>
+                <b>Engineering and science can never be about religion</b>
+                , they are both about trial and error, empirical evidence supporting trials, precision, and formulating
+                math behind all this. Its really easy to forget this though, specially if you've hired really good
+                engineers / scientists. With good engineers / scientists you might cut corners or simply expect and
+                assume that you'll always have the best answers possible on board. A good thesis can only be good if it
+                really covered all possible known grounds and is providing an in depth analysis that likely was never
+                considered before. See
+                <a href="http://www.do-not-panic.com/2013/06/bubbles-law-and-bubble-bang.html">
+                    my article and review of the Big Bang theory
+                </a>
+                for my high bar expectation for what I mean by&nbsp;
+                <i>good science</i>
+                .&nbsp;
+                <b>
+                    Because of all this with the rapid pace of change in science and technology, knowledge and
+                    information flow I suspect there should be a limit at which closed development models can outpace
+                    open development models
+                </b>
+                , although I have no evidence for this I believe the reasoning for this should be relatively trivial to
+                follow. Folks who disagree with this might find it harder to prove the counter, which leaves me content
+                without having to provide a full proof. I have found that this particular issue in Engineering / Science
+                has been best described by Tim Harford in a Ted Talk titled "
+                <a href="http://www.youtube.com/watch?v=K5wCfYujRdE">God Complex</a>
+                " and highly encourage anyone who might have hesitation about the above "open model outpacing closed
+                models" premise to go watch it. I'll use this premise in this post,
+                <b>just an example,&nbsp;</b>
+                to argue that for instance,
+                <b>open hardware development should outpace closed hardware development models --</b>
+                &nbsp;just as open software development models very likely already outpace closed proprietary software
+                development models (we can't prove this as we don't have math on private development models). I'll go
+                into details of my conjecture next and provide a brief guideline to folks who want to test this
+                conjecture on open hardware development.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="https://web.archive.org/web/20161201093710im_/http://4.bp.blogspot.com/-aPbz1_D4wJQ/VRWpJHhP5CI/AAAAAAAB8qM/1xJNWOUhXv0/s1600/20150321_184030.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="https://web.archive.org/web/20161201093710im_/http://4.bp.blogspot.com/-aPbz1_D4wJQ/VRWpJHhP5CI/AAAAAAAB8qM/1xJNWOUhXv0/s1600/20150321_184030.jpg"
+                            height="225"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                Engineering is not supposed to be easy,
+                <b>its fucking hard</b>
+                , and if you have it any other way you're fooling yourself that what you are doing is Engineering.
+                Kernel development is not supposed to be easy, and considering that on Linux we're engaging with the
+                entire planet openly on the
+                <b>largest collaborative development project on the planet</b>
+                , its no surprise that the engineering on Linux has a steeper curve than other average software
+                engineering projects. Even though we've prided ourselves on informality on much of our engineering
+                practices over time our growing pains have taught us a few principles and best practices to help us both
+                scale and to more effectively engineer collaboratively. A few easy to follow examples of this are:
+                <br />
+                <br />
+                <ul>
+                    <li>
+                        The practice of using Subsystem Maintainers, where components of parts of our software are
+                        broken down into components and folks then are in charge to upkeep that component. Linus just
+                        pulls all the strings of all maintainers together during the merge window.
+                    </li>
+                    <li>
+                        The
+                        <a href="http://www.do-not-panic.com/2014/02/developer-certificate-of-origin.html">
+                            Development of the Developer Certificate of Origin (DCO)
+                        </a>
+                        whereby after some legal considerations we realized its best to throw in some Signed-off-by /
+                        provenance guarantees on software in such a way that it would allow us to upkeep our pace of
+                        development.
+                    </li>
+                    <li>
+                        A
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/Documentation/CodeOfConflict?id=ddbd2b7ad99a418c60397901a0f3c997d030c65e"
+                        >
+                            Code of Conflict
+                        </a>
+                        to enable us to deal with unfortunate extreme mishaps on the outright difficult nature of
+                        engaging with grumpy overloaded maintainers and community on the open peer review process.
+                    </li>
+                </ul>
+                Many software projects have learned from Linux. The Subsystem Maintainers model is prevalent, although
+                likely
+                <b>not invented on Linux</b>
+                , but as I've described in
+                <a href="http://www.do-not-panic.com/2014/02/developer-certificate-of-origin.html">
+                    a previous post before the&nbsp;DCO&nbsp;is also heavily embraced by other projects already
+                </a>
+                &nbsp;and other projects are encouraged to use it now thanks to our effort to separate it from Linux.
+                Many projects have Code of Conflicts agreements, that is not unique to Linux. There's one aspect about
+                the Code of Conflict that is important to highlight and goes in only as implicit but that I'd like now
+                to make explicit and use as a primary premise for the reason for this post. Here is the language I'd
+                like to highlight:
+                <div>
+                    <blockquote class="tr_bq">
+                        <i>
+                            Your code and ideas behind it will be carefully reviewed, often resulting in
+                            <b>critique and criticism</b>
+                            . &nbsp;The review will
+                            <b>almost always require improvements</b>
+                            to the code before it can be included in the kernel. &nbsp;Know that this happens because
+                            everyone involved wants to see the best possible solution for the overall success of Linux.
+                        </i>
+                    </blockquote>
+                    <div>
+                        I'm going to summarize this as: Engineering is hard as fuck, expect people to call you out on
+                        your shit. Deal with it, but if you feel we're unreasonable you can tap out. But most
+                        importantly:
+                        <b>
+                            <span style="color: lime">
+                                <u>
+                                    Expect your first iteration on ideas to likely not be correct and require
+                                    improvements
+                                </u>
+                            </span>
+                        </b>
+                        .
+                        <b>Even the most seasoned developers should expect this</b>
+                        . Before working for a purely software company I used to work at a hardware company,
+                        <a href="https://en.wikipedia.org/wiki/Qualcomm_Atheros">Atheros</a>
+                        , and the role I engaged in was unique given that
+                        <a href="https://en.wikipedia.org/wiki/Qualcomm_Atheros">Atheros</a>
+                        was providing full ASIC silicon designs on 802.11 technologies without requiring any CPU on the
+                        devices themselves. This meant that contrary to most 802.11 devices in the industry we worked
+                        without any firmware, all operations of the device were completely transparent to the device
+                        driver. Since I worked on an open device driver that meant all 802.11 hardware operations were
+                        completely open and transparent to the community whereby device drivers that relied and used on
+                        firmware would have hardware operations performed behind the scenes offloaded on the device's
+                        own CPU / proprietary firmware. Before I joined
+                        <a href="https://en.wikipedia.org/wiki/Qualcomm_Atheros">Atheros</a>
+                        I used to believe that
+                        <a href="https://en.wikipedia.org/wiki/Qualcomm_Atheros">Atheros</a>
+                        had the best 802.11 hardware in the industry. After I joined
+                        <a href="https://en.wikipedia.org/wiki/Qualcomm_Atheros">Atheros</a>
+                        and particularly, as other peers got hired by other 802.11 silicon companies and we
+                        collaborated, I became convinced that it was not just Atheros' unique hardware that made it
+                        stand out.
+                        <br />
+                        <br />
+                        <div class="separator" style="clear: both; text-align: center">
+                            <a
+                                href="http://2.bp.blogspot.com/-oBEzgIadWQQ/VRwzjv66j3I/AAAAAAAB9SA/rTVRXAhpTak/s1600/ath9k-contributions.png"
+                                imageanchor="1"
+                                style="margin-left: 1em; margin-right: 1em"
+                            >
+                                <img
+                                    border="0"
+                                    src="http://2.bp.blogspot.com/-oBEzgIadWQQ/VRwzjv66j3I/AAAAAAAB9SA/rTVRXAhpTak/s1600/ath9k-contributions.png"
+                                    height="190"
+                                    width="400"
+                                />
+                            </a>
+                        </div>
+                        <br />
+                        <br />
+                        The success to the quality of support of Atheros' 802.11 devices can also be attributed to:
+                        <br />
+                        <br />
+                        <ol>
+                            <li>
+                                <b>
+                                    The full ASIC design nature of it (not requiring firmware) and how hardware issues
+                                    were punted out to the device driver that made the device operate much better than
+                                    others
+                                </b>
+                            </li>
+                            <li>A strong community commitment / know-how and engagement</li>
+                        </ol>
+                        One thing which I'd like to highlight from the above graph is that at times the community was
+                        performing more contributions to the
+                        <a href="https://wireless.wiki.kernel.org/en/users/Drivers/ath9k">ath9k</a>
+                        device driver than&nbsp;
+                        <a href="https://en.wikipedia.org/wiki/Qualcomm_Atheros">Atheros</a>
+                        &nbsp;(later known as QCA). Both of the above are instrumental for a healthy openly developed
+                        device driver but
+                        <b>I cannot stress enough how critical to success it was for not requiring firmware</b>
+                        . I told folks repeatedly that we should not feel embarrassed about having hardware bugs. We
+                        should accept this as part of the nature of hardware design and silicon development. Its the
+                        rate at which you can fix these, even if through software workarounds, which will ultimately
+                        really create the best experience for users. If you have firmware the pipeline for fixes
+                        requires engaging with a team of engineers inside a company, and the time to fix issues there
+                        typically requires a significant amount of time. Without firmware even the community was able to
+                        participate in creating fixes for extremely complex issues, and this is extremely important for
+                        complex technologies such as 802.11. As we combine more RF technologies and things get more
+                        complex we will have no other option to work and engage with the community, thinking anything
+                        contrary to this make you fumble and fall into the "God complex" trap.
+                        <br />
+                        <br />
+                        At&nbsp;
+                        <a href="https://en.wikipedia.org/wiki/Qualcomm_Atheros">Atheros</a>
+                        , during the good' ol days, we were able to leverage off of the belief that we'd gain more
+                        successful contributions / healthy development model by opening up firmware on other devices
+                        where firmware was actually needed, we first tested this with
+                        <a href="https://wireless.wiki.kernel.org/en/users/Drivers/carl9170">carl9170</a>
+                        and later with
+                        <a href="https://wireless.wiki.kernel.org/en/users/Drivers/ath9k_htc">ath9k_htc</a>
+                        , both of which did require firmware but for which we managed to open source its firmware for. I
+                        believed our efforts to be pivotal, and an engaged open enthusiast reader might wish to perform
+                        metrics on&nbsp;
+                        <a href="https://wireless.wiki.kernel.org/en/users/Drivers/carl9170">carl9170</a>
+                        &nbsp;and
+                        <a href="https://wireless.wiki.kernel.org/en/users/Drivers/ath9k_htc">ath9k_htc</a>
+                        &nbsp;to help evaluate the impact of quality on software over openness.
+                        <br />
+                        <br />
+                        At the last Linux wireless summit that I actively participated in, before
+                        <a href="http://www.do-not-panic.com/2013/11/i-quit-qualcomm-today-whoohoo.html">
+                            joining SUSE
+                        </a>
+                        , it was made clear that
+                        <b>
+                            all manufacturers were moving away from full ASIC designs for 802.11 and that all silicon
+                            companies were going to be using proprietary firmware
+                        </b>
+                        . There are a lot of reasons for this, some of this has to do with the combination of different
+                        RF technologies (not just 802.11), but nevertheless the saddest part to me of all this was that
+                        the good lessons learned from the success of fully open drivers and open firmware models were
+                        not being seriously considered by future 802.11 device drivers and architectures. Part of this
+                        is the above arguments for "goodness" has no direct hard science associated with it, its why I
+                        ended up
+                        <a href="http://www.do-not-panic.com/2013/08/evolving-capitalism-with-ethical.html">
+                            working towards a hard science for ethical attributes
+                        </a>
+                        .
+                        <br />
+                        <br />
+                        <div class="separator" style="clear: both; text-align: center">
+                            <a
+                                href="https://web.archive.org/web/20161201184343im_/http://2.bp.blogspot.com/-2HSOVXOloKw/VRWpJKj6lkI/AAAAAAAB8qI/F0G18krRNSA/s1600/20150322_191023-PANO.jpg"
+                                imageanchor="1"
+                                style="margin-left: 1em; margin-right: 1em"
+                            >
+                                <img
+                                    border="0"
+                                    src="https://web.archive.org/web/20161201184343im_/http://2.bp.blogspot.com/-2HSOVXOloKw/VRWpJKj6lkI/AAAAAAAB8qI/F0G18krRNSA/s1600/20150322_191023-PANO.jpg"
+                                    height="102"
+                                    width="400"
+                                />
+                            </a>
+                        </div>
+                        <br />
+                        Lacking hard science for proof for "goodness" might seem like a bad thing, but its also a chance
+                        for great opportunity. New startups and folks designing new hardware who already "get it" and do
+                        not have any hard requirements to tie themselves down with legacy archaic business requirements
+                        have a full open arena for exploration,
+                        <b>this is the best situation to be in</b>
+                        . Venture capitalism should be easily able to prove my conjecture by a few simple test cases. At
+                        least within the realm of open hardware designs, since
+                        <b>existing</b>
+                        silicon companies (not startups) might
+                        <a href="http://www.do-not-panic.com/2014/03/the-dangers-of-free-software.html">
+                            face the dangers of free software
+                        </a>
+                        , they should consider using hoards of unused / closeted / legacy designs and testing new
+                        innovative approaches with the community. And then there's the folks who have been perfecting
+                        collaborative development models: companies / organizations which have already been perfecting
+                        open collaborative development models have much to bring to the table to new startups / business
+                        models which perhaps never had explored such things. There's room for a lot of experimentation
+                        and trial and error. I'm happy for my conjecture to be disproved given that all this is not
+                        about religion, but rather the best fucking engineering possible. I remain optimistic though.
+                    </div>
+                </div>
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </footer>
+    </body>
+</html>

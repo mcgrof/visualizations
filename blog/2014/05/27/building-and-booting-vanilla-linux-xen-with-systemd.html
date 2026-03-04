@@ -1,0 +1,1423 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Building and booting vanilla Xen on vanilla Linux with systemd — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">← back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2014-05-27">May 27, 2014</time>
+                    <span class="category-badge badge-linux">Linux / Kernel</span>
+                </div>
+                <h1>Building and booting vanilla Xen on vanilla Linux with systemd</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2014/05/building-and-booting-vanilla-linux-xen-with-systemd.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://3.bp.blogspot.com/-eT_UvtqfM6A/U4VPkbUSTcI/AAAAAAABnJc/WN600WEJqUI/s1600/Xen-Panda-Summit-500px.png"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://3.bp.blogspot.com/-eT_UvtqfM6A/U4VPkbUSTcI/AAAAAAABnJc/WN600WEJqUI/s1600/Xen-Panda-Summit-500px.png"
+                            height="307"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                If you want to do
+                <a href="http://www.xenproject.org/">Xen</a>
+                development you
+                <b>should be</b>
+                working with upstream sources, and you
+                <b>should be</b>
+                sending your patches upstream, ASAP, that is before they are even in production. There simply should be
+                no ifs or doubts about this. Doing it any other way is simply detrimental in the long run. I'm new to
+                virtualization but from the architectural look of it I consider
+                <a href="http://en.wikipedia.org/wiki/Kernel-based_Virtual_Machine">kvm</a>
+                a good reaction to virtualization evolution with focus for a clean new architecture that pairs up best
+                with the latest hardware enhancements only. The decision to not support new bells and whistles on things
+                that could be done through software but instead designed with hardware support eliminates tons of
+                support on the software side, but obviously it relies on the assumption that folks will upgrade hardware
+                and that the hardware was designed properly.
+                <a href="http://www.xenproject.org/">Xen</a>
+                however is full of a
+                <i>rich history</i>
+                ,
+                <i>experience</i>
+                , and
+                <i>flexibility</i>
+                , and as such its important to realize that there should be no easy decision to claim what is a better
+                solution right now.
+                <br />
+                <br />
+                One thing I'm sure: both solutions at this point have a rich set of expertise and design goals to be
+                learned from, the one thing I see kvm doing right is pushing
+                <b><i>Upstream First (TM)</i></b>
+                as a motto. Xen should
+                <i>learn</i>
+                from that strategy as there are markets and innovative groups who appreciate this tremendously. With the
+                rapid pace of evolution of the Linux kernel,
+                <b>there is simply no other way</b>
+                , and because of this Xen development should change to a
+                <b>must be</b>
+                working upstream only model, and join the
+                <b><i>Upstream First (TM)</i></b>
+                bandwagon. In this post I will dive into the recipes required to get the latest Xen and vanilla Linux
+                sources and get you started on the
+                <i><b>Upstream First (TM)</b></i>
+                bandwagon with Xen. I provide instructions for getting
+                <u>both</u>
+                <b>Xen</b>
+                and the upstream
+                <b>Linux kernel</b>
+                configured properly. I will ignore anything not upstream on the Linux kernel, as what we need to do with
+                that delta is just get it upstream. Additionally since
+                <a href="http://lwn.net/Articles/585363/">even Debian has casted votes on supporting systemd</a>
+                as a Linux init replacement I'll also provide instructions on how to get systemd support on xen with
+                active socket support as it seems that's the way of the future for all Linux distributions. Both Fedora
+                20 and OpenSUSE 13.1 have already jumped on systemd so you'll want proper systemd support for these, as
+                it stands right now Xen does not have service unit files as part of its upstream sources, patches are in
+                the works though and this posts also illustrates some corner cases found while implementing support,
+                some
+                <a href="https://github.com/mcgrof/funk-systemd/tree/master/src/m4">
+                    general systemd autotools library helpers
+                </a>
+                defined to make it easier for others to integrates support for systemd and an
+                <a href="https://github.com/mcgrof/funk-systemd">
+                    example code base which makes elaborate use of these helpers
+                </a>
+                .
+                <br />
+                <br />
+                Please note that compiling xen with
+                <b>systemd</b>
+                support enables binaries to be used
+                <u>for systems either using legacy init or systemd</u>
+                using the the v5 series of integration patches documented here, systemd support patches are not yet
+                merged upstream, but to help provide wider coverage support you should enable its support as per the
+                instructions below and report any issues you have found to me. Since I wish for as many folks to jump on
+                the upstream bandwagon I'll cover instructions only for getting the latest xen to run on the latest
+                stable vanilla kernel over a slew of Linux distributions, this includes the Linux kernel as well as xen,
+                and resolving all your dependencies. I'll recommend building and
+                <a href="http://www.do-not-panic.com/2014/04/summary-of-gains-of-xen-oxenstored.html">
+                    embracing oxenstored for reasons I've stated before
+                </a>
+                , after all if you run into issues with the latest systemd series of patches you can easily revert back
+                to cxenstored by a simple flip on the configuration file on either /etc/sysconfig/xencommons (rpm based
+                distributions) or /etc/defaults/xencommons (Debian based distributions) (Note: this last part still
+                needs to be worked on, right now this requires a bit more work for systemd).
+                <br />
+                <br />
+                I have built tested the below instructions on
+                <a href="http://en.opensuse.org/Portal:Tumbleweed">OpenSUSE Tumbleweed</a>
+                , Debian testing, and Fedora 20. I have only run time tested this on
+                <a href="http://en.opensuse.org/Portal:Tumbleweed">OpenSUSE Tumbleweed</a>
+                and Debian testing. Reports for any issues on run time on Fedora 20 and Ubuntu are appreciated.
+                Instructions for other Linux distributions are welcomed so I can extend the documentation here while
+                systemd support patches get baked upstream, after that I will move all documentation to the xen wiki.
+                <br />
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-XcvGkFRYOW0/U4VRBplGXDI/AAAAAAABnJs/_X_ubD4sRbY/s1600/Grub_logo.png"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://2.bp.blogspot.com/-XcvGkFRYOW0/U4VRBplGXDI/AAAAAAABnJs/_X_ubD4sRbY/s1600/Grub_logo.png"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                <h2>Getting an updated /sbin/installkernel&nbsp;</h2>
+                <h3>&nbsp;</h3>
+                Linux distributions shipping with grub2 will need to ensure that their /sbin/installkernel script, which
+                has to be provided by each Linux distribution, copies the the kernel configuration upon a custom kernel
+                install time. The requirement for the config file comes from
+                <a href="http://git.savannah.gnu.org/cgit/grub.git/tree/util/grub.d/20_linux_xen.in">
+                    upstream grub2 /etc/grub.d/20_linux_xen
+                </a>
+                which&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <br />
+                will only add xen as an instance to your grub.cfg
+                <b>if and only if</b>
+                it finds in your config file either
+                of:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    CONFIG_XEN_DOM0=y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <br />
+                    CONFIG_XEN_PRIVILEGED_GUEST=y&nbsp;&nbsp;&nbsp;
+                </span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <br />
+                Without this a user compiling and installing their own kernel with proper support for xen
+                <b>and</b>
+                with the xen hypervisor present will not get their respective grub2 update script to pick up the xen
+                hypervisor. Debian testing has proper support for this, OpenSUSE required
+                <a href="https://github.com/openSUSE/mkinitrd/commit/56f8a20e1bf3efa9c822a724cb33f5683818b7ec">
+                    this change upstream on mkinitrd
+                </a>
+                , so OpenSUSE folks will want to get the latest /sbin/installkernel hosted on the
+                <a href="https://github.com/openSUSE/mkinitrd">OpenSUSE mkinitrd repository on github</a>
+                .
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # If on OpenSUSE update your /sbin/installkernel
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    git clone https://github.com/openSUSE/mkinitrd.git
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">cd</span>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">mkinitrd</span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    sudo cp sbin/installkernel /sbin/installkernel
+                    <span style="font-size: small"><span style="font-family: inherit">&nbsp;</span></span>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: small">
+                        <span style="font-family: inherit"><br /></span>
+                    </span>
+                </span>
+                Fedora might need a similar update. I welcome feedback on confirming this.
+                <br />
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://4.bp.blogspot.com/-oiQLSXkVNnc/U4VRwa4r31I/AAAAAAABnJ8/ktaCeh-DYcg/s1600/open_suse.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://4.bp.blogspot.com/-oiQLSXkVNnc/U4VRwa4r31I/AAAAAAABnJ8/ktaCeh-DYcg/s1600/open_suse.jpg"
+                        />
+                    </a>
+                </div>
+                <h2>
+                    <span style="font-size: large">Xen systemd build dependencies on OpenSUSE</span>
+                </h2>
+                <h4>
+                    <span style="font-size: large">&nbsp;</span>
+                </h4>
+                <h4>
+                    &nbsp;
+                    <span style="font-size: small"></span>
+                </h4>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # If you're now on the latest OpenSUSE you'll note its now a
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # a
+                    <a href="http://en.opensuse.org/openSUSE:Factory_installation">
+                        rolling distribution base for (and also called Factory)
+                    </a>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # The default instructions do not actually encourage you to
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # install the source repositories, and even if you did
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # install them the instructions disable them by default, so
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # be sure to install them and enable them otherwise
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # the command zypper source-install -d won't work.
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # To enable the required repository if you already had it
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace"># installed:</span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    sudo zypper mr -e repo-src-oss
+                </span>
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # Get the build dependencies for Xen
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    sudo zypper source-install -d xen
+                </span>
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # Things not picked up by the build dependencies
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    sudo zypper install systemd-devel gettext-tools\
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    ocaml ocaml-compiler-libs ocaml-runtime \
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    ocaml-ocamldoc ocaml-findlib glibc-devel-32bit make patch
+                </span>
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # Get build dependencies for Linux
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    sudo zypper source-install -d kernel-desktop
+                </span>
+                <br />
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        <a
+                            href="http://3.bp.blogspot.com/-tGeNBhK4Vk4/U4VSBTZBFSI/AAAAAAABnKM/GhpsO5Vp7j8/s1600/openlogo-100.png"
+                            imageanchor="1"
+                            style="margin-left: 1em; margin-right: 1em"
+                        >
+                            <img
+                                border="0"
+                                src="http://3.bp.blogspot.com/-tGeNBhK4Vk4/U4VSBTZBFSI/AAAAAAABnKM/GhpsO5Vp7j8/s1600/openlogo-100.png"
+                            />
+                        </a>
+                    </span>
+                </div>
+                <br />
+                <h2>
+                    <span style="font-size: large">
+                        Xen systemd build dependencies on Debian testing and maybe Ubuntu
+                    </span>
+                </h2>
+                <h4>
+                    <span style="font-size: large">&nbsp;</span>
+                </h4>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: small">
+                        <span style="font-family: Arial, Helvetica, sans-serif">
+                            Note that these instructions are not to enable systemd as the init process on Debian,
+                            although there are some instructions
+                            <a href="https://wiki.debian.org/systemd">here</a>
+                            to help you with that if you wish to venture into that.
+                        </span>
+                    </span>
+                </span>
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: small">sudo apt-get build-dep xen linux</span>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: small">sudo apt-get install git libsystemd-daemon-dev \</span>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: small">libpixman-1-dev texinfo</span>
+                </span>
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-lE50vFUd-oA/U4VSNilydCI/AAAAAAABnKc/_Fgjefjd30c/s1600/Logo_fedoralogo.png"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://2.bp.blogspot.com/-lE50vFUd-oA/U4VSNilydCI/AAAAAAABnKc/_Fgjefjd30c/s1600/Logo_fedoralogo.png"
+                            height="97"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                <h2>
+                    <span style="font-size: large">Xen systemd build dependencies on Fedora 20&nbsp;</span>
+                </h2>
+                <h2>
+                    <span style="font-size: small">&nbsp;</span>
+                </h2>
+                <span style="font-family: Arial, Helvetica, sans-serif">
+                    <span style="font-size: small">
+                        Fedora may need an update to /sbin/installkernel as OpenSUSE did for grub2 support, see the
+                        notes above for more details on that. Verification on this is appreciated.
+                    </span>
+                </span>
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: small"># Get build dependencies for xen</span>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: small">sudo yum-builddep xen</span>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace"><br /></span>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # Things not picked up by the build dependencies
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: small">sudo yum install glibc-devel.x86_64 systemd-devel.x86_64</span>
+                </span>
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: small"># Get build dependencies for Linux</span>
+                </span>
+                <br />
+                <span style="font-size: small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        sudo yum-builddep kernel&nbsp;
+                    </span>
+                </span>
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://upload.wikimedia.org/wikipedia/en/d/de/Ccpenguin,_the_ancestor_of_Tux.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://upload.wikimedia.org/wikipedia/en/d/de/Ccpenguin,_the_ancestor_of_Tux.jpg"
+                            height="320"
+                            width="229"
+                        />
+                    </a>
+                </div>
+                <br />
+                <h2>
+                    <span style="font-size: small">
+                        <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                            <span style="font-family: inherit"></span>
+                            <span style="font-family: Verdana, sans-serif">
+                                <span style="font-size: large">Getting the code</span>
+                            </span>
+                        </span>
+                    </span>
+                </h2>
+                <br />
+                <br />
+                <span style="font-family: Arial, Helvetica, sans-serif">Next go get Linux and Xen sources.</span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace"><br /></span>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    git clone git://xenbits.xen.org/xen.git
+                </span>
+                <br />
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        <a
+                            href="http://4.bp.blogspot.com/-dTjB4kf3k9E/U4VS7GSpWpI/AAAAAAABnKs/BXxWLmSkXsY/s1600/Xen-Panda-Motorcycle-Red-500px.png"
+                            imageanchor="1"
+                            style="margin-left: 1em; margin-right: 1em"
+                        >
+                            <img
+                                border="0"
+                                src="http://4.bp.blogspot.com/-dTjB4kf3k9E/U4VS7GSpWpI/AAAAAAABnKs/BXxWLmSkXsY/s1600/Xen-Panda-Motorcycle-Red-500px.png"
+                                height="280"
+                                width="320"
+                            />
+                        </a>
+                    </span>
+                </div>
+                <br />
+                <h2>Configuring vanilla Linux with xen support</h2>
+                <h4>&nbsp;</h4>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">cd linux</span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    wget
+                    <a href="http://drvbp1.linux-foundation.org/%7Emcgrof/patches/2014/05/15/linux-xen-defconfig.patch">
+                        http://drvbp1.linux-foundation.org/~mcgrof/patches/2014/05/15/linux-xen-defconfig.patch
+                    </a>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    patch -p1 &lt; linux-xen-defconfig.patch
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    cp /boot/config-your-distro-config .config
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">make xendom0config</span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    make -j $(getconf _NPROCESSORS_ONLN)
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">sudo make install</span>
+                <br />
+                <h4>&nbsp;</h4>
+                <h2>Configuring xen with oxenstored and systemd support</h2>
+                <h4>&nbsp;</h4>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">cd xen</span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">
+                    wget
+                    <a
+                        href="http://drvbp1.linux-foundation.org/%7Emcgrof/patches/2014/05/27/all-v5-series-xen-systemd.patch"
+                    >
+                        http://drvbp1.linux-foundation.org/~mcgrof/patches/2014/05/27/all-v5-series-xen-systemd.patch
+                    </a>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">
+                    git reset --hard 86216963fd1d89883bb8120535704fdc79fdad50
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">git am</span>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">
+                    <a
+                        href="http://drvbp1.linux-foundation.org/%7Emcgrof/patches/2014/05/27/all-v5-series-xen-systemd.patch"
+                    >
+                        all-v5-series-xen-systemd.patch
+                    </a>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">
+                    ./configure --with-xenstored=oxenstored --enable-systemd
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">
+                    make dist -j $(getconf _NPROCESSORS_ONLN)
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">
+                    sudo make install
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: x-small">
+                    sudo ldconfig
+                </span>
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    # If on systemd, that is, if you have /run/systemd/system/
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    sudo systemctl daemon-reload
+                </span>
+                <br />
+                <br />
+                The last step is to enable the systemd unit services you want, if you want to test the active socket
+                stuff, just enable xenstored.socket, and after reboot you can just use netcat as root to tickle the
+                socket as described below, if you just want to have the xenstored service already running enable the
+                xenstored.service, which will also enable xenstored.socket as its a dependency.
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    sudo systemctl enable xenstored.socket
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    sudo systemctl enable xenstored.service
+                </span>
+                <br />
+                <br />
+                The last step is to ensure the grub config updated to pick up the xen hypervisor. This varies depending
+                on Linux distributions. Below we cover the distributions that I have tested booting on.
+                <br />
+                <h2>Updating grub for Xen on OpenSUSE</h2>
+                <h4>&nbsp;</h4>
+                sudo update-bootloader --refresh
+                <br />
+                <h2>Updating grub for Xen on Debian and maybe Ubuntu</h2>
+                <h2>&nbsp;</h2>
+                sudo update-grub
+                <br />
+                <h2>Reboot and test&nbsp;</h2>
+                <h4>&nbsp;</h4>
+                That's all, reboot and make sure you pick the right grub entry. Typically grub2 will list regular kernel
+                entries and hypervisor entries separated, with the option to go into advanced settings for each one.
+                Entering the advanced settings for the hypervisor will enable you to pick the exact kernel you want to
+                boot to. If you have hardware with some virtualization capabilities you'll want to enable that, this is
+                done on through the BIOS / UEFI menu. Below are some pictures of enabling the features on a Thinkpad
+                T440p, and then the flow through grub2.
+                <br />
+                <br />
+                <br />
+                Get into the virtualization menu on the system BIOS / UEFI menu.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://1.bp.blogspot.com/-61bSRIK-vGY/U312jyBhb2I/AAAAAAABmsY/eLDDFprpBjE/s1600/IMG_20140515_014449.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://1.bp.blogspot.com/-61bSRIK-vGY/U312jyBhb2I/AAAAAAABmsY/eLDDFprpBjE/s1600/IMG_20140515_014449.jpg"
+                            height="300"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                On Intel hardware this will be labeled as Intel Virtualization Technology and Intel VT-d Feature. For
+                AMD the name is some other flashy similar thing.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://3.bp.blogspot.com/-8CANQIHnkz4/U312iFH4thI/AAAAAAABmsQ/hNHsSpEXOG8/s1600/IMG_20140515_014457.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://3.bp.blogspot.com/-8CANQIHnkz4/U312iFH4thI/AAAAAAABmsQ/hNHsSpEXOG8/s1600/IMG_20140515_014457.jpg"
+                            height="300"
+                            width="400"
+                        />
+                        &nbsp;
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    Boot into grub and you should now see an option for your distribution with the Xen hypervisor, pick
+                    that if you want to go with the defaults, but if instead you want to browse each hypervisor
+                    available pick the advanced options.
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                <br />
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-5I4aSPFryh8/U312lRf9qQI/AAAAAAABmsg/W5aoeZ18oCs/s1600/IMG_20140515_013723.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://2.bp.blogspot.com/-5I4aSPFryh8/U312lRf9qQI/AAAAAAABmsg/W5aoeZ18oCs/s1600/IMG_20140515_013723.jpg"
+                            height="300"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                &nbsp;If you picked the default hypervisor option you should be booting into the Xen Hypervisor and that
+                in turn will boot your kernel / distribution. If you picked the advanced option you'll see the options
+                for the hypervisor as below. In my case I have only the bleeding edge unstable version from git of the
+                Xen hypervisor.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://4.bp.blogspot.com/-WtBvwvS8HSE/U312qKIsbUI/AAAAAAABmsw/_JBceqXLEpY/s1600/IMG_20140515_013742.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://4.bp.blogspot.com/-WtBvwvS8HSE/U312qKIsbUI/AAAAAAABmsw/_JBceqXLEpY/s1600/IMG_20140515_013742.jpg"
+                            height="300"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                Next it will let you pick the kernel you want to boot your hypervisor with. All of the kernels with
+                support for Xen will be displayed.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://3.bp.blogspot.com/-ptlymda2LNk/U312oVnSgmI/AAAAAAABmso/-0sGJ-tq17s/s1600/IMG_20140515_013755.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://3.bp.blogspot.com/-ptlymda2LNk/U312oVnSgmI/AAAAAAABmso/-0sGJ-tq17s/s1600/IMG_20140515_013755.jpg"
+                            height="300"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                After this you should be booting into the Xen hypervisor and this in turn will boot Linux as dom0.
+                <br />
+                <h2>After bootup</h2>
+                <h2>&nbsp;</h2>
+                <h2>&nbsp;Starting xen with old init</h2>
+                <h2>&nbsp;</h2>
+                First verify you booted into a xen hypervisor first as follows:
+                <br />
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        mcgrof@garbanzo ~ $ cat /sys/hypervisor/type
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">xen</span>
+                </span>
+                <br />
+                <br />
+                You're all set, the next step is to start Xen. On Linux distributions stuck on old init like Debian
+                right now you just have to spawn the old init script. This is done as follows:
+                <br />
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        mcgrof@garbanzo ~ $ sudo /etc/init.d/xencommons start
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        Starting /usr/local/sbin/oxenstored...
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        Setting domain 0 name and domid...
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        Starting xenconsoled...
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        Starting QEMU as disk backend for dom0
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace"><br /></span>
+                </span>
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        mcgrof@garbanzo ~ $ echo $?
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">0</span>
+                </span>
+                <br />
+                <br />
+                You are ready to start creating guests!
+                <br />
+                <br />
+                <h2>Starting xen with systemd</h2>
+                <h3>&nbsp;</h3>
+                First thing is to ensure your dom0 is now booted on the xen hypervisor. If you have systemd you can do
+                this easily with:
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    mcgrof@ergon ~ $ sudo systemd-detect-virt
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">xen</span>
+                <br />
+                <br />
+                Under the hood this is the same as the following:
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    mcgrof@garbanzo ~ $ cat /sys/hypervisor/type
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">xen</span>
+                <br />
+                <br />
+                If you only enabled xenstored.socket you can verify the sockets by:
+                <br />
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        mcgrof@ergon ~ $ sudo netstat -lpn | grep xen
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        unix&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ ACC ]&nbsp;&nbsp;&nbsp;&nbsp;
+                        STREAM&nbsp;&nbsp;&nbsp;&nbsp; LISTENING&nbsp;&nbsp;&nbsp;&nbsp; 13976&nbsp;
+                        1/init&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        /var/run/xenstored/socket
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        unix&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ ACC ]&nbsp;&nbsp;&nbsp;&nbsp;
+                        STREAM&nbsp;&nbsp;&nbsp;&nbsp; LISTENING&nbsp;&nbsp;&nbsp;&nbsp; 13979&nbsp;
+                        1/init&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        /var/run/xenstored/socket_ro
+                    </span>
+                </span>
+                <br />
+                <br />
+                You can also use systemd:
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace"><br /></span>
+                </span>
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        mcgrof@ergon ~ $ sudo systemctl list-sockets| grep xen
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        /var/run/xenstored/socket&nbsp;&nbsp;&nbsp;
+                        xenstored.socket&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        xenstored.service
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        /var/run/xenstored/socket_ro
+                        xenstored.socket&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        xenstored.service
+                    </span>
+                </span>
+                <br />
+                <br />
+                You can also verify the socket unit:
+                <br />
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        mcgrof@ergon ~ $ sudo systemctl status xenstored.socket
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        xenstored.socket - Xen xenstored / oxenstored Activation Socket
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        &nbsp;&nbsp; Loaded: loaded (/usr/local/lib/systemd/system/xenstored.socket; enabled)
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        &nbsp;&nbsp; Active: active (listening) since Thu 2014-05-15 01:12:53 PDT; 16min ago
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        &nbsp;&nbsp; Listen: /var/run/xenstored/socket (Stream)
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /var/run/xenstored/socket_ro
+                        (Stream)
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace"><br /></span>
+                </span>
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        May 15 01:12:53 ergon systemd[1]: Starting Xen xenstored / oxenstored Activation Socket.
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        May 15 01:12:53 ergon systemd[1]: Listening on Xen xenstored / oxenstored Activation Socket.
+                    </span>
+                </span>
+                <br />
+                <br />
+                Next, you can check to see if xenstored.service is running, it should not be if you didn't enable it and
+                only enabled xenstored.socket:
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace"><br /></span>
+                </span>
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        mcgrof@ergon ~ $ sudo systemctl status xenstored.service
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        xenstored.service - Xenstored - daemon managing xenstore file system
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        &nbsp;&nbsp; Loaded: loaded (/usr/local/lib/systemd/system/xenstored.service; disabled)
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        &nbsp;&nbsp; Active: inactive (dead)
+                    </span>
+                </span>
+                <br />
+                <br />
+                Next to see the active socket magic trigger you can just use netcat to tickle any of the sockets. Since
+                the permissions are only to grant access to the root user you'll need root to tickle the socket.
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    mcgrof@ergon ~ $ sudo nc -w 1 -U /var/run/xenstored/socket_ro
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">mcgrof@ergon ~ $ echo $?</span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">0</span>
+                <br />
+                <br />
+                Now verify the xenstored.service is loaded:
+                <br />
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        mcgrof@ergon ~ $ sudo systemctl status xenstored.service
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        xenstored.service - Xenstored - daemon managing xenstore file system
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        &nbsp;&nbsp; Loaded: loaded (/usr/local/lib/systemd/system/xenstored.service; disabled)
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        &nbsp;&nbsp; Active: active (running) since Tue 2014-05-20 04:33:09 PDT; 1 day 16h ago
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        &nbsp;Main PID: 1621 (oxenstored)
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        &nbsp;&nbsp; CGroup: /system.slice/xenstored.service
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#9492;&#9472;1621
+                        /usr/local/sbin/oxenstored --no-fork
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace"><br /></span>
+                </span>
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        May 21 21:24:24 ergon oxenstored[1621]: xenstored is ready
+                    </span>
+                </span>
+                <br />
+                <h2></h2>
+                <h2>Why you want active sockets</h2>
+                <h2>&nbsp;</h2>
+                <a href="http://www.freedesktop.org/wiki/Software/systemd/">Systemd</a>
+                has support for
+                <i>"active sockets</i>
+                " or
+                <i>"socket based activation</i>
+                ", but this concept is not new, socket based activation was pioneered by Apple's
+                <a href="http://launchd/">Launchd</a>
+                , and that software was released under the Apache 2.0 license, that project got its first release in
+                2005, while systemd's initial release dates 2010. Go and watch
+                <a href="https://www.youtube.com/watch?v=cD_s6Fjdri8">Dave Zarzycki's talk at Google about Launchd</a>
+                , there's tons of talks about systemd and, here's an old
+                <a href="https://www.youtube.com/watch?v=TyMLi8QF6sw">
+                    introduction talk about systemd it by Lennart Poettering
+                </a>
+                , and Lennart does give Apple proper kudos here. Systemd is simply über optimized for Linux, it takes
+                advantage of tons of special Linux kernel enhancements. Socket based activation is ideal for local
+                service, AF_UNIX sockets, although support does exist for inet sockets as well. There are two reasons
+                why you want active sockets:
+                <br />
+                <ol>
+                    <li>On demand auto-spawning</li>
+                    <li>Help with bootup parallelizaiton</li>
+                </ol>
+                The on demand auto-spawning can be taken advantage by xen if and only if its tools are converted to try
+                to open the unix socket when they run, but they currently don't do this and some communication uses the
+                kernel ring interface, not the unix domain sockets. If you use the stubdoms you also never end up
+                using&nbsp; the unix domain sockets. The gains from parrallelization however are awlays welcomed, you
+                essentially let systemd figure out how to bring things up by associating dependencies rather than trying
+                to pile things up in a specific strict numbered order, this is all controlled by the service unit files
+                and the requirements specified. Udev lends a here as well, which is not merged part of systemd, but I'll
+                have to cover udev on another post. If one had an ecosystem that one was sure did not require the
+                service to be spawned up all the time and you didn't need the kernel ring interface immediatley up, you
+                could just either enable only the xenstored.socket or remove this section from the xenstored.service:
+                <br />
+                <br />
+                WantedBy=multi-user.target
+                <br />
+                <br />
+                A few things worth noting for daemons and systemd that I do not see covered
+                <b>clearly</b>
+                in documentation, the exact expectations on the different type of service types. Systemd supports
+                different types of daemons, for those that don't fork you should declare in your service unit file a
+                type of:
+                <br />
+                <br />
+                Service=simple
+                <br />
+                <br />
+                For daemons that do call fork() you should use the following:
+                <br />
+                <br />
+                Service=forking
+                <br />
+                <br />
+                In legacy init world, this consists of most of the daemons out there. There's a bit of a caveat here
+                though: systemd expects you to behave in a certain way if you use Service=forking,
+                <b>your first parent process should be the one to call sd_notify_fds()</b>
+                , you should not let child processes do the sd_notify_fds() call. What deamons do vary and the
+                assumption on systemd that daemon's spawn sockets on the parent rather than children means deamons will
+                need a bit of a change in order to work with systemd properly as there is no way to tell systemd a child
+                is going to be the main process, even if you try sd_notifyf() with the process ID of the child. Arguably
+                there's a good reason for this though, you should consider using
+                <b>Service=notify</b>
+                and when you use this type of service you
+                <b>don't fork</b>
+                as part of your deamonizing effort, instead you just tell systemd when your service is ready with
+                sd_notify(). There's some curious architectural design principles worth elaborating on that comes with
+                this that highlight a mistake typically in place on some deamons that do fork. When deamonizing and
+                forking killing the parent immediately is the easy and fastest way from a programmer's perspective
+                <b>but</b>
+                should typically not be done given that regular legacy init that spawn daemons in order will enable
+                processes to make use of the daemon under the impression that the deamon is ready,
+                <b>leaving a small amount of time for a race condition to trigger</b>
+                . Typically this is addressed with nasty undocumented workarounds, for example retry connections to
+                connect to the unix domain sockets on daemons that are expected to be created after initialization. Mind
+                you,
+                <i>the race condition is small</i>
+                but yet very possible, specially if we want to boot up fast. This is one of the races that systemd
+                services using sd_notify() avoid by design. This is pretty cool.
+                <br />
+                <h2>&nbsp;</h2>
+                <h2>funk-systemd - example complex systemd daemon&nbsp;</h2>
+                <h4>&nbsp;</h4>
+                <h4>&nbsp;</h4>
+                Apart from corner cases there is also the complexities introduced by the different types of build
+                systems / target systems, specially for projects which really want to support multiple Operating Systems
+                and init systems such as Xen. To address different build environments and targets a lot of projects use
+                autotools, Xen follows this practice so integrating support for systemd on Xen required proper autotools
+                support. Autotools support with systemd can get complicated fast -- you see, systemd does not allow
+                variable placements on ExecStart settings for the binary you wish to run, this means that if your
+                project uses configure to dynamically place the path of the binary you will also need proper replacement
+                for the paths upon configure time. With autotools this is accomplished with the AC_CONFIG_FILES() helper
+                but in order to make use of some paths with AC_CONFIG_FILES() you'll want to eval and call AC_SUBST() on
+                them. This is not only useful for the ExecStart but also consider the different placements of the socket
+                files. If using ${prefix} for any of the paths you will need to work with a not-so-well documented
+                $ac_default_prefix. You also have to consider the different types of build environments and the
+                different types of target systems that a project wishes to support for a produced single binary daemon.
+                The different build environments may vary.&nbsp; A project may wish to support forcing systemd to be
+                present, some may wish to only use systemd if the development libraries are present, and others may with
+                to require you to specify that you want systemd explicitly. As far as target systems are concerned --
+                they vary as well, in the worst case scenario a project may wish to support legacy init with and without
+                systemd libraries present and then for the case where systemd is the init process. In this example
+                situation if its desirable to support a single binary for all types of init systems the dynamic link
+                loader (using dlopen(), dlsym()) can be used, or a in-place replacement for sd_booted() can be
+                implemented as well instead of relying and calling on the systemd helper sd_booted(). A project such as
+                Xen that supports two daemons for the same type of service also needs to consider which route to take
+                for supporting and maintaining service until files for the different possible daemons. There's different
+                strategies for this. A lot of this is not well documented, and good examples for for projects as complex
+                as Xen's build system are not readily available, let alone cover all the cases I've described. Becuase
+                of all this and since I ended up doing the work for systemd Xen integration I made sure to try to
+                generalize a solution and address all types of environments as described above, I have also stuffed a
+                sample daemon which also covers documents the legacy init corner case that sd_notify() explicitly
+                addresses. You can find the sample code here, the autoconf helpers defined and documented here are also
+                being submitted as part of the xen system integration patches:
+                <br />
+                <br />
+                <a href="https://github.com/mcgrof/funk-systemd">https://github.com/mcgrof/funk-systemd</a>
+                <br />
+                <br />
+                To look at an example solution for the legacy init race condition look at the usage of funk_wait_ready()
+                which is called on the parent process that forks. As for xen, the legacy init daemon has as part of init
+                script a retry counter, we should be able to remove that code with a similar solution for the legacy
+                socket implementation. In this tree you will also find a few helpers if you want to get ramped up with
+                systemd and autoconf which xen's systemd ingration patches make use of:
+                <br />
+                <ul>
+                    <li>
+                        <a href="https://github.com/mcgrof/funk-systemd/blob/master/src/m4/systemd.m4">
+                            src/m4/systemd.m4
+                        </a>
+                        - systemd autoconf library which enables easy build integration support for systemd. There are
+                        four build options supported
+                    </li>
+                    <ul>
+                        <li>
+                            AX_ENABLE_SYSTEMD() - enables systemd by default and requires an explicit --disable-systemd
+                            option flag to configure if you want to disable systemd support.
+                        </li>
+                        <li>
+                            AX_ALLOW_SYSTEMD() - systemd will be disabled by default and requires you to run configure
+                            with --enable-systemd to look for and enable systemd
+                        </li>
+                        <li>
+                            AX_AVAILABLE_SYSTEMD() - systemd will be disabled by default but if your build system is
+                            detected to have systemd build libraries it will be enabled. You can always force disable
+                            with --disable-systemd. This is the option we have decided to use for Xen.
+                        </li>
+                        <li>
+                            If you want to use the dynamic link loader you should use AX_AVAILABLE_SYSTEMD() but must
+                            then ensure to use -rdynamic -ldl when linking, if using automake autotools will deal with
+                            this for you,otherwise you must ensure this is in place on your Makefile.
+                        </li>
+                    </ul>
+                    <li>
+                        <a href="https://github.com/mcgrof/funk-systemd/blob/master/src/m4/paths.m4">src/m4/paths.m4</a>
+                        - Implements AX_LOCAL_EXPAND_CONFIG() which you can use to replace meta @VAR@ variables on files
+                        defined with AC_CONFIG_FILES(). You might want to make use of this for example on systemd
+                        service unit file ExecStart, on the socket definition file, and/or the code that connects to the
+                        sockets.
+                    </li>
+                    <li>
+                        <a href="https://github.com/mcgrof/funk-systemd/blob/master/src/funk_dynamic_helpers.c">
+                            src/funk_dynamic_helpers.c
+                        </a>
+                        &nbsp; - example systemd integration implementation support using the dynamic link loader --
+                        using dlopen() and dlsym() which can be used for the one-binary-fits all solutions. Although a
+                        solution with this strategy was tested for systemd, this is not the option we are going to
+                        support on Xen.
+                    </li>
+                    <li>
+                        <a href="https://github.com/mcgrof/funk-systemd/tree/master/with-autoconf">
+                            funk daemon with-autoconf implementation
+                        </a>
+                        &nbsp; - example implementation with the above helpers with autoconf support alone
+                    </li>
+                    <li>
+                        <a href="https://github.com/mcgrof/funk-systemd/tree/master/with-automake">
+                            funk daemon with-automake implementation
+                        </a>
+                        - example implementation with the above helpers with automake support
+                    </li>
+                    <li>
+                        <a href="https://github.com/mcgrof/funk-systemdh">README</a>
+                        and
+                        <a href="https://github.com/mcgrof/funk-systemd/blob/master/INSTALL">INSTALL</a>
+                        - read these for more details on this example
+                    </li>
+                </ul>
+                <h4>&nbsp;</h4>
+                <h2>Systemd support for projects with multiple daemon replacements</h2>
+                <h2>&nbsp;</h2>
+                <h4>&nbsp;</h4>
+                Xen is a good example of a project that requires support for multiple alternative binaries that can run
+                as the daemon. For such type of situations there are a few possible solutions,
+                <a href="http://lists.freedesktop.org/archives/systemd-devel/2014-May/019427.html">
+                    this has been discussed only briefly on the systemd-devel list
+                </a>
+                , you can end up implementing:
+                <br />
+                <ol>
+                    <li>
+                        Define a service unit file each for daemon, and define one target which defines the overall
+                        service. Service unit files that require the service will require the target, not the actual
+                        service unit file. The service unit files are then mutually exclusive with each other, the
+                        system administrator would then have to then manually select which service unit to enable. The
+                        downside to this strategy is you end up with multiple service unit files which in the worst case
+                        are identical and only differ on the ExecStart path.
+                    </li>
+                    <li>
+                        Define a service unit file for each daemon and define an Alias=foo.service for the general
+                        service. Services that need to depend on this service would then Require the alias, not the
+                        specific service file for each binary. The same downside is present with this solution.
+                    </li>
+                    <li>
+                        One service file and environment variables to be used by a binary launcher which will get use
+                        getenv() and execve() to launch the respective preferred daemon. This option gives the
+                        flexibility to be easily compatible with legacy init daemons that typically require
+                        /etc/sysconfig/&nbsp; or /etc/default/ configuration files. Although
+                        <a href="http://0pointer.de/blog/projects/on-etc-sysinit.htm">
+                            Lennart has clarified that ideally the systemd-way could be to ignore /etc/sysconfig and
+                            /etc/default all together
+                        </a>
+                        this solution would still enable to ignore /etc/sysconfig/ and /etc/default/ by requiring the
+                        default variable to be set via Environment=FOO_DEFAULT_DAEMON=/usr/local/sbin/bar. For support
+                        with legacy init systems the EnvironmentFile=-/etc/sysconfig/foodaemon and
+                        EnvironmentFile=-/etc/default/foodaemon can be used.
+                    </li>
+                </ol>
+                No example code or service unit files is provided at this point, what we end up doing for Xen remains to
+                be decided.
+                <br />
+                <br />
+                <h2>Ocaml and systemd support</h2>
+                <h2>&nbsp;</h2>
+                Xen has an ocaml implementation of the xenstore so as you can imagine we also had to add some support
+                for systemd with ocaml. I won't provide examples here, but just not that support has been provided using
+                a C interface wrapper. For details please review the posted patches.
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">← back to timeline</a>
+        </footer>
+    </body>
+</html>

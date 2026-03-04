@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Comcast bufferbloat in San Francisco — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2011-09-24">Sep 24, 2011</time>
+                    <span class="category-badge badge-linux">Linux / Kernel</span>
+                </div>
+                <h1>Comcast bufferbloat in San Francisco</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2011/09/comcast-bufferbloat-in-san-francisco-my.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <span class="Apple-style-span">
+                    My ISP, Comcast, is sucking big red hairy balls today in San Francisco.
+                    <a href="http://gettys.wordpress.com/bufferbloat-faq/">Bufferbloat</a>
+                    issues to the max. Here are my
+                    <a href="http://netalyzr.icsi.berkeley.edu/">netalyzr</a>
+                    results of relevance. Is your ISP sucking as bad as mine? Try out netalyzr yourself. Let me know
+                    what you get for this metric. I will note that
+                    <a href="http://en.wikipedia.org/wiki/G.114">ITU-T G.114</a>
+                    recommends a maximum of a
+                    <b>150</b>
+                    <b>ms</b>
+                    and that &gt;
+                    <b>400 ms</b>
+                    is
+                    <b><span class="Apple-style-span">completely unacceptable</span></b>
+                    . If you get worse results then expect VoIP to suck. Not only is my
+                    <b>uplink</b>
+                    sucking though but also my
+                    <b>downlink</b>
+                    !
+                    <br />
+                    <br />
+                    I am also not downloading anything except just streaming Pandora 24x7 here, and I pay for this
+                    service. Because of this, this issue is more severe as capacity seems to be throttled by something
+                    else, and I can only blame Comcast right now for that. Curious what others see. Would be nice if we
+                    had graphs of this by regions. I'd like to thank
+                    <a href="http://gettys.wordpress.com/">Jim Gettys</a>
+                    for educating people on this severe issue,
+                    <a href="http://gettys.wordpress.com/bufferbloat-faq/">Bufferbloat</a>
+                    .
+                </span>
+                <br />
+                <br />
+                <blockquote>
+                    <br />
+                    <b>Network buffer measurements</b>
+                    (?):
+                    <b>Uplink</b>
+                    <span class="Apple-style-span"><b>1000 ms</b></span>
+                    ,
+                    <b>Downlink</b>
+                    <span class="Apple-style-span"><b>610 ms</b></span>
+                    <br />
+                    <br />
+                    We estimate your uplink as having 1000 msec of buffering. This is quite high, and you may experience
+                    substantial disruption to your network performance when performing interactive tasks such as
+                    web-surfing while simultaneously conducting large uploads. With such a buffer, real-time
+                    applications such as games or audio chat can work quite poorly when conducting large uploads at the
+                    same time.
+                    <br />
+                    <br />
+                    We estimate your downlink as having 610 msec of buffering. This level can in some situations prove
+                    somewhat high, and you may experience degraded performance when performing interactive tasks such as
+                    web-surfing while simultaneously conducting large downloads. Real-time applications, such as games
+                    or audio chat, may also work poorly when conducting large downloads at the same time.
+                </blockquote>
+                <br />
+                <br />
+                <a
+                    href="http://www.flickr.com/photos/garlandcannon/4558340132/"
+                    title="The Leader of the . . . Bloat (Song following) by garlandcannon, on Flickr"
+                >
+                    <img
+                        alt="The Leader of the . . . Bloat (Song following)"
+                        height="210"
+                        src="https://web.archive.org/web/20160415050749im_/http://farm4.static.flickr.com/3648/4558340132_1e650c4547.jpg"
+                        width="300"
+                    />
+                </a>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

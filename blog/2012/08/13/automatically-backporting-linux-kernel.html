@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Automatically backporting the Linux kernel — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2012-08-13">Aug 13, 2012</time>
+                    <span class="category-badge badge-linux">Linux / Kernel</span>
+                </div>
+                <h1>Automatically backporting the Linux kernel</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2012/08/automatically-backporting-linux-kernel.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                Users should be able to get support for their hardware if they are on any
+                <b><u>supported</u></b>
+                kernel. Linux kernel developers should always
+                <u>prioritize</u>
+                working directly on the Linux kernel and
+                <u>there should be no excuse as to why not do to so</u>
+                . Linux kernel developers should
+                <i><b>ideally</b></i>
+                never have to backport anything they do onto older kernels. Linux distributions should share as much as
+                possible if they are already putting some work into backporting. What if we could simply
+                <b>automatically backport the Linux kernel</b>
+                ? What if to automatically backport the Linux kernel we may have to take into consideration some design
+                considerations of the technologies and semantics that would enable this? This &nbsp;blog post is about
+                all this, where we stand and where we are going.
+                <br />
+                <br />
+                At the 2012 Linux Collaboration summit in San Francisco I gave a talk about the idea and project
+                objective I have on
+                <a href="https://docs.google.com/presentation/d/1axVNEGwKZjnzG1ocdd289WMqPxzJ3qfMv70ghGcnUKc/edit">
+                    automatically backporting the Linux kernel
+                </a>
+                .
+                <i>A pictures speaks more than 1000 words</i>
+                so lets try to get directly to shiny pictures and graphs so you have to read less and I can write less.
+                If you haven't yet please go first read my last blog post on
+                <a href="http://www.do-not-panic.com/2012/08/optimizing-backporting-collateral.html">
+                    optimizing backporting collateral evolutions on the Linux kernel
+                </a>
+                , and then go through the few images below. You can also just review the slides from the&nbsp;
+                <a href="https://docs.google.com/presentation/d/1axVNEGwKZjnzG1ocdd289WMqPxzJ3qfMv70ghGcnUKc/edit">
+                    automatically backporting the Linux kernel
+                </a>
+                &nbsp;presentation.
+                <br />
+                <br />
+                This is your Linux backport effort of a collateral evolution on drugs:
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://4.bp.blogspot.com/-Mvv5q4PKBQ0/UCnHC2fjZDI/AAAAAAAA4tE/F3JudBilANc/s1600/net_device_ops-01.png"
+                        imageanchor="1"
+                        style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="386"
+                            src="http://4.bp.blogspot.com/-Mvv5q4PKBQ0/UCnHC2fjZDI/AAAAAAAA4tE/F3JudBilANc/s400/net_device_ops-01.png"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                If you've been doing backporting or if you've read backported Linux kernel code before though you'll
+                realize that this is what you typically see though. This change in fact would be present for all
+                drivers, and the one above is a change for just one driver. A better idea is to wrap all this code up
+                into a helper routine that could be used over different drivers. Here's what this would look like then:
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://1.bp.blogspot.com/-w8f-zXQ1KpQ/UCnHmqAJLsI/AAAAAAAA4tM/x2oVT9_Luks/s1600/net_device_ops-02.png"
+                        imageanchor="1"
+                        style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="388"
+                            src="http://1.bp.blogspot.com/-w8f-zXQ1KpQ/UCnHmqAJLsI/AAAAAAAA4tM/x2oVT9_Luks/s400/net_device_ops-02.png"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                And this is exactly where we are today with backporting the net_device_ops
+                <b>collateral evolution</b>
+                down to one line for each driver. We do this by implementing the actual helper in a shared module under
+                the project
+                <a href="http://mcgrof.github.com/compat/">compat</a>
+                . Once we have this implemented you can even express this in SmPL form (see previous blog post on
+                <a href="http://www.do-not-panic.com/2012/08/optimizing-backporting-collateral.html">
+                    optimizing collateral evolutions
+                </a>
+                ) and then we would not have to even code this collateral evolution for other new drivers. In fact, if
+                we added a static inline for netdev_attach_ops() upstream to simply do that assignment to the data
+                structure it would mean we would require 0 lines of code changed to backport this collateral evolution.
+                I really want you to go review the first picture before you make any decisions on how you feel about
+                this.
+                <br />
+                <br />
+                A few people like the strategy and thanks to all the help of a good large group of contributors today I
+                can say we are striving towards these&nbsp;optimizations&nbsp;slowly. This effort
+                <b>started</b>
+                through the compat and compat-wireless (now renamed to
+                <b>compat-drivers</b>
+                ) projects but the number of systems we backport keeps growing and the amount of code we can share keeps
+                growing as well. Below exactly how much code we share is illustrated against the amount of code we are
+                pulling directly from the Linux kernel.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://1.bp.blogspot.com/-DkTC41EJT0s/UCnKN_AqK7I/AAAAAAAA4tk/e5WfvYNRfew/s1600/graph-compat-metrics.png"
+                        imageanchor="1"
+                        style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="242"
+                            src="http://1.bp.blogspot.com/-DkTC41EJT0s/UCnKN_AqK7I/AAAAAAAA4tk/e5WfvYNRfew/s400/graph-compat-metrics.png"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                That small green thing -- that's
+                <a href="http://mcgrof.github.com/compat/">compat</a>
+                , and that red thing between the dark stuff and the green stuff is the delta of patches that we have not
+                yet merged into a generic compat module or are things which we have not yet figured out how to
+                generalize -- this goes into the
+                <a href="https://backports.wiki.kernel.org/index.php/Documentation/compat-drivers">
+                    compat-drivers project
+                </a>
+                . In short: the more we share into a compat module the more subystems we can share at a lower cost and
+                most effort is done automatically.
+                <br />
+                <br />
+                But not all work is automatic of course.
+                <a href="http://www.hauke-m.de/">Hauke Mehrtens</a>
+                ,
+                <a href="http://johannes%20berg/">Johannes Berg</a>
+                , Bala Shanmugam,&nbsp;
+                <a href="https://www.ohloh.net/accounts/ozancaglayan">Ozan Çağlayan</a>
+                &nbsp;among others have contributed mounds of work to the projects and without their help we would not
+                have such great advancements. Ozan in particular decided to take on backporting the
+                <b>video graphics</b>
+                kernel drivers as part of his Google Summer of Code project and with this making it the 4th subsystem we
+                are working towards integrating into the project, previous to this we only backporte
+                <b>Ethernet</b>
+                ,
+                <b>Wireless</b>
+                and
+                <b>Bluetooth</b>
+                subystems. The folks at the
+                <a href="http://www.linuxfoundation.org/collaborate/workgroups/driver-backport/group">
+                    Linux Foundation driver backports working group
+                </a>
+                expressed interest in the project at the last Linux Collaboration summit in San Francisco and at their
+                request we will be renaming the project to
+                <a href="https://backports.wiki.kernel.org/">compat-drivers</a>
+                to put emphasis we are interested in&nbsp;generalizing&nbsp;backporting, and we will eventually be
+                making releases through kernel.org instead of the
+                <a href="http://wireless.kernel.org/en/users/Download/stable/">wireless front</a>
+                . At this point all relevant documentation has been migrated onto the
+                <a href="https://backports.wiki.kernel.org/">kernel.org backports wiki page</a>
+                , please use that page to advance or read the required documentation. We expect to make the first
+                release through kernel.org as of the v3.7 release cycle.
+                <br />
+                <br />
+                For now if interested in the project you can refer to the code:
+                <br />
+                <ul>
+                    <li><a href="http://mcgrof.github.com/compat/">compat.git</a></li>
+                    <li><a href="https://github.com/mcgrof/compat-drivers">compat-drivers.git</a></li>
+                </ul>
+                <div>
+                    At this point we aim to backport all 4 subystem kernel drivers and making both daily snapshots based
+                    on
+                    <a href="http://git.kernel.org/?p=linux/kernel/git/next/linux-next.git;a=summary">
+                        Stephen Rothwell's linux-next.git
+                    </a>
+                    , and RC releases based on
+                    <a href="http://git.kernel.org/?p=linux/kernel/git/torvalds/linux.git;a=summary">
+                        Linus's linux.git
+                    </a>
+                    sand
+                    <a href="http://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary">
+                        Greg's stable releases from linux-stable.git
+                    </a>
+                    and all of these able to compile across 21 older kernels.
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    If interested in poking around first, you may want to simply clone compat.git and check out the
+                    following few scripts:
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>git clone git://github.com/mcgrof/compat.git</div>
+                <div>./bin/get-compat-trees</div>
+                <div>./bin/get-compat-kernels</div>
+                <div>./bin/ckmake</div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    <b>ckmake</b>
+                    is intended to help you cross compile test any external module across 21 older kernels.&nbsp;
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    Apart from backporting we realize at times you may need to integrate critical fixes not yet
+                    integrated upstream. The project has solution for this that respects and prioritizes Linux upstream
+                    development by providing
+                    <a href="http://bit.ly/H6BTF7">code metrics on each type of delta possible</a>
+                    of patches from the birth of a patch all the way up to its integration upstream and the effort
+                    required to backport it.
+                    <br />
+                    <br />
+                    If you want to send patches please subscribe and send patches to the shiny new mailing list:
+                    <b>backports@vger.kernel.org</b>
+                    . To subscribe send an e-mail with anything on the subject to
+                    <b>majordomo@vger.kernel.org</b>
+                    with this on the subject:
+                    <br />
+                    <br />
+                    <b>subscribe backports</b>
+                    <br />
+                    <br />
+                    Read the following e-mails on a follow up of how to confirm subscription. Please read the
+                    <b>new</b>
+                    &nbsp;
+                    <a href="https://backports.wiki.kernel.org/">backports kernel wiki page</a>
+                    &nbsp;on how you are expected to send patches, but please use the new mailing list.
+                </div>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>GNU things are GNU — Simplicity of GNU Make — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2012-02-27">Feb 27, 2012</time>
+                    <span class="category-badge badge-tools">Tools</span>
+                </div>
+                <h1>GNU things are GNU — Simplicity of GNU Make</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2012/02/gnu-things-are-gnu-simplicity-of-gnu.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <div class="separator" style="clear: both; text-align: left">
+                    <a
+                        href="http://www.flickr.com/photos/oddsock/100761143/"
+                        title="edvard munch - the scream  1893 by oddsock, on Flickr"
+                    >
+                        <img
+                            alt="edvard munch - the scream  1893"
+                            height="500"
+                            src="http://farm1.staticflickr.com/40/100761143_226e540b49.jpg"
+                            width="389"
+                        />
+                    </a>
+                </div>
+                <br />
+                <div class="separator" style="clear: both; text-align: left">
+                    GNU things are GNU. If you're a hacker you'll understand that this is meant to be a
+                    fun&nbsp;interjection. It really depends on who reads this what you'll make of
+                    that&nbsp;interjection. As a kernel hacker perhaps you'll cringe and maybe even
+                    cry&nbsp;yourself&nbsp;to sleep in fetal position (as I think
+                    <a href="http://johannes.sipsolutions.net/" target="_blank">Johannes Berg</a>
+                    &nbsp;[
+                    <a href="https://plus.google.com/101449330804536230754/posts" target="_blank">G+</a>
+                    ] may have today)&nbsp;of the thought of the completion of a project such as the&nbsp;
+                    <a href="http://www.gnu.org/software/hurd/hurd.html" target="_blank">GNU Hurd</a>
+                    . As a GNU'er maybe you'll pride yourself with the amount of documentation, portability,
+                    and&nbsp;righteousness and of course recursion&nbsp;after the implications of such a statement. If
+                    you're not a hacker just understand that GNU has a
+                    <a href="http://www.gnu.org/gnu/manifesto.html" target="_blank">bible</a>
+                    and
+                    <a href="http://www.fsf.org/" target="_blank">a church</a>
+                    .
+                </div>
+                <br />
+                As reported by&nbsp;
+                <a href="http://www.hauke-m.de/" target="_blank">Hauke Mehrtens</a>
+                , I recently
+                <a
+                    href="https://github.com/mcgrof/compat/commit/7bf2796dc1899d68c721a1b74777df4879c89a2e"
+                    target="_blank"
+                >
+                    broke parallel building
+                </a>
+                in
+                <a href="http://mcgrof.github.com/compat/" target="_blank">compat</a>
+                , a Linux kernel backport module, when I added&nbsp;autoconf.h-like support&nbsp;support for it.
+                The&nbsp;autoconf.h support allows us to push build time configuration options onto the C and header
+                files we are using at build time.
+                <a href="http://www.gnu.org/software/make/" target="_blank">GNU Make</a>
+                typically builds things serially but if you ask it to build things in parallel, by specifying the -j
+                command argument,
+                <a href="http://www.gnu.org/software/make/" target="_blank">GNU Make</a>
+                will build all objects through independent tasks and later combine them. For any modern system this is
+                crucial otherwise you system's resources will not be used efficiently at build time and each object will
+                only build until the last one will have finished, even though each one could have been built
+                independently. The component that manages parallel building in GNU Make is called, the jobserver.
+                <br />
+                <br />
+                I'll confess that I have been avoiding looking into how
+                <a href="http://www.gnu.org/software/make/" target="_blank">GNU Make</a>
+                &nbsp;jobserver works given that the man page really doesn't provide much details about its
+                implementation nor does it clarify exactly what that pesky "+" thing is when it fails on using the job
+                server:
+                <br />
+                <br />
+                <blockquote class="tr_bq">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        hauke@hauke:~/compat-wireless/compat-wireless$ make -j5
+                        <br />
+                        make[1]: warning: jobserver unavailable: using -j1. &nbsp;Add `+' to parent
+                        <br />
+                        make rule.
+                    </span>
+                </blockquote>
+                <br />
+                <a href="http://mad-scientist.net/" target="_blank">Peter D. Smith</a>
+                is the maintainer of
+                <a href="http://www.gnu.org/software/make/" target="_blank">GNU Make</a>
+                and I'm fortunate to have found an entry on his page where he documents in careful detail
+                <a href="http://mad-scientist.net/make/jobserver.html" target="_blank">
+                    history and evolution of the implementation details of GNU Make's jobserver
+                </a>
+                . After reading that I now appreciate
+                <a href="http://www.gnu.org/software/make/" target="_blank">GNU Make</a>
+                a bit more in consideration for all the "GNU" objectives it strives for, and it being a GNU
+                project&nbsp;utility.
+                <a href="http://nbd.name/" target="_blank">Felix&nbsp;Fietkau</a>
+                &nbsp;tells me that this&nbsp;appreciation&nbsp;says more about other GNU utilities than about
+                <a href="http://www.gnu.org/software/make/" target="_blank">GNU Make</a>
+                ... perhaps he's right but nevertheless I now really like the simplicity of GNU Make's manpage,
+                its&nbsp;apparent&nbsp;simplicity, and its side little&nbsp;optimizations&nbsp;that I have found after
+                mucking around with it a bit more on my hunt to understand its jobserver.
+                <br />
+                <br />
+                I hate long blog entries so I'm going to now summarize very quickly for hackers my findings, if you're
+                not a hacker, stop reading here.
+                <br />
+                <br />
+                <a
+                    href="http://www.flickr.com/photos/gnumasters/5894198632/"
+                    title="GNU Masters no FISL 12 by GNU Masters, on Flickr"
+                >
+                    <img
+                        alt="GNU Masters no FISL 12"
+                        height="334"
+                        src="http://farm6.staticflickr.com/5112/5894198632_50ea0597ec.jpg"
+                        width="500"
+                    />
+                </a>
+
+                <br />
+                <br />
+                The jobserver works using pipes, and the jobserver will barf if its&nbsp;heuristics implementation fails
+                at understanding if a target has a command that may
+                <b>not</b>
+                be another make process (called sub-make process, in
+                <a href="http://www.gnu.org/software/make/" target="_blank">GNU Make</a>
+                language). The&nbsp;heuristics implementation is very simple, this means
+                <a href="http://www.gnu.org/software/make/" target="_blank">GNU Make</a>
+                is inherently dumb and you need to guide it, the only thing it knows is itself, and to the GNU pride
+                even about recursive calls against itself. The job server will know what to do if a sub-make process is
+                issued with the same binary, to be clear the same make binary -- and this is pretty darn cool. You make
+                emphasis that a sub-process is an explicit GNU Make sub-process and ensure that this propagates properly
+                by using the MAKE variable. It is imperative that sub-processes on a target that are not identical GNU
+                Make sub-processes are annotated as such, you do this by pre-pending a "+" to each command that is not a
+                GNU Make sub-process. Since the jobserver is braindead stupid by design GNU Make will halt the jobserver
+                completely when issuing these specific commands.
+                <br />
+                <br />
+                <a
+                    href="http://www.flickr.com/photos/red5standingby/2216483158/"
+                    title="pipes by red5standingby, on Flickr"
+                >
+                    <img
+                        alt="pipes"
+                        height="375"
+                        src="http://farm3.staticflickr.com/2026/2216483158_ba4741e6d5.jpg"
+                        width="500"
+                    />
+                </a>
+
+                <br />
+                <br />
+                What if you have a project that needs some header file but you want that header file to be generated
+                through the build process automatically ? GNU Make is dumb but fortunately smart enough to look for
+                header files that are being included on targets, even if the target is not listed as a dependency to a
+                final required build target. GNU Make is also dumb but smart enough to know that if it had to build a
+                header file that was being included it will call itself again, automatically after building the required
+                target file, in fact it will
+                <b>not</b>
+                fatally fail in this case even if you asked it to fail (by not specifying that the include file can be
+                missing by prefexing the include command with the "-"). This is really cool and shows some real GNU
+                recursive&nbsp;philosophy&nbsp;in mind.
+                <br />
+                <br />
+                Now to the stupid part. When trying to optimize your Makefiles take some time to review all the ways
+                that you have left GNU Make go astray and be stupid by looking at the make -d output. What I found was
+                that there were tons of implicit checks on targets that needed to be generated, this included even the
+                god damn Makefile itself and possible derivatives of it. I counted 18 stupid derivatives. The simple
+                solution is to optimize build time by adding to .PHONY even your own Makefile.
+                <br />
+                <br />
+                If you'd like to see examples you can review
+                <a href="http://marc.info/?l=linux-wireless&amp;m=133039119217048&amp;w=2" target="_blank">
+                    my jobserver and general GNU Make optimization patches to compat
+                </a>
+                . These patches&nbsp;illustrate all these&nbsp;optimizations&nbsp;at the Linux kernel module level,
+                along with some&nbsp;build time optimizations for external Linux kernel modules. I hope someone out
+                there appreciates the recursion between the link to this blog post on the patches posted and the linking
+                from this blog post to those patches. I wonder what Google calls this when scraping the web, there must
+                be a name for it.
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

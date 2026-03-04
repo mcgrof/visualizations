@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Concerns with Xen PVH / HVMLite boot on Linux x86 — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2016-08-11">Aug 11, 2016</time>
+                    <span class="category-badge badge-linux">Linux / Kernel</span>
+                </div>
+                <h1>Concerns with Xen PVH / HVMLite boot on Linux x86</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2016/08/concerns-with-xen-pvh-boot-on-x86-linux.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source &#8599;
+                </a>
+            </header>
+            <div class="post-content">
+                <p>
+                    <a
+                        href="https://4.bp.blogspot.com/-aUi5SDUjeSw/V60iRXfDDRI/AAAAAAAC64k/_gfiIBVTuhod_87qIjR-B81qzcqtm5fvgCPcB/s1600/20160419_002009.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="137"
+                            src="https://4.bp.blogspot.com/-aUi5SDUjeSw/V60iRXfDDRI/AAAAAAAC64k/_gfiIBVTuhod_87qIjR-B81qzcqtm5fvgCPcB/s400/20160419_002009.jpg"
+                            width="400"
+                        />
+                    </a>
+                </p>
+                <p>
+                    I've been helping a bit with streamlining proper upstream support for Xen on x86 Linux. One of the
+                    items I have decided to take on is the so called "dead code" concern in theory present on x86 Linux
+                    Xen guests largely in part due to the radical way in which old PV Xen x86 Linux guests boot. This
+                    topic is a bit complex, so I had previously written two posts about this to help shed some light
+                    into these dark corners of the technical Linux universe that only a few really care about:
+                </p>
+                <ul>
+                    <li>
+                        <a href="http://www.do-not-panic.com/2015/12/avoiding-dead-code-pvops-not-silver-bullet.html">
+                            Avoiding dead code: pv_ops is not the silver bullet
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://www.do-not-panic.com/2015/12/xen-and-x86-linux-zero-page.html">
+                            Xen and the x86 Linux zero page
+                        </a>
+                    </li>
+                </ul>
+                <br />
+                Xen has evolved over the years, but so has hardware to help with virtualization. Some say and believe
+                KVM is a much better platform for virtualization than Xen since KVM didn't have to deal with the lack of
+                hardware virtualization support. To a certain degree, part of this is true -- the KVM design has an
+                upper hand in that it has not had to deal with implementing any of the legacy complexities in hardware.
+                If you follow the money in terms of investment, you will notice
+                <a href="https://en.wikipedia.org/wiki/Moshe_Bar_(investor)">Moshe Bar</a>
+                , who had co-founded
+                <a href="https://en.wikipedia.org/wiki/Xen">XenSource</a>
+                (later acquired by Citrix) then also c-ofounded
+                <a href="https://en.wikipedia.org/wiki/Qumranet">Qumranet</a>
+                 (later acquired by Red Hat) which was the main company originally behind KVM. In these regards KVM is a
+                natural
+                <i>architectural evolution</i>
+                over Xen. Despite the technical leap forward, this is not to say KVM is simply better, or for instance
+                that KVM cannot possibly have dead code though, or that Xen could not do better. There may be less dead
+                code in KVM on the Linux kernel but in analyzing how dead code comes about I've come to the realization
+                that dead code should be a generic concern all around, the Xen design just exacerbated the concern and
+                took the situation to a whole new level. As it turns out there is also a shit ton of dead code possible
+                in qemu... so perhaps some is saved on KVM, but qemu still has to address this very same problem. This
+                is also not to say that KVM does not paravirtualize. Quite the contrary, its had to also learn from the
+                Xen design -- so it has a paravirtualized clock and devices, but it doesn't have a paravirtualized
+                interface for timers and interrupts, it uses an emulated APIC and so you end up with qemu as a
+                requirement for KVM. As hardware virtualization features evolved, Xen has obviously had to provide
+                support for them as well. This has lead to the complex
+                <a href="https://wiki.xen.org/wiki/Virtualization_Spectrum">
+                    Paravirtualization spectrum described best in this page
+                </a>
+                . The "sweet spot" for paravirtualization then has evolved over the years, and the latest proposal on
+                the Xen front is called
+                <i>HVMLite</i>
+                . A previous incarnation of this is called
+                <i>Xen PVH</i>
+                design, but this old incarnation is going to be ripped out of the Linux kernel completely as it never
+                really took off for production, HVMLite is the proper replacement, but to avoid complexities with
+                branding the same old name PVH will be used. Here forward I refer to
+                <i>PVH</i>
+                as the new shiny HVMLite design, not the old existing code in the kernel now, as of Linux v4.8 days.
+                What interested me the most of the new PVH design was going to be its proposed alternative boot
+                protocol, which should hopefully address most of the concerns folks had from the previous old legacy PV
+                design. Xen PVH will also not use qemu. With these two things in mind, from one perspective 
+                <i>
+                    one could actually argue that Xen PVH guests may suffer from less possible dead code than KVM guests
+                </i>
+                . The rest of this post covers some basics over this new PVH design with a focus on the boot protocol, a
+                bit of the evolution of the Linux x86 boot protocol, and where we might be going. I really am writing
+                this mostly for my own note taking, and for future reference, only as secondary in the hopes it may be
+                useful to others.
+                <blockquote class="tr_bq">
+                    The 
+                    <i>given up </i>
+                    part here is a bit serious and worrisome. Some folks can give two shits over what goes into Xen to
+                    the extent that folks are OK with them merging anything so long as it does not interfere or regress
+                    Linux in any way shape or form.
+                </blockquote>
+                <br />
+                <blockquote class="tr_bq">
+                    Clean well understood semantics for guests are needed early in boot, we should not allow nasty hacks
+                    for virtualization in the kernel, understanding why these hacks creep up, and finding proper
+                    solutions for them are extremely important.  
+                </blockquote>
+                <br />
+                I've been told by Xen maintainers that the PVH ABI boot protocol apparently was settled long ago... As
+                someone new to this world, this came as a huge surprise to me given I was not aware of any Linux x86
+                maintainer having done a thorough evaluation over it, and most importantly if it were an agreed upon
+                acceptable and reasonable protocol this should have been reflected by the fact that those who likely had
+                the biggest concerns over Xen's old boot protocol would have been fans of the new design. That's at
+                least the litmus test I would have used if I would have tried to handle a technical revamp.
+                Unfortunately, as I spoke to different folks, I got the impression most x86 folks simply either had
+                completely
+                <i>given up</i>
+                on Xen or were completely unaware of this new PVH design. The
+                <i>given up</i>
+                part here is a bit serious and worrisome. Some folks can give two shits over what goes into Xen to the
+                extent that folks are OK with them merging anything so long as it does not interfere or regress Linux in
+                any way shape or form. This
+                <i>lost cause</i>
+                attitude has a bit of history, and the PV design I mentioned above is to blame for some of this attitude
+                -- the Xen PV design interfered and regressed Linux often enough it became a burden. The danger in
+                taking a 
+                <a href="https://en.wikipedia.org/wiki/Laissez-faire">Laissez-faire</a>
+                attitude with Xen in Linux is we are simply not doing our best then, and in doing so users can suffer,
+                and you can only count then on the Xen community to fix things. This...
+                <i>perhaps</i>
+                is the way it should be -- however it also implicates we may not be learning anything from this other
+                than having fear for such type of intrusive technologies in Linux, I believe there is quite a bit to
+                learn from this experience, and there are things we can do better. This later part is the emphasis of my
+                post given that as I'll explain why below,
+                <b>I've also partly given up</b>
+                . There are benefits from taking a proactive approach here, and Xen is not the only one that could
+                benefit from this. It sounds counter intuitive but helping Xen with a clean boot design is not just
+                about addressing a cleaner boot protocol for Xen alone. For instance, consider the loose semantics
+                sprinkled over the kernel for guests which even ended up in a few device drivers --
+                <code>paravirt_enabled()</code>
+                was one which thanks to some recent efforts by a few is now long gone. This sort of stupid epidemic is
+                not Xen specific -- even KVM has had its own hacks. For instance an audio driver had an
+                <a href="http://lkml.kernel.org/r/s5hvb4151v1.wl-tiwai@suse.de">"inside_vm" hack for guests</a>
+                , when trying to look for an alternative I was told no possible solution existed, when in fact only 4
+                days later a
+                <a href="https://www.spinics.net/lists/alsa-devel/msg48627.html">
+                    completely sensible replacement was found
+                </a>
+                . Clean well understood semantics for guests are needed early in boot, we should not allow nasty hacks
+                for virtualization in the kernel, understanding why these hacks creep up, and finding proper solutions
+                for them are extremely important. Helping review Xen's boot design should help us all avoid seeing cruft
+                land in the kernel long term. It should also pave the way for supporting new radical technologies and
+                architectures using a well streamlined boot protocol.
+                <p>
+                    Let's review the new PVH boot protocol. The last patch set proposal to add PVH to Linux added
+                    <i>yet-another-entry-point</i>
+                    (TM) by annotating it as an ELF note, this entry was Xen PVH specific. It had some asm code, and
+                    finally, it copied boot params and then handed things off to Linux. I was a bit perplexed, I had
+                    looked so much into the flaws of the previous PV boot design that I was
+                    <b>super paranoid</b>
+                    any new entry was simply doomed to be a disaster, so naturally I was extremely suspicious since the
+                    very beginning, despite the amount of delta being small and it still using
+                    <code>startup_32()</code>
+                    and
+                    <code>startup_64()</code>
+                    . These have become de-facto entry points, grub2 and kexec use them, so another thing using it seems
+                    fair. However I learned both that:
+                </p>
+                <p><br /></p>
+                <ol>
+                    <li>Linux Xen ARM guests use Linux' EFI entry to boot when on Xen</li>
+                    <li>Windows guests will rely on Window's EFI entry to boot when on Xen</li>
+                </ol>
+                <p>
+                    Naturally, my own first observation was to wonder why we can't use EFI to boot x86 Linux on Xen as
+                    well. There are a few reasons for this, but perhaps the best summary of the situation is best
+                    described by Matt Fleming, the Linux kernel's EFI maintainer:
+                    <br />
+                </p>
+                <blockquote class="tr_bq">
+                    <br />
+                    <i>"Everyone has a different use case in mind and no one has all of them in mind"</i>
+                </blockquote>
+                <p>
+                    Regular guests are known as domU guests. Guests with special privileges are known in Xen as dom0. So
+                    if you boot into Xen,and then a Linux control guest OS that's the dom0, you can then spawn domU
+                    guests using dom0.
+                </p>
+                <p>
+                    The first obvious concern over exclusively using EFI is that contrary to Windows, Linux needs to
+                    support dom0, so then hypercalls would need to talk to EFI. Xen supports dom0 on Linux ARM guests
+                    though, but in that case, as George Dunlap clarifies to me, it then relies on the native ARM (as
+                    used by uboot) entry path and relies on completely on device tree for hardware information. x86
+                    Linux supports device tree, and has used it on some odd x86 harware, however there are assumptions
+                    made for what type of hardware is present. ACPI can and should be used for ironing out
+                    discrepancies, however it remains unclear if this would suffice to support all cases required for
+                    x86 Linux guests when supporting dom0.
+                </p>
+                <p>
+                    For domU guests an EFI emulation would need to be provided by Xen somehow. But if Windows requires
+                    EFI this should be a shared concern. Upon review with Matt -- if one wanted a minimal EFI
+                    environment one could only provide the EFI services really needed, we'd also need a way to
+                    distinguish bare metal boot and PVH some way by using EFI, Matt has noted that using the EFI GUID
+                    seems to be one way to accomplish filling in the required semantics to pass. If EFI was required for
+                    domUs though that would mean Xen unikernels (Linux or not) would need to boot EFI. To be clear
+                    unikernels can be Linux based as well, they consist of very slim kernels with a small ramdisk and
+                    have a single process running as init. George notes that in these cases even
+                    <a href="http://lkml.kernel.org/r/5710BB74.2060409@citrix.com">
+                        an extra megabyte of guest RAM and extra second of boot time is significant cost to incur on
+                        guests
+                    </a>
+                    . He further notes that using OVMF (which would provide EFI) is an excellent solution for domUs when
+                    you boot a full Linux distribution, but that it would impose a significant cost on using Linux in
+                    unikernel-style VMs. This seems like a fair concern, however its not a reason for why Linux should
+                    not be able to use EFI though. In fact supporting to boot Linux x86 with EFI using OVMF seems like a
+                    design goal by Xen, after all that would also allow Xen to boot Windows guests without qemu to
+                    emulate devices since OVMF will be able to access the PV devices until the PV drivers come around
+                    for Windows. Another concern here over requiring EFI is other open operating systems may not support
+                    EFI entry points (does NetBSD and FreeBSD not support EFI boot?). The biggest concerns then are the
+                    implications to use EFI for dom0, requiring it for small unikernel guests (Linux or not), and the
+                    lack of other guest OS support for EFI.
+                </p>
+                <p>
+                    <br />
+                    Even though were supposed to have a good technical session at the last Xen Hackathon in London 2016,
+                    when it came down to talking about alternatives to the existing PVH boot ABI -- David Vrabel
+                    stonewalled the discussion by indicating the decisions had already been made, and as such found it
+                    pointless to discuss the topic. That's the very moment I gave up on helping with this topic for Xen.
+                    The rest of the details here and below are due to hallway tracks between me, Matt Fleming, Daniel
+                    Kiper, Andrew Cooper, Jürgen Gross, and later Alexander Graf. If you want to help change for the
+                    better for Xen PVH on Linux you'll have to coordinate with them. My own personal interest in this
+                    has morphed only to the more real long term for Linux.
+                </p>
+                <p>
+                    <a
+                        href="https://docs.google.com/drawings/d/1pcoG2bcYYY7xKYGMEhDhyUXTLHgjCPrpuk8c9yP_kUg/pub?w=1440&h=1080"
+                        style="margin-left: 1em; margin-right: 1em; text-align: center"
+                    >
+                        <img
+                            border="0"
+                            height="480"
+                            src="https://docs.google.com/drawings/d/1pcoG2bcYYY7xKYGMEhDhyUXTLHgjCPrpuk8c9yP_kUg/pub?w=1440&h=1080"
+                            width="640"
+                        />
+                    </a>
+                </p>
+                <p>
+                    With regards to using EFI to boot Xen PVH -- the devil is in the details.  Even if we go the EFI
+                    route there's a slight discrepancy between how Xen boots Linux and how Linux's 5 first
+                    <i>pre-decompression</i>
+                    x86 entry points work -- in particular Linux's EFI entry supports and requires decompression to be
+                    done as part of the kernel boot code. On the other hand the Xen hypervisor runs domU Linux guests
+                    just like any other regular userspace application: paging is enabled. Linux decompression runs in
+                    32-bit mode with paging disabled, and the code relies on this. The hypervisor does not do the
+                    decompression for the domU guest, the toolstack does this, so in this regard the toolstack must
+                    support each decompression algorithm used by each supported guest. Also, some VT-x hardware can't
+                    run the real-mode code, which makes up the 16-bit boot stub. The exception to this is when Xen boots
+                    dom0 Linux, in that case, as Andrew Cooper explains, "
+                    <i>
+                        the hypervisor contains just enough domain builder code in .init to construct dom0, but this
+                        code is discarded before dom0 starts to execute
+                    </i>
+                    ". If one were to resolve the EFI boot issue for Linux, it would not only be useful for PVH, old HVM
+                    guests could also use it as well, the only difference would be that HVM guests would use qemu for
+                    legacy devices.
+                </p>
+                <p>
+                    Can these issues be resolved though? For instance, can we add a decompression algorithm type that
+                    simply skips the decompression? Additionally -- even if these are the reasons to have this new boot
+                    method used by Xen for the new PVH -- has this
+                    <u><i>really</i></u>
+                    been fully vetted by everyone ? Are there really no issues with it ? One concern expressed by
+                    Alexander Graf recently was that without a boot loader (grub2) you loose the ability to boot from an
+                    older btrfs snapshot. Directly booting in this light is a bad idea.
+                </p>
+                <p>
+                    It turns out though that if you want to boot Xen you rely on the
+                    <a href="https://en.wikipedia.org/wiki/Multiboot_Specification">Multiboot protocol</a>
+                    , originally put out by the FSF long ago, the last proposed new PVH boot patches had borrowed ideas
+                    from Multiboot to add an entry to Linux, only it was Xen'ified. What would be
+                    <b>Multiboot 2</b>
+                    seemed flexible enough to allow all sorts of custom semantics and information stacked into a boot
+                    image. The last thought I had over this topic (before giving up)  was-- if we're going to
+                    <i>add yet-another-entry</i>
+                    (TM) why not add extend Mulitiboot 2 support with the semantics we need to boot any virtual
+                    environment and then add Multiboot 2 support entry on Linux? In fact, could such work help unify
+                    boot entries over architectures long term in Linux? Is a single unified Linux entry possible?
+                </p>
+                <p>
+                    Using EFI seems to require work and a proof of concept, is there an alternative? For instance --
+                    Alexander Graf wonders why can't the 32-bit entry points be used directly? We would need a PV IO
+                    description table -- could merging what we need into ACPI tables suffice to address concerns ?
+                    Again, this gets into semantics, as we'd still need to find out if who entered the entry point is a
+                    Xen PVH guest or not so we can set up the boot parameters accordingly. One option, for instance is
+                    to use CPUID, however CPUID instruction was introduced as of Pentium, so this would fail on i486.
+                    Jürgen has noted that we however could probably just
+                    <a
+                        href="https://web.archive.org/web/20110307080258/http://www.intel.com/Assets/PDF/appnote/241618.pdf"
+                    >
+                        detect CPUID support
+                    </a>
+                    , and this avoid the invalid op code.
+                </p>
+                <p>
+                    In the end talk is cheap. So we need to see code. But hopefully this summarizes enough to understand
+                    the issues on both sides. Good luck!
+                </p>
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </footer>
+    </body>
+</html>

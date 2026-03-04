@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Gay boring, Gay Google and copyleft-next — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2012-07-08">Jul 8, 2012</time>
+                    <span class="category-badge badge-opensource">Open Source</span>
+                </div>
+                <h1>Gay boring, Gay Google and copyleft-next</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2012/07/gay-boring-gay-google-and-copyleft-next.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a href="http://instagram.com/p/MPF-jOtzPe/" target="_blank">
+                        <img
+                            border="0"
+                            src="https://web.archive.org/web/20140128001139im_/http://distilleryimage2.s3.amazonaws.com/2ef04ee8bd9011e1b2fe1231380205bf_7.jpg"
+                            height="320"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                Yesterday
+                <a href="http://www.ontopmag.com/article.aspx?id=12330&amp;MediaType=1&amp;Category=24" target="_blank">
+                    Google announced a global campaign to legalize gay marriage
+                </a>
+                . At first I was a bit perplexed and did not know how I felt about it. I reached out to my gay cousin,
+                <a href="https://twitter.com/pico218">Pico</a>
+                , for an opinion. I did this given that although my cousin is gay she never has never associated herself
+                well with the gay pride movement. I took me a while to understand why: some folks who are gay tend to be
+                extremely flamboyant. The word flamboyant describes it best but other adjectives can help for those lost
+                in&nbsp;translation:&nbsp;flashy, obnoxious, and at times even rude. After long winded conversations
+                about the subject with my cousin and her&nbsp;beautiful&nbsp;wife while I last visited for their wedding
+                I insisted to them to blog about it, and they accepted the challenge. The name chosen is
+                <a href="http://gayboring.com/">gayboring.com</a>
+                &nbsp;and it reflects on the idea that not all folks who are gay are flamboyant and in fact some gay
+                folks hate it.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a href="http://instagram.com/p/MRIbv_NzCb/" target="_blank">
+                        <img
+                            border="0"
+                            src="https://web.archive.org/web/20140128001139im_/http://distilleryimage3.s3.amazonaws.com/6e83dce2be2f11e1989612313815112c_7.jpg"
+                            height="320"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                You can be gay and yet have a relatively typical normal lifestyle: take your child to t-ball, and make
+                one of your highlights of a relative visit showing someone how to make their own hummus. Despite all
+                this instinctively my cousin told me she supported Google's efforts, but she did not tell me why. I
+                thought about this and I too support this, but I'd like to elaborate on why and also relate it to
+                another movement to which I care very dearly about:
+                <a href="http://en.wikipedia.org/wiki/Free_and_open-source_software">Free and Open Source Software</a>
+                . Thinking about why I support gay rights has pushed me to finally make
+                <b>a huge personal philosophical breakthrough</b>
+                .
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a href="http://instagram.com/p/MPTDDqNzIq/" target="_blank">
+                        <img
+                            border="0"
+                            src="https://web.archive.org/web/20140128001139im_/http://distilleryimage10.s3.amazonaws.com/23722838bda011e1abd612313810100a_7.jpg"
+                            height="320"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                Gay rights movement is about that alone:
+                <b>gay rights</b>
+                . Surely if you do not have any openly gay relatives you likely have not yet been exposed to why gay
+                rights just makes so much damn sense. If you do not have any openly gay relatives start asking relatives
+                who you do suspect are gay and just start talking about it. I'll bet my right nut that you have a gay
+                relative, whoever you are. When you start thinking about the gay rights movement more in terms of
+                fighting for freedoms it just clicks and the movement makes perfect sense: the movement has its place
+                and we need to show support and educate as much as possible on the matter.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a href="http://www.fotw.us/flags/qq-rb_h.html" target="_blank">
+                        <img
+                            border="0"
+                            src="https://web.archive.org/web/20050109203618im_/http://www.fotw.us/images/s/sex-rb.gif"
+                            height="213"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    The
+                    <a href="http://www.fotw.us/flags/qq-rb_h.html" target="_blank">
+                        "gay rainbow / pride flag" has a pretty awesome history
+                    </a>
+                    . Read about it for all the
+                    <a href="http://gayboring.com/" target="_blank">gayboring</a>
+                    details but I'll highlight one important overlooked fact: the original flag had hot pink stripe
+                    which today is removed. The pink stripe symbolized "sex". So if we do want to support the gay rights
+                    movement but not any of the flamboyant attributes that some folks have
+                    <b>the current flag seems fair to support</b>
+                    . Its important I clarify that its not that I do not support folks to be flamboyant -- not at all, I
+                    fully support this, its just I believe we should consider being flamboyant a completely separate
+                    attribute from being gay. Even straight folks can be flamboyant and sexually obnoxious, its no
+                    different. In fact your typical macho at bars smacking girl's asses is no different nor ruder than a
+                    flamboyant fag.
+                    <a href="http://en.wikipedia.org/wiki/Alfred_Kinsey" target="_blank">Alfred Kinsey</a>
+                    &nbsp;first started redefining what we know as sexual&nbsp;behavior&nbsp;in the 1940s and 1950s --
+                    and a lot of this was based on&nbsp;empirical&nbsp;studies. Towards the end of of his life he
+                    started loosing funding for his research and a lot of this had to do with the fact that he started
+                    making moral opinionated claims, and some of this had to do with sex offenders.
+                    Flamboyant&nbsp;behavior&nbsp;is a sexual orientation neutral attribute and if one wants to fight
+                    for rights for it: study it and document it first, but do not try to piggy back your agenda on top
+                    of the gay rights movement, doing otherwise would only do a disservice to freedoms we need passed in
+                    legislation all around the world. Baby steps.
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    <br />
+                </div>
+                <div style="text-align: center">
+                    <a
+                        href="http://www.flickr.com/photos/stevenraymondparker/127399509/"
+                        title="The Thinker Paris by Steven Parker, on Flickr"
+                    >
+                        <img
+                            alt="The Thinker Paris"
+                            src="http://farm1.staticflickr.com/53/127399509_9327d6c808.jpg"
+                            height="375"
+                            width="500"
+                        />
+                    </a>
+                </div>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    Moving on to free and open source software philosophy... I have
+                    <a href="http://mcgrof.blogspot.com/2012/03/connecting-dots.html" target="_blank">written before</a>
+                    that while in college one of my goals before I graduated was to have reached a conclusion on the
+                    ideals of free software philosophy and specifically on the
+                    <a href="http://www.fsf.org/" target="_blank">Free Software Foundation</a>
+                    's position on moral claims to free software.
+                    <a href="http://mcgrof.blogspot.com/2012/03/connecting-dots.html">As I stated before</a>
+                    , I couldn't reach a conclusion then and I have been trying to reach one, and I thought I was close
+                    but now I'm certain I've finally completed my philosophical objective and of all things I have to
+                    thank
+                    <b>gay rights philosophy</b>
+                    for it!
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    <br />
+                </div>
+                <div style="text-align: center">
+                    <a href="http://www.flickr.com/photos/pepebosch/6996307424/" title="Quake3 by josebosch, on Flickr">
+                        <img
+                            alt="Quake3"
+                            src="http://farm8.staticflickr.com/7178/6996307424_b56cde6de3.jpg"
+                            height="399"
+                            width="500"
+                        />
+                    </a>
+                </div>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    When you think about
+                    <a href="http://en.wikipedia.org/wiki/Free_and_open-source_software">
+                        Free and Open Source software (FOSS)
+                    </a>
+                    and only try to answer the question of whether or not users should have freedom to the software they
+                    obtain / purchase, the answer is not obvious for a few reasons. First are the
+                    <b>exceptions</b>
+                    : what about video games? Even though you have super awesome companies like
+                    <a href="http://en.wikipedia.org/wiki/Id_Software" target="_blank">Id Software</a>
+                    &nbsp;which
+                    <b>have</b>
+                    released software to their game engine like...
+                    <a href="https://github.com/id-Software/Quake-III-Arena">Quake III Arena</a>
+                    , and even have released
+                    <a href="https://github.com/id-Software/DOOM-3">Doom 3</a>
+                    game engine... they are
+                    <b>the exception</b>
+                    in the gaming industry. A lot of this has to do with old corporate&nbsp;fogies&nbsp;who simply don't
+                    get the general alternative benefits of Free and Open Source software -- but apart from that I also
+                    believe
+                    <b>a key issue with free software philosophy</b>
+                    &nbsp;has been the very need to properly and formally justify free software in a way that
+                    <b>people can easily relate to</b>
+                    . Because of the difficulty in justifying free software from a moral&nbsp;perspective&nbsp;we have
+                    started another movement in the community: the
+                    <a href="http://en.wikipedia.org/wiki/Open_source" target="_blank">Open Source</a>
+                    movement. The movement and philosophy is simple: support opening up code not for moral reasons but
+                    for
+                    <b>practical and empirical reasons</b>
+                    . This movement has enabled corporations to invest millions if not billions of dollars by now in
+                    supporting the "Open Source" movement (people get surprised when I tell them Android is running on a
+                    Linux kernel with all open code, or that most of the stock markets all are running Linux), and free
+                    software zealots remain a bit content given that some free software keeps moving along and we're at
+                    least in a better place than before. Personally, I'm not satisfied with the status quo, not because
+                    of the
+                    <b>brutally great obvious practical benefits of FOSS</b>
+                    and shocked at how Steve Ballmer himself has not come out and admitted his position for Microsoft
+                    has been wrong all along and for Microsoft to just open up all its own damn software -- but because
+                    the philosophical aspects of free software still had issues in my head -- after all I am a
+                    philosophy minor ;) These issues persisted even when debating with lead developers and lead
+                    philosophers in the community on the subject
+                    <b>for years now</b>
+                    . But now its all crystal clear!&nbsp;
+                    <a href="http://www.do-not-panic.com/2012/03/connecting-dots.html">Dot</a>
+                    .
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    <br />
+                </div>
+                <div style="text-align: center">
+                    <a
+                        href="http://www.flickr.com/photos/s3a/5498393620/"
+                        title="Come on, I canna hold it much longer by Jonathan_W (@whatie), on Flickr"
+                    >
+                        <img
+                            src="https://web.archive.org/web/20160413165146im_/https://farm6.staticflickr.com/5220/5498393620_b4990431c6.jpg"
+                            width="500"
+                            height="375"
+                            alt="Come on, I canna hold it much longer"
+                        />
+                    </a>
+                </div>
+                <br />
+                <div class="separator" style="clear: both; text-align: left">
+                    Just as gay folks can fight for freedoms, and maybe in the future&nbsp;flamboyant folks may want to
+                    try to fight for their own rights, geeks also have rights they want to fight for, and that's fine.
+                    Freedoms tend to not be considered until its obvious a wrong was done to someone.
+                    <a href="http://en.wikipedia.org/wiki/Richard_Stallman" target="_blank">Richard Stallman</a>
+                    &nbsp;(
+                    <a href="http://identi.ca/rms">rms</a>
+                    ) is the pioneer of free software philosophy, and he started it after a company did something
+                    obviously wrong to him. Richard did more than birth free software philosophy, he started the
+                    ambitious&nbsp;
+                    <a href="http://en.wikipedia.org/wiki/GNU_Project" target="_blank">GNU project</a>
+                    , to create a completely free and open operating system. Richard did try to explain to many folks
+                    how important free software was -- some got it, some didn't. I'd wager that many folks who did get
+                    it understood the harm that could be done to them when their own freedoms were taken away, perhaps
+                    even from some own personal experiences. I realize today that one of my mentors,
+                    <a href="http://www.do-not-panic.com/2012/03/connecting-dots.html" target="_blank">
+                        Joseph F. Miklojcik III whom I have written about before
+                    </a>
+                    , likely understood the ideals of free software&nbsp;because&nbsp;of his experience with competing
+                    against Emacs with proprietary software. In short, he worked on a proprietary version of Emacs. He
+                    had to work on this even though he knew that the open and free version of GNU Emacs was far
+                    superior. It puzzled him given that even folks like NASA for a while were still using the
+                    proprietary version of Emacs! If we want people to understand why free software is important we must
+                    put emphasis on the stories of
+                    <b>being done wrong</b>
+                    , of
+                    <b>your freedoms being taken away</b>
+                    , or
+                    <b>your freedoms being mocked, or abused</b>
+                    . In fact I'd wager that it is not until this happens that most people do not get free software. I'm
+                    pretty sure this has happened even to folks in the BSD camp... who use a license that does not
+                    require giving you access to software modifications a third party has made to software you
+                    originally wrote.
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    <br />
+                </div>
+                <div style="text-align: center">
+                    <a
+                        href="http://www.guardian.co.uk/commentisfree/2010/dec/17/anonymous-wikileaks-protest-amazon-mastercard"
+                    >
+                        <img
+                            alt="Anonymous at Occupy LSX-1.jpg"
+                            src="https://web.archive.org/web/20140128001141im_/http://farm7.staticflickr.com/6100/6249096437_82a59c452f.jpg"
+                            height="333"
+                            width="500"
+                        />
+                    </a>
+                </div>
+                <br />
+                I'm pretty sure some folks out there may still not understand why software freedom is important, even
+                though I am trying to clarify this in simple terms, relating it to a very current modern topic, and even
+                providing the philosophical breakdown for it. Let me provide one more example. Anonymous. Heck, even
+                <a
+                    href="http://www.guardian.co.uk/commentisfree/2010/dec/17/anonymous-wikileaks-protest-amazon-mastercard"
+                >
+                    Richard Stallman has written an article on Anonymous
+                </a>
+                and I encourage everyone to read it. The rights that Anonymous fights for are things likely more folks
+                can relate to: freedom of speech, using the internet freely, allowing us to donate to groups like
+                WikiLeaks, etc. These freedoms are not freedoms everyone takes advantage of, such as sitting down on a
+                bus when there is a chair available regardless of your color, or not voting even though you are a female
+                -- but they exist, and a few of us really care about them. Free Software is no different, but typically
+                only geeks care about it. But what if you started to loose trust on your typical proprietary products? A
+                few examples all listed on Stallman's article:
+                <br />
+                <ul>
+                    <li>
+                        <a href="http://www.nytimes.com/2009/07/18/technology/companies/18amazon.html">
+                            In 2009 Amazon used a back door in its e-reader to remotely delete thousands of copies of
+                            1984, by George Orwell
+                        </a>
+                        &nbsp;from readers
+                        <b>who had bought them!</b>
+                    </li>
+                    <li>
+                        <a
+                            href="http://www.telegraph.co.uk/technology/3358134/Apples-Jobs-confirms-iPhone-kill-switch.html"
+                        >
+                            Apple put a back door in the iPhone to remotely delete installed applications
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://www.informationweek.com/news/201806263">
+                            Windows enabled Microsoft to install software changes without asking permission
+                        </a>
+                    </li>
+                </ul>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                <div style="text-align: center">
+                    <a
+                        href="http://www.flickr.com/photos/pookhy/6049203399/"
+                        title="Books # 13 : George Orwell 1984 by Pierre Beteille, on Flickr"
+                    >
+                        <img
+                            alt="Books # 13 : George Orwell 1984"
+                            src="http://farm7.staticflickr.com/6186/6049203399_33ddb26269.jpg"
+                            height="450"
+                            width="500"
+                        />
+                    </a>
+                </div>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    So geeks have freedoms, and whether or not you may have realized it, some of these freedoms are
+                    actually important for you,
+                    <b><u>even though you do not exercise them</u></b>
+                    , when it comes to trust -- there is nothing better than having open code and demanding it. But even
+                    to this day it is not evident that we do have software freedoms. In fact I'd also like to make a
+                    relationship here that may help explain why we have had a
+                    <b>technical community backlash</b>
+                    against the GPL,
+                    <a href="http://mcgrof.blogspot.com/2012/03/importance-of-gpl.html" target="_blank">
+                        despite its importance
+                    </a>
+                    . Just as we have
+                    <b>gayboring gays</b>
+                    and we also have
+                    <b>flamboyant gays</b>
+                    , we also have
+                    <b>boring geeks</b>
+                    , and
+                    <b>flamboyant geeks</b>
+                    . If one is to properly use the analogy I'd likely fit into the boring geeks camp. I do not wear a
+                    pocket protector, I do not carry a GNU bible, and I at times have gotten into debates with zealots
+                    over the practicality FOSS outweighing some theoretical moral gains with "free software philosophy".
+                    There is also obviously Richard Stallman himself, who has gone to&nbsp;lengths,
+                    <a href="http://www.do-not-panic.com/2012/03/connecting-dots.html" target="_blank">
+                        as I've written about before
+                    </a>
+                    ,&nbsp;of asking even University Student Linux Users Groups (LUGs) to rename themselves to include
+                    "GNU" in their organization name. We did not change our LUG's name at Rutgers.
+                    <a href="http://identi.ca/rms">rms</a>
+                    a zealot, our very own most famous
+                    <b>flamboyant geek</b>
+                    in the universe, sometimes even called the Pope. Then we also have
+                    <a href="http://identi.ca/bkuhn" target="_blank">Bradley M. Kuhn</a>
+                    &nbsp;who believes so much in free software philosophy that he's been advising Free Software groups
+                    with organizational / legal structure through a slew of non profit work. Bradley deserves a medal
+                    for his heroic efforts. But there is one aspect of Bradley's work that has some corporations
+                    concerned: copyleft enforcement -- that is taking folks to court when they violate the license used
+                    in most free software projects: the Copyleft GPL license. I've written before on
+                    <a href="http://mcgrof.blogspot.com/2012/03/importance-of-gpl.html" target="_blank">
+                        the importance of the GPL and why I support GPL enforcement
+                    </a>
+                    , but I'd like to clarify that GPL enforcement is also seen very negatively by many corporations. It
+                    is seen negatively as
+                    <b>some</b>
+                    <i>interpretations</i>
+                    of the language of the GPL could be taken to a far extreme and imply opening up&nbsp;aspects&nbsp;of
+                    software some companies legally cannot for either legal purposes or current technical purposes. It
+                    really is not different than trying to work on actual legislation language for new rights for groups
+                    of folks, whether that's
+                    <a href="http://gayboring.com/" target="_blank">gayboring</a>
+                    folks or handicapped people. The conflicts of the possible loose language of the GPL have put us
+                    where we are today with regards to corporations.
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    <br />
+                </div>
+                <div style="text-align: center">
+                    <a href="http://www.flickr.com/photos/amagill/3906314682/" title="Dog days by AMagill, on Flickr">
+                        <img
+                            alt="Dog days"
+                            src="http://farm3.staticflickr.com/2636/3906314682_ef53a55b63.jpg"
+                            height="333"
+                            width="500"
+                        />
+                    </a>
+                </div>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    I will clarify that although I have been pushing hard on the concept of formally
+                    <a href="http://mcgrof.blogspot.com/2012/04/localizing-gpl.html" target="_blank">
+                        localizing the GPL inside the Linux kernel
+                    </a>
+                    &nbsp;I cannot emphasize now more than ever on
+                    <a href="http://mcgrof.blogspot.com/2012/03/importance-of-gpl.html" target="_blank">
+                        the importance of the GPL
+                    </a>
+                    . See, the BSD camp is a type of FOSS camp that chooses to not require you to give back changes to
+                    software a third party makes of your software. I'd like to invite even the BSD camp to reflect hard
+                    on their ancient license. In fact I think a good middle ground solution has presented itself
+                    recently.
+                    <a href="http://identi.ca/fontana" target="_blank">Richard Fontana</a>
+                    &nbsp;has recently announced the
+                    <a href="https://gitorious.org/copyleft-next">copyleft-next.git</a>
+                    &nbsp;project as
+                    <b>an independent project</b>
+                    . I cannot emphasize enough how
+                    <b><u>important this is</u></b>
+                    . The original popular copyleft license (used on the Linux kernel), the GPLv2, has evolved into the
+                    GPLv3 and the Linux kernel
+                    <b>never moved to it</b>
+                    . There are quite a few reasons for this and I've documented a few reasons why on my blog post on
+                    <a href="http://www.do-not-panic.com/2012/03/importance-of-gpl.html">the importance of the GPL</a>
+                    , but I recently learned of one obscure possible reason I'll shyly mention but consider it important
+                    to share to understand the tensions. It seems some kernel developers were told that even if they did
+                    not want to move to the GPLv3 that
+                    <i>they</i>
+                    would force the Linux kernel to move to the GPLv3 somehow. For fuck's sake, that's not how this
+                    needs to be dealt with. As for the current ongoing effort on GPL enforcement, I can hope its even
+                    clearer now on why it is
+                    <b>morally correct</b>
+                    and
+                    <b>extremely important</b>
+                    to fight for the freedom of developers who did write and contribute to code under the GPL. If you
+                    are in the industry and still find reasons to object to the current set of GPL enforcement efforts,
+                    I'd love to hear why you would oppose such efforts, specially if you read this long blog post. I'd
+                    also like to&nbsp;incite now more developers to take the
+                    <b>leap</b>
+                    &nbsp;to join in on the SFC's compaign on GPL enforcement on the Linux kernel, I'll simply echo
+                    <a href="http://mjg59.dreamwidth.org/">Mathew Garret</a>
+                    's&nbsp;
+                    <a href="http://mjg59.dreamwidth.org/10437.html">invitation</a>
+                    :
+                </div>
+                <blockquote class="tr_bq">
+                    <i>
+                        No significant kernel copyright holders have so far offered to allow the SFC to enforce their
+                        copyrights, with the result that enforcement action will grind to a halt as vendors move over to
+                        this Busybox replacement. So, if you hold copyright over any part of the Linux kernel, I'd urge
+                        you to get in touch with them.&nbsp;
+                    </i>
+                </blockquote>
+                <div class="separator" style="clear: both; text-align: left">
+                    <br />
+                </div>
+                <div style="text-align: center">
+                    <a
+                        href="http://www.flickr.com/photos/followthethings/8707065938/"
+                        title="Teaching controversial issues by followthethings.com, on Flickr"
+                    >
+                        <img
+                            src="https://farm9.staticflickr.com/8135/8707065938_5b0783b368.jpg"
+                            width="500"
+                            height="334"
+                            alt="Teaching controversial issues"
+                        />
+                    </a>
+                </div>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    As I have expressed to a few folks: even though you disagree with the possible reasons, or approach,
+                    if you participate
+                    <b>you can have an influence on the subject</b>
+                    . It is only fair for the SFC to listen to you as a contributor. So it is fair to participate and to
+                    vocalize your position to be very reasonable. If you have doubts over the subject I'd love to help
+                    in any way I can.
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    <br />
+                </div>
+                <div style="text-align: center">
+                    <a
+                        href="http://www.flickr.com/photos/eneas/2540708438/"
+                        title="Hulk odiar Sarrooooo / Hulk hate Tartaaaaar by Eneas, on Flickr"
+                    >
+                        <img
+                            alt="Hulk odiar Sarrooooo / Hulk hate Tartaaaaar"
+                            src="http://farm3.staticflickr.com/2009/2540708438_ac733f5509.jpg"
+                            height="334"
+                            width="500"
+                        />
+                    </a>
+                </div>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    As we move on with GPL enforcement&nbsp;
+                    <a href="http://identi.ca/fontana">Fontana's</a>
+                    &nbsp;efforts will help us with a
+                    <b>stronger</b>
+                    copyleft. I believe it will be a very fair license given that he is separating himself from the
+                    church (FSF) and corporations. It can be seen as community
+                    <b>independent project</b>
+                    and we simply trust Fontana to be the&nbsp;benevolent&nbsp;dictator of that project. Given that
+                    there was a huge corporate interest in the editing of the GPLv3, to the extent that as I have
+                    written before even a
+                    <a href="http://www.do-not-panic.com/2012/03/importance-of-gpl.html">
+                        private draft edit of the GPLv3 was made by a few corporations
+                    </a>
+                    , I suspect there will be another huge corporate interest in the editing of
+                    <a href="https://gitorious.org/copyleft-next">copyleft-next</a>
+                    . Given the way it is set up, the fact that we have a hopefully non partial dictator, my hope is
+                    that perhaps we can look forward to this license as something to consider for new important code,
+                    maybe even new kernel code. I invite corporate attorneys to consider engaging on the editing of
+                    <a href="https://gitorious.org/copyleft-next">copyleft-next</a>
+                    &nbsp;but as individuals... &nbsp;If you do need to be associated with your company then simply
+                    learn to try to engage as much as possible publicly. This is how public community projects work
+                    best! Don't ruin it!
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    <br />
+                </div>
+                <div style="text-align: center"></div>
+                <div style="text-align: center">
+                    <a
+                        href="http://www.flickr.com/photos/chaparral/354306238/"
+                        title="Closet[Day11]* by Chapendra, on Flickr"
+                    >
+                        <img
+                            alt="Closet[Day11]*"
+                            height="500"
+                            src="https://farm1.staticflickr.com/127/354306238_35b2f6a50c.jpg"
+                            width="275"
+                        />
+                    </a>
+                </div>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    Google working on a&nbsp;campaign&nbsp;to push for legalizing gay marriage is of
+                    <u>paramount importance</u>
+                    , and I give them a lot of credit for it. Curiously enough though even though Google uses Linux for
+                    its mobile OS Android, its desktop OS ChromeOS, it has hired a few Linux kernel developers, has
+                    Google Summer of Code, I personally still consider
+                    <b>Google as being in the closet with regards to Free Software</b>
+                    . I don't blame them though, everyone has. I think the philosophy about free software is not easy to
+                    digest but I am in hopes that with time we can also openly not only talk about the benefits of free
+                    software from the "open source"&nbsp;perspective&nbsp;but also from the users's, geeks' and
+                    community's freedom point of view.
+                    <b>It took me over 10 years to digest Free Software philosophy</b>
+                    , so
+                    <b>I understand</b>
+                    its hard to get it from a corporate perspective but hopefully this personal
+                    documented&nbsp;philosophical&nbsp;breakthrough&nbsp;will help others. I am in hopes that
+                    <a href="https://gitorious.org/copyleft-next">copyleft-next</a>
+                    will help remove any extravagant language and enables us to really focus on the real matter at hand:
+                    software freedom. And -- although
+                    <a href="http://identi.ca/rms">rms</a>
+                    &nbsp;can be considered a flamboyant free software advocate, I'd like to ensure everyone understands
+                    not only does rms focus on free software freedoms, I consider him a pioneer on monitoring all of our
+                    freedoms around the world, we're very&nbsp;fortunate&nbsp;to have him. If you're curious about that
+                    just
+                    <a href="http://identi.ca/rms">read his dents on identica</a>
+                    &nbsp;(dents are "Tweets" on the free software version of Twitter called
+                    <a href="http://indenti.ca/">indenti.ca</a>
+                    ). It is also no surprise to me
+                    <b>why</b>
+                    <a href="http://identi.ca/rms">rms</a>
+                    wrote an article on newspaper supporting and
+                    <a
+                        href="http://www.guardian.co.uk/commentisfree/2010/dec/17/anonymous-wikileaks-protest-amazon-mastercard"
+                    >
+                        explaining the way in which Anonymous electronically protests
+                    </a>
+                    .
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    <br />
+                </div>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

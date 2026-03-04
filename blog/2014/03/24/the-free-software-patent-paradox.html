@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>The Free Software patent paradox — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">← back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2014-03-24">Mar 24, 2014</time>
+                    <span class="category-badge badge-opensource">Open Source</span>
+                </div>
+                <h1>The Free Software patent paradox</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2014/03/the-free-software-patent-paradox.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <br />
+                This is part of a 3 piece entry, the cover of which:
+                <a href="http://www.do-not-panic.com/2014/03/free-software-patents-surveillance-and.html">
+                    free software patents and cosmos
+                </a>
+                <br />
+                <div style="text-align: center">
+                    <iframe
+                        allowfullscreen=""
+                        frameborder="0"
+                        height="432"
+                        mozallowfullscreen=""
+                        msallowfullscreen=""
+                        oallowfullscreen=""
+                        src="https://www.flickr.com/photos/angelsgate/549231098/player/569e8aefab"
+                        webkitallowfullscreen=""
+                        width="324"
+                    ></iframe>
+                </div>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                On my last post I reviewed the rapid pace of evolution of
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                ,
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source software</b></a>
+                and legal evolutions and the implications for business models. There is an interesting set of problems
+                which arise in light of all these evolutions in consideration of personal freedoms, existing business
+                models and patents which I'd like to review now which in the worst case scenario make
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                and
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source software</b></a>
+                targets. I'll refer to this as the free software patent paradox. A paradox, as per my lazy search on
+                google, is defined as:
+                <br />
+                <blockquote class="tr_bq">
+                    paradox:
+                    <i>
+                        a statement or proposition that, despite sound (or apparently sound) reasoning from acceptable
+                        premises, leads to a conclusion that seems senseless, logically unacceptable, or
+                        self-contradictory.
+                    </i>
+                </blockquote>
+                I'll define the free software patent paradox as follows:
+                <br />
+                <blockquote class="tr_bq">
+                    Due to the explosion, market use and leadership of
+                    <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                    and
+                    <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source software</b></a>
+                    we have created a great set of safe havens for
+                    <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                    and
+                    <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source software</b></a>
+                    developers to work in.
+                </blockquote>
+                You might think that this paradox might
+                <b><u>only</u></b>
+                make sense for those who understand and appreciate
+                <a href="http://en.wikipedia.org/wiki/Copyleft">copyleft</a>
+                in the industry, that is, that BSD hackers could not be affected by all this, but that's not the case.
+                If you don't care or understand the reasons for the advancements of
+                <a href="http://en.wikipedia.org/wiki/Copyleft">copyleft</a>
+                today you can still easily get burned by the rules put in place at companies that have patents. The
+                issue I'm trying to highlight then does not only affect Linux / GNU hackers, but also BSD and permissive
+                licensed hackers. This might even hold true, although I'm certain to a lesser degree, for companies that
+                provide devices with trusted boot images (addressed by the
+                <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3">GPLv3</a>
+                ), or web services code (addressed by the
+                <a href="http://en.wikipedia.org/wiki/Affero_General_Public_License">AGPL</a>
+                ). It must be less of an issue for these companies as the licenses that could create a conflict for
+                these companies such as the
+                <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3">GPLv3</a>
+                and
+                <a href="http://en.wikipedia.org/wiki/Affero_General_Public_License">AGPL</a>
+                are naturally less common than the combination of
+                <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3">GPLv3</a>
+                ,
+                <a href="http://en.wikipedia.org/wiki/Affero_General_Public_License">AGPL</a>
+                , and
+                <a href="http://en.wikipedia.org/wiki/Apache_License">Apache 2.0 licensed</a>
+                projects put together, all of which address patents. There are tons of important projects licensed under
+                the
+                <a href="http://en.wikipedia.org/wiki/Apache_License">Apache 2.0 license</a>
+                . Don't take my word for the issues I'm saying exist for
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                and
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source software</b></a>
+                developers -- if you don't know what this is like go ask someone who works at a high patent portfolio
+                owning company what it's like to get a better sense of what's required to contribute to any
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                and
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source software</b></a>
+                project, heck while at it ask what are the rules to contribute to
+                <a href="http://en.wikipedia.org/wiki/Main_Page">Wikipedia</a>
+                .
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://3.bp.blogspot.com/-8kq-aXTc8t8/US2V3DBYQ0I/AAAAAAABPVw/WrLzp8XNUQI/s1600/20130203_114329.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://3.bp.blogspot.com/-8kq-aXTc8t8/US2V3DBYQ0I/AAAAAAABPVw/WrLzp8XNUQI/s1600/20130203_114329.jpg"
+                            height="240"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                The explanation to this paradox comes from the fact that the rate of change of corporate adoption of new
+                freedoms will be slower than the rate at which you may wish to embrace these freedoms and at the same
+                time protect its own corporate interests. Unfortunately in the the worst case scenario for some
+                developers its like being in a glacial moving prison.
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://3.bp.blogspot.com/-ZdX63bU9eZE/Uy_eoHH7D9I/AAAAAAABlCk/xeaRCRpsi_4/s1600/patent-paradox.png"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://3.bp.blogspot.com/-ZdX63bU9eZE/Uy_eoHH7D9I/AAAAAAABlCk/xeaRCRpsi_4/s1600/patent-paradox.png"
+                            height="311"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                The motivation for reviewing this paradox comes from the consideration of the unfortunate implications
+                for any
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                developer who wishes to work at any modern company or is already working at a company that has put in
+                place rules the engineer must follow to participate in
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                and
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source software</b></a>
+                projects either at work or at home. If we are to consider the situation of a developer, lets call him
+                Joe Hacker, having started
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                projects prior to joining a corporation, lets call it Yoyodyne, Inc. Lets assume Joe Hacker only gets
+                hired to work on
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                and
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source software</b></a>
+                .There are copyright considerations for:
+                <br />
+                <ol>
+                    <li>
+                        Who owns the copyrights to the software that Joe Hacker wrote prior to joining Yoyodyne, Inc?
+                    </li>
+                    <li>Who owns the copyrights to the software that Joe Hacker will write for Yoyodyne Inc?</li>
+                    <li>What software projects can Joe Hacker contribute to while at Yoyodyne Inc?</li>
+                </ol>
+                At least the state of California provides clarifications that what you do on your own time without
+                office equipment is your own but a lot of corporate legal agreements contain language that could try to
+                abuse this in other jurisdictions, so the above questions need to be considered separately for both the
+                case of when Joe Hacker is on the clock or at home. I think its reasonable to say that in terms of
+                copyright one could assume that any company hiring any
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                should be able to contribute to any
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                project when at home and the very least
+                <a href="http://en.wikipedia.org/wiki/Main_Page">Wikipedia</a>
+                . You'd be surprised, unfortunately this is not the case, and I'm afraid you might as well consider a
+                different profession other than software engineering if you want to contribute freely to any
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                project.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://1.bp.blogspot.com/-MY_h_UaNPHs/US2V3Oz7xzI/AAAAAAABPVw/0KnkSeAJWpc/s1600/20130218_102357.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://1.bp.blogspot.com/-MY_h_UaNPHs/US2V3Oz7xzI/AAAAAAABPVw/0KnkSeAJWpc/s1600/20130218_102357.jpg"
+                            height="240"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                The situation is already a bit complex, now throw in patent considerations and things get even worse.
+                I'm not going to get into the details and leave the considerations as an exercise for the reader.
+                Remember that money talks and that companies and governments can toy around with our freedoms as they
+                see legally fit, ethics can very easily simply be thrown out the fucking window. I will provide a clear
+                conclusion and some advice for
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                developers. The free software patent paradox
+                <b>does not need to be a paradox</b>
+                , you are a free person by nature! Don't set yourself up and don't go work for a prison, as you may
+                easily simply get yourself locked up in there. The paradox does however present a
+                <b>serious</b>
+                problem in terms of evolution and the problem of creating more highly evolved business models that
+                respect and take into serious consideration the evolution of freedoms in a more timely manner. In my
+                next post I will explain why this is necessary.
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">← back to timeline</a>
+        </footer>
+    </body>
+</html>

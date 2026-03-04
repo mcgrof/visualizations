@@ -1,0 +1,2079 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Interactive visualization explaining the difference between weight decay and L2 regularization, and why AdamW matters."
+        />
+        <meta name="theme-color" content="#0a0e17" />
+        <title>Weight Decay ≠ L2 Regularization</title>
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap");
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #0a0e17;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #2a3a52;
+                border-radius: 3px;
+            }
+
+            body {
+                background: #0a0e17;
+                color: #e2e8f0;
+                min-height: 100vh;
+                font-family: "JetBrains Mono", "Fira Code", "SF Mono", monospace;
+                padding: 24px 16px;
+                line-height: 1.6;
+            }
+
+            .container {
+                max-width: 840px;
+                margin: 0 auto;
+            }
+
+            h1 {
+                font-family: "Playfair Display", serif;
+                font-size: 28px;
+                font-weight: 700;
+                margin-bottom: 4px;
+                background: linear-gradient(135deg, #f59e0b, #06b6d4);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .subtitle {
+                color: #8896ab;
+                font-size: 13px;
+                margin-bottom: 24px;
+            }
+
+            .tabs {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 24px;
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                background: none;
+                border: 1px solid #2a3a52;
+                color: #8896ab;
+                padding: 8px 14px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-family: inherit;
+                font-size: 12px;
+                transition: all 0.2s;
+            }
+
+            .tab-btn:hover {
+                border-color: #f59e0b;
+                color: #e2e8f0;
+            }
+
+            .tab-btn.active {
+                background: rgba(245, 158, 11, 0.13);
+                border-color: #f59e0b;
+                color: #fbbf24;
+            }
+
+            .section {
+                display: none;
+            }
+
+            .section.active {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .card {
+                background: #111827;
+                border: 1px solid #2a3a52;
+                border-radius: 10px;
+                padding: 20px;
+            }
+
+            .card-light {
+                background: #1a2235;
+                border: 1px solid #2a3a52;
+                border-radius: 10px;
+                padding: 16px;
+            }
+
+            .card h3 {
+                font-size: 16px;
+                margin-bottom: 12px;
+                color: #e2e8f0;
+            }
+
+            .card h4,
+            .card-light h4 {
+                font-size: 13px;
+                margin-bottom: 8px;
+                color: #e2e8f0;
+            }
+
+            .card p,
+            .card-light p {
+                font-size: 12px;
+                color: #8896ab;
+                line-height: 1.8;
+            }
+
+            .card p + p {
+                margin-top: 14px;
+            }
+
+            .card p strong {
+                color: #e2e8f0;
+            }
+
+            .card-light p {
+                font-size: 11px;
+                line-height: 1.7;
+            }
+
+            .eq-box {
+                background: #1a2235;
+                border: 1px solid #2a3a52;
+                border-radius: 8px;
+                padding: 14px 18px;
+                font-size: 13px;
+                line-height: 1.8;
+                margin: 10px 0;
+            }
+
+            .grid-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+
+            .grid-3 {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 16px;
+            }
+
+            .canvas-wrap {
+                display: flex;
+                justify-content: center;
+            }
+
+            .canvas-wrap canvas {
+                border-radius: 8px;
+                border: 1px solid #2a3a52;
+            }
+
+            .highlight-wd {
+                color: #fbbf24;
+                font-weight: 700;
+            }
+            .highlight-l2 {
+                color: #22d3ee;
+                font-weight: 700;
+            }
+            .highlight-bad {
+                color: #f87171;
+                font-weight: 700;
+            }
+            .highlight-good {
+                color: #34d399;
+                font-weight: 700;
+            }
+
+            .accent1 {
+                color: #fbbf24;
+            }
+            .accent2 {
+                color: #22d3ee;
+            }
+            .accent3 {
+                color: #f87171;
+            }
+            .accent4 {
+                color: #34d399;
+            }
+
+            .badge {
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 10px;
+                font-weight: 700;
+                margin-bottom: 10px;
+            }
+
+            .badge-good {
+                background: rgba(16, 185, 129, 0.13);
+                color: #34d399;
+            }
+
+            .badge-bad {
+                background: rgba(239, 68, 68, 0.13);
+                color: #f87171;
+            }
+
+            .badge-muted {
+                background: rgba(136, 150, 171, 0.13);
+                color: #8896ab;
+            }
+
+            .border-accent1 {
+                border-color: rgba(245, 158, 11, 0.27) !important;
+            }
+            .border-accent2 {
+                border-color: rgba(6, 182, 212, 0.27) !important;
+            }
+            .border-accent3 {
+                border-color: rgba(239, 68, 68, 0.27) !important;
+            }
+            .border-accent4 {
+                border-color: rgba(16, 185, 129, 0.27) !important;
+            }
+
+            .mono-block {
+                font-size: 11px;
+                color: #8896ab;
+                line-height: 2;
+                font-family: monospace;
+            }
+
+            .muted {
+                color: #8896ab;
+            }
+
+            .text-sm {
+                font-size: 10px;
+            }
+
+            .gradient-box {
+                border-radius: 10px;
+                padding: 18px;
+            }
+
+            @media (max-width: 700px) {
+                .grid-2,
+                .grid-3 {
+                    grid-template-columns: 1fr;
+                }
+
+                h1 {
+                    font-size: 22px;
+                }
+
+                .tabs {
+                    gap: 4px;
+                }
+
+                .tab-btn {
+                    padding: 6px 10px;
+                    font-size: 11px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Weight Decay ≠ L2 Regularization</h1>
+            <p class="subtitle">...except when it is. The subtle confusion that led to AdamW.</p>
+
+            <div class="tabs" id="tabs"></div>
+
+            <!-- Section: What is Adam -->
+            <div class="section" id="section-adam_intro">
+                <div class="card">
+                    <h3>Adam: Adaptive Moment Estimation</h3>
+                    <p>
+                        <strong>The problem with SGD:</strong>
+                        vanilla stochastic gradient descent uses a single, fixed learning rate for every parameter. On
+                        loss surfaces with different curvature in different directions (extremely common in neural
+                        networks), this causes oscillation along steep axes while making glacially slow progress along
+                        flat ones — the classic "zigzag" problem.
+                    </p>
+                    <p>
+                        <strong>Adam (Kingma & Ba, 2014)</strong>
+                        solves this by maintaining
+                        <em>per-parameter</em>
+                        adaptive learning rates using two running averages of gradient history: the
+                        <strong class="accent1">first moment</strong>
+                        (mean of gradients, like momentum) and the
+                        <strong class="accent1">second moment</strong>
+                        (mean of squared gradients, measuring variance). Dividing by √(second moment) normalizes each
+                        parameter's step size by its gradient scale.
+                    </p>
+                </div>
+
+                <div class="canvas-wrap">
+                    <canvas id="canvas-adam-pipeline" width="740" height="280"></canvas>
+                </div>
+
+                <div class="eq-box" style="background: #111827">
+                    <h4 style="font-size: 13px; margin-bottom: 10px">The Adam Update Rule</h4>
+                    <div class="grid-2" style="font-size: 12px">
+                        <div>
+                            <p class="accent1" style="font-weight: 700; margin-bottom: 6px; font-size: 12px">
+                                Moving averages (per parameter):
+                            </p>
+                            <p style="line-height: 2">
+                                m
+                                <sub>t</sub>
+                                = β₁ · m
+                                <sub>t-1</sub>
+                                + (1 − β₁) · g
+                                <sub>t</sub>
+                                <span class="text-sm muted">← first moment (momentum)</span>
+                                <br />
+                                v
+                                <sub>t</sub>
+                                = β₂ · v
+                                <sub>t-1</sub>
+                                + (1 − β₂) · g
+                                <sub>t</sub>
+                                ²
+                                <span class="text-sm muted">← second moment (variance)</span>
+                            </p>
+                        </div>
+                        <div>
+                            <p class="accent4" style="font-weight: 700; margin-bottom: 6px; font-size: 12px">
+                                Bias correction + update:
+                            </p>
+                            <p style="line-height: 2">
+                                m̂
+                                <sub>t</sub>
+                                = m
+                                <sub>t</sub>
+                                / (1 − β₁
+                                <sup>t</sup>
+                                )
+                                <span class="text-sm muted">← compensate zero-init bias</span>
+                                <br />
+                                v̂
+                                <sub>t</sub>
+                                = v
+                                <sub>t</sub>
+                                / (1 − β₂
+                                <sup>t</sup>
+                                )
+                                <br />
+                                w ← w − lr · m̂
+                                <sub>t</sub>
+                                / (√v̂
+                                <sub>t</sub>
+                                + ε)
+                                <span class="text-sm muted">← the adaptive step</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card-light border-accent2" style="padding: 16px">
+                        <h4 class="accent2">First Moment m: Momentum</h4>
+                        <p>
+                            An exponential moving average of past gradients. Instead of following the current gradient's
+                            noisy direction, the optimizer accumulates a smoothed direction (β₁ = 0.9 typical). This
+                            dampens oscillations and sustains progress along consistent gradient directions — like a
+                            ball rolling with inertia.
+                        </p>
+                    </div>
+                    <div class="card-light border-accent1" style="padding: 16px">
+                        <h4 class="accent1">Second Moment v: Adaptive Scaling</h4>
+                        <p>
+                            An exponential moving average of squared gradients (β₂ = 0.999 typical). Dividing by √v̂
+                            gives each parameter its own effective learning rate: parameters with historically large
+                            gradients get
+                            <em>smaller</em>
+                            steps, parameters with small gradients get
+                            <em>larger</em>
+                            steps. This is what eliminates the zigzag.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="canvas-wrap">
+                    <canvas id="canvas-adam-intro" width="420" height="360"></canvas>
+                </div>
+
+                <div class="card-light">
+                    <p>
+                        <strong>The elliptical contours matter:</strong>
+                        the loss surface has 3× steeper curvature along w₂ than w₁. SGD's single learning rate causes it
+                        to overshoot on the steep axis, creating the characteristic zigzag. Adam's per-parameter 1/√v̂
+                        scaling automatically compensates — it takes shorter steps where gradients are large and longer
+                        steps where they're small, producing a much more direct path.
+                    </p>
+                    <p style="margin-top: 14px">
+                        <strong>Why this matters for the rest of this tutorial:</strong>
+                        Adam's per-parameter adaptive scaling is exactly what creates the divergence between weight
+                        decay and L2 regularization. When a penalty term flows through this adaptive machinery, it gets
+                        transformed differently than when applied directly to the weights.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Section: Regularization -->
+            <div class="section" id="section-regularization">
+                <div class="card">
+                    <h3>What is Regularization?</h3>
+                    <p>
+                        Neural networks are powerful function approximators — sometimes
+                        <em>too</em>
+                        powerful. Given enough parameters, a model can memorize the training data perfectly, including
+                        its noise and idiosyncrasies. This is
+                        <strong>overfitting</strong>
+                        : the model performs well on training data but fails to generalize to new, unseen data.
+                    </p>
+                    <p>
+                        <strong>Regularization</strong>
+                        is any technique that constrains or penalizes the model to prevent overfitting and encourage
+                        generalization. The core idea: simpler models (smaller weights, smoother functions) tend to
+                        generalize better. Regularization nudges the optimizer toward these simpler solutions.
+                    </p>
+                    <p>
+                        Common forms include dropout (randomly zeroing activations), data augmentation (expanding
+                        training distribution), early stopping (halting before overfitting), and — the focus of this
+                        tutorial —
+                        <strong>weight-based penalties</strong>
+                        that discourage the model from developing excessively large parameter values.
+                    </p>
+                </div>
+
+                <div class="card border-accent2">
+                    <h3 class="accent2">Why "L2" Regularization? — Norms and Naming</h3>
+                    <p>
+                        The name comes from the
+                        <strong>L2 norm</strong>
+                        (also called the Euclidean norm), which measures the "length" of a vector. For a weight vector
+                        <span class="accent2">w</span>
+                        , the Lp norms are defined as:
+                    </p>
+                    <div class="eq-box">
+                        <span class="muted">General Lp norm:</span>
+                        ‖w‖ₚ = ( |w₁|ᵖ + |w₂|ᵖ + ... + |wₙ|ᵖ )
+                        <sup>1/p</sup>
+                        <br />
+                        <br />
+                        <span class="highlight-l2">L1 norm (p=1):</span>
+                        ‖w‖₁ = |w₁| + |w₂| + ... + |wₙ|
+                        <span class="text-sm muted">— sum of absolute values (promotes sparsity)</span>
+                        <br />
+                        <br />
+                        <span class="highlight-l2">L2 norm (p=2):</span>
+                        ‖w‖₂ = √( w₁² + w₂² + ... + wₙ² )
+                        <span class="text-sm muted">— Euclidean distance from origin</span>
+                    </div>
+                    <p style="margin-top: 14px">
+                        <span class="highlight-l2">L2 regularization</span>
+                        adds the
+                        <em>squared</em>
+                        L2 norm of the weights to the loss function:
+                        <strong>λ · ‖w‖₂²</strong>
+                        . We use the squared norm (not the raw norm) because its gradient is clean and differentiable
+                        everywhere — it yields
+                        <strong>2λw</strong>
+                        , a simple linear push toward zero proportional to each weight's magnitude.
+                    </p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card-light">
+                        <h4>L1 Regularization (Lasso)</h4>
+                        <p>
+                            Penalty: λ · ‖w‖₁ = λ · Σ|wᵢ|
+                            <br />
+                            <br />
+                            Produces
+                            <strong>sparse</strong>
+                            solutions — many weights become exactly zero. Useful for feature selection. The gradient is
+                            ±λ (constant magnitude), which pushes small weights all the way to zero.
+                        </p>
+                    </div>
+                    <div class="card-light border-accent2">
+                        <h4 class="accent2">L2 Regularization (Ridge)</h4>
+                        <p>
+                            Penalty: λ · ‖w‖₂² = λ · Σwᵢ²
+                            <br />
+                            <br />
+                            Produces
+                            <strong>small but non-zero</strong>
+                            weights — a smooth shrinkage toward zero. The gradient is 2λw (proportional to weight), so
+                            large weights get penalized more heavily. This is the one commonly confused with weight
+                            decay.
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="gradient-box"
+                    style="
+                        background: linear-gradient(135deg, rgba(6, 182, 212, 0.07), rgba(245, 158, 11, 0.07));
+                        border: 1px solid rgba(6, 182, 212, 0.2);
+                    "
+                >
+                    <h4>The Source of Confusion</h4>
+                    <p style="font-size: 12px; color: #8896ab; line-height: 1.8">
+                        Both L2 regularization and weight decay push weights toward zero. With standard SGD, they
+                        produce
+                        <em>mathematically identical</em>
+                        updates (as we'll see in the next sections). This led the field to treat them as synonyms for
+                        years. But they are conceptually different mechanisms — and with adaptive optimizers like Adam,
+                        they produce genuinely different behavior. Understanding
+                        <em>why</em>
+                        requires looking at each one carefully.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Section: Dropout -->
+            <div class="section" id="section-dropout">
+                <div class="card">
+                    <h3 class="accent1">Dropout (Srivastava et al., 2014)</h3>
+                    <p>
+                        Dropout is a strikingly simple regularization technique: during each training forward pass,
+                        <strong>randomly set each neuron's output to zero</strong>
+                        with probability
+                        <em>p</em>
+                        (typically 0.1–0.5). The dropped neurons change every pass, so the network can never rely on any
+                        single neuron or co-adaptation between specific neurons.
+                    </p>
+                    <p>
+                        The key insight: this is equivalent to training an
+                        <strong>exponentially large ensemble</strong>
+                        of "thinned" sub-networks that share weights. At inference, all neurons are active but outputs
+                        are scaled by (1 − p) to match the expected training-time activation magnitude. The result:
+                        better generalization through redundant, distributed representations.
+                    </p>
+                </div>
+
+                <div class="canvas-wrap">
+                    <canvas id="canvas-dropout" width="720" height="320"></canvas>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card-light">
+                        <h4>Where Dropout is Applied</h4>
+                        <p>
+                            In transformers, dropout was historically applied in several locations: after the attention
+                            softmax (attention dropout), after each sub-layer before the residual connection, and within
+                            the feedforward MLP blocks. The original "Attention Is All You Need" paper used p = 0.1
+                            throughout.
+                        </p>
+                    </div>
+                    <div class="card-light">
+                        <h4>The Ensemble Interpretation</h4>
+                        <p>
+                            A network with
+                            <em>n</em>
+                            units can produce 2
+                            <sup>n</sup>
+                            possible thinned sub-networks via dropout. Each training batch effectively trains a
+                            different sub-network. Inference with scaled weights approximates the geometric mean of all
+                            these sub-networks — an efficient ensemble without the cost of training separate models.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="eq-box" style="background: #111827">
+                    <h4>The Mechanics</h4>
+                    <p style="font-size: 12px; color: #8896ab; line-height: 1.8">
+                        <strong class="accent1">Training:</strong>
+                        For each neuron, sample r ~ Bernoulli(1 − p). Output becomes: ŷ = r · y. On average, a fraction
+                        p of neurons are zeroed each pass. The surviving neurons' gradients are amplified by 1/(1 − p)
+                        to maintain expected magnitude (inverted dropout).
+                        <br />
+                        <br />
+                        <strong class="accent4">Inference:</strong>
+                        No dropout applied — all neurons active. With inverted dropout (the modern default), no scaling
+                        adjustment is needed at inference time since the training-time scaling already compensated.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Section: Intuition -->
+            <div class="section" id="section-intuition">
+                <div class="grid-2">
+                    <div class="card border-accent1">
+                        <h3 class="accent1" style="font-size: 15px">⚖️ Weight Decay</h3>
+                        <p style="margin-bottom: 12px">
+                            The original idea from Hanson & Pratt (1988): every update step,
+                            <strong>multiply each weight by a factor slightly less than 1</strong>
+                            . That's it. No loss function modification — just shrink the weights.
+                        </p>
+                        <div class="eq-box">
+                            <span class="highlight-wd">w</span>
+                            ←
+                            <span class="highlight-wd">w</span>
+                            · (1 − λ) − lr · ∇L(
+                            <span class="highlight-wd">w</span>
+                            )
+                            <br />
+                            <span class="text-sm muted">
+                                = w − lr·∇L(w) −
+                                <span class="highlight-wd">λ·w</span>
+                                ← the decay term
+                            </span>
+                        </div>
+                        <div class="canvas-wrap" style="margin-top: 10px">
+                            <canvas id="canvas-wd-diagram" width="320" height="260"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card border-accent2">
+                        <h3 class="accent2" style="font-size: 15px">📐 L2 Regularization</h3>
+                        <p style="margin-bottom: 12px">
+                            A different approach: add a penalty term
+                            <strong>directly to the loss function</strong>
+                            that penalizes large weights. The gradient of this penalty then naturally pushes weights
+                            toward zero during optimization.
+                        </p>
+                        <div class="eq-box">
+                            <span class="highlight-l2">L̃</span>
+                            (w) = L(w) +
+                            <span class="highlight-l2">λ·‖w‖²</span>
+                            <br />
+                            <br />
+                            ∇
+                            <span class="highlight-l2">L̃</span>
+                            = ∇L(w) +
+                            <span class="highlight-l2">2λ·w</span>
+                            <br />
+                            w ← w − lr · (∇L(w) +
+                            <span class="highlight-l2">2λ·w</span>
+                            )
+                            <br />
+                            <span class="text-sm muted">
+                                = w − lr·∇L(w) −
+                                <span class="highlight-l2">lr·2λ·w</span>
+                                ← penalty gradient
+                            </span>
+                        </div>
+                        <p style="margin-top: 10px">
+                            The regularization gradient
+                            <span class="highlight-l2">2λ·w</span>
+                            gets mixed into the total gradient — this matters for adaptive optimizers!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card-light">
+                    <h3 style="font-size: 14px; margin-bottom: 8px">🔑 The Key Difference</h3>
+                    <p style="font-size: 12px; color: #8896ab; line-height: 1.8">
+                        <span class="highlight-wd">Weight decay</span>
+                        acts
+                        <em>directly on the weights</em>
+                        — it's a multiplicative shrinkage that doesn't touch the gradient at all.
+                        <br />
+                        <span class="highlight-l2">L2 regularization</span>
+                        modifies
+                        <em>the gradient</em>
+                        by adding a term to the loss function — the regularization signal flows through the same
+                        gradient pipeline as the task loss.
+                        <br />
+                        <br />
+                        For vanilla SGD, these produce identical update rules (just rescale λ). But for any optimizer
+                        that
+                        <em>transforms</em>
+                        the gradient before applying it — like Adam's per-parameter adaptive learning rates — they
+                        diverge.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Section: SGD Equivalence -->
+            <div class="section" id="section-sgd">
+                <div class="eq-box" style="background: #111827">
+                    <h3 style="font-size: 14px; margin-bottom: 12px; color: #e2e8f0">
+                        With SGD, weight decay and L2 are equivalent
+                    </h3>
+                    <p style="font-size: 12px; color: #8896ab; line-height: 1.8">
+                        <span class="highlight-wd">Weight decay:</span>
+                        w ← w − lr·∇L(w) −
+                        <span class="highlight-wd">lr·λ·w</span>
+                        <br />
+                        <span class="highlight-l2">L2 regularization:</span>
+                        w ← w − lr·(∇L(w) +
+                        <span class="highlight-l2">2λ·w</span>
+                        ) = w − lr·∇L(w) −
+                        <span class="highlight-l2">lr·2λ·w</span>
+                        <br />
+                        <br />
+                        Set
+                        <span class="highlight-l2">λ_L2</span>
+                        =
+                        <span class="highlight-wd">λ_WD</span>
+                        /2 and they produce
+                        <em>the exact same parameter update</em>
+                        . This algebraic equivalence led the field to treat them as synonyms for decades.
+                    </p>
+                </div>
+
+                <div class="canvas-wrap">
+                    <canvas id="canvas-sgd" width="420" height="360"></canvas>
+                </div>
+
+                <div class="card-light">
+                    <p style="font-size: 12px; color: #8896ab; line-height: 1.8">
+                        <strong>Why they match:</strong>
+                        SGD applies the raw gradient directly — there is no transformation between the gradient
+                        computation and the weight update. Whether you add the penalty to the loss (L2) or subtract it
+                        from the weights (decay), the final Δw is identical. The solid and dashed lines overlap
+                        completely.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Section: Adam Divergence -->
+            <div class="section" id="section-adam">
+                <div class="eq-box" style="background: #111827">
+                    <h3 class="accent3" style="font-size: 14px; margin-bottom: 12px">
+                        Adam's adaptive scaling breaks the equivalence
+                    </h3>
+                    <p style="font-size: 12px; color: #8896ab; line-height: 1.8">
+                        Adam divides the gradient by √(v̂) — a running estimate of gradient variance. This is
+                        per-parameter. When L2 regularization injects the penalty
+                        <em>into the gradient</em>
+                        , it gets divided by √(v̂) too. The regularization strength becomes
+                        <strong>inversely proportional to gradient magnitude</strong>
+                        .
+                    </p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card border-accent3" style="background: #0a0e17; padding: 14px">
+                        <h4 class="accent3" style="font-size: 12px">Adam + L2 (penalty in gradient)</h4>
+                        <p>
+                            The 2λw penalty gets scaled by 1/√(v̂). Large-gradient params: regularization gets
+                            <em>weakened</em>
+                            . Small-gradient params: regularization gets
+                            <em>amplified</em>
+                            . The decay becomes
+                            <strong class="accent3">non-uniform</strong>
+                            across parameters.
+                        </p>
+                    </div>
+                    <div class="card border-accent1" style="background: #0a0e17; padding: 14px">
+                        <h4 class="accent1" style="font-size: 12px">Adam + true weight decay</h4>
+                        <p>
+                            λw applied
+                            <em>after</em>
+                            Adam's adaptive update — never passes through the 1/√(v̂) normalization. Every parameter
+                            decays by the
+                            <strong class="accent1">same proportion</strong>
+                            , regardless of gradient scale.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="canvas-wrap">
+                    <canvas id="canvas-adam-diverge" width="420" height="360"></canvas>
+                </div>
+
+                <div class="card-light border-accent3">
+                    <p style="font-size: 12px; color: #8896ab; line-height: 1.8">
+                        <strong>Why they diverge:</strong>
+                        The elliptical contours represent different curvature per axis (common in real networks). Adam
+                        normalizes gradients per-parameter to handle exactly this. But when L2's penalty is inside the
+                        gradient, it gets normalized too — so the regularization strength becomes entangled with the
+                        loss landscape geometry. True weight decay acts on the raw weights, keeping the regularization
+                        clean and geometry-independent. The dashed bracket shows the gap between the two endpoints.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Section: AdamW -->
+            <div class="section" id="section-adamw">
+                <div class="eq-box" style="background: #111827">
+                    <h3 class="accent4" style="font-size: 14px; margin-bottom: 12px">
+                        Loshchilov & Hutter (2019): "Decoupled Weight Decay Regularization"
+                    </h3>
+                    <p style="font-size: 12px; color: #8896ab; line-height: 1.8">
+                        The landmark paper that identified the problem. They showed that virtually every implementation
+                        of "weight decay" in deep learning was actually doing L2 regularization — feeding the penalty
+                        into the gradient where Adam's adaptive scaling would distort it.
+                    </p>
+                    <p style="font-size: 12px; color: #8896ab; line-height: 1.8; margin-top: 8px">
+                        The fix was remarkably simple:
+                        <strong class="accent4">decouple the weight decay from the gradient-based update</strong>
+                        . Apply Adam's adaptive update first, then subtract the decay term separately.
+                    </p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card border-accent3">
+                        <h4 class="accent3">❌ Adam (with L2 — the common mistake)</h4>
+                        <div class="mono-block">
+                            g ← ∇L(w) +
+                            <span class="highlight-bad">2λw</span>
+                            <br />
+                            m ← β₁m + (1-β₁)g
+                            <br />
+                            v ← β₂v + (1-β₂)g²
+                            <br />
+                            w ← w − lr · m̂/√(v̂+ε)
+                            <br />
+                            <span class="text-sm">
+                                ↑ regularization signal gets
+                                <span class="highlight-bad">distorted</span>
+                                by adaptive scaling
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card border-accent4">
+                        <h4 class="accent4">✅ AdamW (decoupled — the fix)</h4>
+                        <div class="mono-block">
+                            g ← ∇L(w)
+                            <span class="muted">(no L2 term)</span>
+                            <br />
+                            m ← β₁m + (1-β₁)g
+                            <br />
+                            v ← β₂v + (1-β₂)g²
+                            <br />
+                            w ← w − lr · m̂/√(v̂+ε) −
+                            <span class="highlight-good">lr·λ·w</span>
+                            <br />
+                            <span class="text-sm">
+                                ↑ decay applied
+                                <span class="highlight-good">after</span>
+                                adaptive update, clean separation
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="canvas-wrap">
+                    <canvas id="canvas-adamw" width="420" height="360"></canvas>
+                </div>
+
+                <div
+                    class="gradient-box"
+                    style="
+                        background: linear-gradient(135deg, rgba(16, 185, 129, 0.07), rgba(245, 158, 11, 0.07));
+                        border: 1px solid rgba(16, 185, 129, 0.2);
+                        margin-top: 4px;
+                    "
+                >
+                    <h4 class="accent4">Why This Matters</h4>
+                    <p style="font-size: 12px; color: #8896ab; line-height: 1.8">
+                        Loshchilov & Hutter showed that proper decoupling improved generalization across the board.
+                        AdamW is now the default optimizer in most transformer training — from BERT to GPT to most
+                        large-scale training since 2019.
+                        <br />
+                        <br />
+                        The lesson: a "trivial" algebraic equivalence in one setting (SGD) became a meaningful
+                        performance difference in another (Adam). The field spent years applying L2 regularization
+                        thinking it was weight decay, and this confusion measurably held back training quality until
+                        Loshchilov and Hutter formalized the distinction.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Section: Modern Practice -->
+            <div class="section" id="section-modern">
+                <div class="card">
+                    <h3>Regularization in Frontier LLMs (2024–2025)</h3>
+                    <p>
+                        The regularization landscape looks very different for modern large language models compared to
+                        the deep learning of the 2010s. The scale of data and the single-epoch training regime have
+                        fundamentally changed which techniques matter.
+                    </p>
+                </div>
+
+                <div class="grid-3">
+                    <div class="card border-accent4">
+                        <span class="badge badge-good">STILL USED</span>
+                        <h4 class="accent4">Weight Decay (AdamW)</h4>
+                        <p>
+                            AdamW with decoupled weight decay remains the
+                            <strong>default optimizer</strong>
+                            for virtually all frontier LLM pretraining. Typical weight decay values: 0.01–0.1. One
+                            notable refinement: recent work excludes embeddings and normalization layers from weight
+                            decay, as decaying these can hurt training stability.
+                        </p>
+                    </div>
+
+                    <div class="card border-accent3">
+                        <span class="badge badge-bad">NOT USED IN PRETRAINING</span>
+                        <h4 class="accent3">Dropout</h4>
+                        <p>
+                            GPT-3, PaLM, LLaMA, Chinchilla, and Gopher all train with
+                            <strong>dropout = 0</strong>
+                            . LLaMA's config defaults attention_dropout to 0.0. Reason: modern pretraining sees each
+                            token only once (single-epoch), so there is minimal overfitting risk. Dropout just slows
+                            convergence with no regularization benefit. Still sometimes used in fine-tuning on small
+                            datasets.
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <span class="badge badge-muted">REPLACED</span>
+                        <h4 class="muted">L2 Regularization</h4>
+                        <p>
+                            Since AdamW became the standard, L2 regularization (penalty in the loss) has been
+                            effectively
+                            <strong>superseded</strong>
+                            by proper decoupled weight decay. No major frontier model uses L2 regularization directly —
+                            the Loshchilov & Hutter paper resolved this definitively.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card-light">
+                    <h4 style="margin-bottom: 10px">What Regularizes Modern LLMs Instead?</h4>
+                    <p style="font-size: 12px; color: #8896ab; line-height: 1.8">
+                        <strong class="accent4">Data scale as implicit regularization:</strong>
+                        When training on trillions of unique tokens in a single epoch, the model never sees the same
+                        data twice. This eliminates the primary overfitting mechanism that dropout and L2 were designed
+                        to combat.
+                        <br />
+                        <br />
+                        <strong class="accent4">Weight decay via AdamW:</strong>
+                        The one classical regularizer that survived — and for good reason. It prevents weight magnitude
+                        explosion without distorting the adaptive gradient signal, and it helps with training stability
+                        independent of overfitting concerns.
+                        <br />
+                        <br />
+                        <strong class="accent4">Architectural choices:</strong>
+                        Modern regularization is increasingly built into the architecture itself — RMSNorm, QK-norm for
+                        attention stability, logit soft-capping (Gemma-style), and careful initialization schemes. These
+                        provide training stability without the generalization-vs-convergence tradeoffs of classical
+                        regularizers.
+                        <br />
+                        <br />
+                        <strong class="accent4">Gradient clipping:</strong>
+                        Not a regularizer in the classical sense, but gradient norm clipping (typically at 1.0) is
+                        universally applied in LLM training to prevent loss spikes and training instability.
+                    </p>
+                </div>
+
+                <div
+                    class="gradient-box"
+                    style="
+                        background: linear-gradient(135deg, rgba(16, 185, 129, 0.07), rgba(6, 182, 212, 0.07));
+                        border: 1px solid rgba(16, 185, 129, 0.2);
+                    "
+                >
+                    <h4 class="accent4" style="margin-bottom: 8px">The Exception: Fine-Tuning</h4>
+                    <p style="font-size: 12px; color: #8896ab; line-height: 1.8">
+                        While pretraining has moved past dropout and L2,
+                        <strong>fine-tuning on small datasets</strong>
+                        still benefits from classical regularization. LoRA fine-tuning commonly uses dropout (0.05–0.1)
+                        on the adapter weights, stronger weight decay (0.01–0.1), and early stopping. The data scarcity
+                        that triggers overfitting in fine-tuning is precisely the regime these techniques were designed
+                        for.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // ── Color constants ──
+            var COLORS = {
+                bg: "#0a0e17",
+                surface: "#111827",
+                surfaceLight: "#1a2235",
+                border: "#2a3a52",
+                text: "#e2e8f0",
+                textMuted: "#8896ab",
+                accent1: "#f59e0b",
+                accent1Light: "#fbbf24",
+                accent2: "#06b6d4",
+                accent2Light: "#22d3ee",
+                accent3: "#ef4444",
+                accent3Light: "#f87171",
+                accent4: "#10b981",
+                accent4Light: "#34d399",
+                grid: "#1e293b",
+                gridLight: "#2d3f58",
+            }
+
+            // ── Math functions ──
+            function lossGrad(w1, w2, tx, ty) {
+                if (tx === undefined) tx = 1.5
+                if (ty === undefined) ty = 1.0
+                return {
+                    loss: (w1 - tx) ** 2 + 3 * (w2 - ty) ** 2,
+                    dw1: 2 * (w1 - tx),
+                    dw2: 6 * (w2 - ty),
+                }
+            }
+
+            function runSGD(w0, lr, lambda, steps, useDecoupled) {
+                var w = [w0[0], w0[1]]
+                var path = [{ w: [w[0], w[1]], step: 0 }]
+                for (var i = 1; i <= steps; i++) {
+                    var g = lossGrad(w[0], w[1])
+                    if (useDecoupled) {
+                        w[0] = w[0] - lr * g.dw1 - lr * lambda * w[0]
+                        w[1] = w[1] - lr * g.dw2 - lr * lambda * w[1]
+                    } else {
+                        w[0] = w[0] - lr * (g.dw1 + 2 * lambda * w[0])
+                        w[1] = w[1] - lr * (g.dw2 + 2 * lambda * w[1])
+                    }
+                    path.push({ w: [w[0], w[1]], step: i })
+                }
+                return path
+            }
+
+            function runAdam(w0, lr, lambda, steps, useDecoupled, beta1, beta2, eps) {
+                if (beta1 === undefined) beta1 = 0.9
+                if (beta2 === undefined) beta2 = 0.999
+                if (eps === undefined) eps = 1e-8
+                var w = [w0[0], w0[1]]
+                var m = [0, 0]
+                var v = [0, 0]
+                var path = [{ w: [w[0], w[1]], step: 0 }]
+                for (var i = 1; i <= steps; i++) {
+                    var grad = lossGrad(w[0], w[1])
+                    var g = [grad.dw1, grad.dw2]
+                    if (!useDecoupled) {
+                        g[0] += 2 * lambda * w[0]
+                        g[1] += 2 * lambda * w[1]
+                    }
+                    for (var j = 0; j < 2; j++) {
+                        m[j] = beta1 * m[j] + (1 - beta1) * g[j]
+                        v[j] = beta2 * v[j] + (1 - beta2) * g[j] ** 2
+                        var mHat = m[j] / (1 - beta1 ** i)
+                        var vHat = v[j] / (1 - beta2 ** i)
+                        w[j] = w[j] - (lr * mHat) / (Math.sqrt(vHat) + eps)
+                    }
+                    if (useDecoupled) {
+                        w[0] -= lr * lambda * w[0]
+                        w[1] -= lr * lambda * w[1]
+                    }
+                    path.push({ w: [w[0], w[1]], step: i })
+                }
+                return path
+            }
+
+            // ── Contour plot drawing ──
+            function drawContourPlot(canvasId, paths, labels, colors, title, annotations, showOptimum) {
+                if (annotations === undefined) annotations = []
+                if (showOptimum === undefined) showOptimum = true
+                var canvas = document.getElementById(canvasId)
+                if (!canvas) return
+                var ctx = canvas.getContext("2d")
+                var width = canvas.width
+                var height = canvas.height
+                var range = { x: [-3, 5], y: [-3, 4] }
+
+                function toCanvas(wx, wy) {
+                    var px = ((wx - range.x[0]) / (range.x[1] - range.x[0])) * width
+                    var py = height - ((wy - range.y[0]) / (range.y[1] - range.y[0])) * height
+                    return [px, py]
+                }
+
+                ctx.clearRect(0, 0, width, height)
+
+                // Contour lines
+                var levels = [0.5, 1.5, 3, 5, 8, 12, 18, 25, 35]
+                var tx = 1.5,
+                    ty = 1.0
+                for (var li = 0; li < levels.length; li++) {
+                    var level = levels[li]
+                    ctx.beginPath()
+                    ctx.strokeStyle = COLORS.gridLight
+                    ctx.lineWidth = 0.5
+                    var nPts = 200
+                    var started = false
+                    for (var a = 0; a <= Math.PI * 2; a += (Math.PI * 2) / nPts) {
+                        var r1 = Math.sqrt(level)
+                        var r2 = Math.sqrt(level / 3)
+                        var wx = tx + r1 * Math.cos(a)
+                        var wy = ty + r2 * Math.sin(a)
+                        if (wx < range.x[0] || wx > range.x[1] || wy < range.y[0] || wy > range.y[1]) {
+                            started = false
+                            continue
+                        }
+                        var pt = toCanvas(wx, wy)
+                        if (!started) {
+                            ctx.moveTo(pt[0], pt[1])
+                            started = true
+                        } else {
+                            ctx.lineTo(pt[0], pt[1])
+                        }
+                    }
+                    ctx.stroke()
+                }
+
+                // Axes
+                ctx.strokeStyle = COLORS.border
+                ctx.lineWidth = 1
+                var origin = toCanvas(0, 0)
+                ctx.beginPath()
+                ctx.moveTo(origin[0], 0)
+                ctx.lineTo(origin[0], height)
+                ctx.stroke()
+                ctx.beginPath()
+                ctx.moveTo(0, origin[1])
+                ctx.lineTo(width, origin[1])
+                ctx.stroke()
+
+                // Axis labels
+                ctx.fillStyle = COLORS.textMuted
+                ctx.font = "10px monospace"
+                ctx.textAlign = "center"
+                ctx.fillText("w₁", width - 14, origin[1] - 6)
+                ctx.fillText("w₂", origin[0] + 14, 14)
+
+                // Optimum
+                if (showOptimum) {
+                    var opt = toCanvas(tx, ty)
+                    ctx.beginPath()
+                    ctx.arc(opt[0], opt[1], 6, 0, Math.PI * 2)
+                    ctx.fillStyle = "#ffffff22"
+                    ctx.fill()
+                    ctx.strokeStyle = "#ffffff66"
+                    ctx.lineWidth = 1.5
+                    ctx.stroke()
+                    ctx.beginPath()
+                    ctx.strokeStyle = "#ffffff44"
+                    ctx.lineWidth = 0.5
+                    ctx.moveTo(opt[0] - 10, opt[1])
+                    ctx.lineTo(opt[0] + 10, opt[1])
+                    ctx.moveTo(opt[0], opt[1] - 10)
+                    ctx.lineTo(opt[0], opt[1] + 10)
+                    ctx.stroke()
+                    ctx.fillStyle = COLORS.textMuted
+                    ctx.font = "9px monospace"
+                    ctx.textAlign = "left"
+                    ctx.fillText("L* (unregularized", opt[0] + 10, opt[1] - 10)
+                    ctx.fillText("   optimum)", opt[0] + 10, opt[1] + 1)
+                }
+
+                // Origin marker
+                var z = toCanvas(0, 0)
+                ctx.fillStyle = COLORS.textMuted
+                ctx.font = "10px monospace"
+                ctx.textAlign = "left"
+                ctx.fillText("0", z[0] + 4, z[1] - 4)
+
+                // Draw paths
+                for (var pIdx = 0; pIdx < paths.length; pIdx++) {
+                    var path = paths[pIdx]
+                    var color = colors[pIdx]
+                    var totalSteps = path.length - 1
+                    var useDash = pIdx > 0 && paths.length === 2
+
+                    // Line
+                    ctx.beginPath()
+                    ctx.strokeStyle = color + (useDash ? "99" : "bb")
+                    ctx.lineWidth = useDash ? 2.5 : 2
+                    if (useDash) ctx.setLineDash([6, 4])
+                    var sp = toCanvas(path[0].w[0], path[0].w[1])
+                    ctx.moveTo(sp[0], sp[1])
+                    for (var i = 1; i <= totalSteps; i++) {
+                        var pp = toCanvas(path[i].w[0], path[i].w[1])
+                        ctx.lineTo(pp[0], pp[1])
+                    }
+                    ctx.stroke()
+                    ctx.setLineDash([])
+
+                    // Comet dots
+                    var dotInterval = Math.max(1, Math.floor(totalSteps / 20))
+                    for (var i = 0; i <= totalSteps; i += dotInterval) {
+                        var dp = toCanvas(path[i].w[0], path[i].w[1])
+                        var t = i / totalSteps
+                        var radius = 1.2 + (1 - t) * 2.5
+                        var alpha = 0.3 + (1 - t) * 0.7
+                        ctx.beginPath()
+                        ctx.arc(dp[0], dp[1], radius, 0, Math.PI * 2)
+                        ctx.fillStyle =
+                            color +
+                            Math.round(alpha * 255)
+                                .toString(16)
+                                .padStart(2, "0")
+                        ctx.fill()
+                    }
+
+                    // Start marker (first path only)
+                    if (pIdx === 0) {
+                        var startPt = toCanvas(path[0].w[0], path[0].w[1])
+                        ctx.beginPath()
+                        ctx.arc(startPt[0], startPt[1], 6, 0, Math.PI * 2)
+                        ctx.fillStyle = "#ffffffcc"
+                        ctx.fill()
+                        ctx.strokeStyle = "#ffffff"
+                        ctx.lineWidth = 1.5
+                        ctx.stroke()
+                        ctx.fillStyle = "#ffffff"
+                        ctx.font = "bold 10px monospace"
+                        ctx.textAlign = "right"
+                        ctx.fillText("START", startPt[0] - 10, startPt[1] + 4)
+                    }
+
+                    // End marker
+                    var endPt = path[totalSteps]
+                    var ep = toCanvas(endPt.w[0], endPt.w[1])
+                    ctx.beginPath()
+                    ctx.arc(ep[0], ep[1], 5, 0, Math.PI * 2)
+                    ctx.fillStyle = color
+                    ctx.fill()
+                    ctx.strokeStyle = "#ffffffcc"
+                    ctx.lineWidth = 1.5
+                    ctx.stroke()
+
+                    // End label
+                    ctx.fillStyle = color
+                    ctx.font = "bold 9px monospace"
+                    var labelSide = pIdx === 0 ? -1 : 1
+                    var labelYOff = pIdx === 0 ? -10 : 12
+                    ctx.textAlign = labelSide < 0 ? "right" : "left"
+                    ctx.fillText(labels[pIdx], ep[0] + labelSide * 8, ep[1] + labelYOff)
+                    ctx.font = "8px monospace"
+                    ctx.fillStyle = color + "aa"
+                    ctx.fillText(
+                        "(" + endPt.w[0].toFixed(2) + ", " + endPt.w[1].toFixed(2) + ")",
+                        ep[0] + labelSide * 8,
+                        ep[1] + labelYOff + 11,
+                    )
+                }
+
+                // Custom annotations
+                for (var ai = 0; ai < annotations.length; ai++) {
+                    var ann = annotations[ai]
+                    if (ann.type === "bracket") {
+                        var end0 = paths[0][paths[0].length - 1]
+                        var end1 = paths[1][paths[1].length - 1]
+                        var b0 = toCanvas(end0.w[0], end0.w[1])
+                        var b1 = toCanvas(end1.w[0], end1.w[1])
+                        ctx.beginPath()
+                        ctx.strokeStyle = "#ffffff44"
+                        ctx.lineWidth = 1
+                        ctx.setLineDash([3, 3])
+                        ctx.moveTo(b0[0], b0[1])
+                        ctx.lineTo(b1[0], b1[1])
+                        ctx.stroke()
+                        ctx.setLineDash([])
+                        var dist = Math.sqrt((end0.w[0] - end1.w[0]) ** 2 + (end0.w[1] - end1.w[1]) ** 2)
+                        ctx.fillStyle = "#ffffffaa"
+                        ctx.font = "bold 9px monospace"
+                        ctx.textAlign = "center"
+                        ctx.fillText(
+                            "\u0394 = " + dist.toFixed(2),
+                            (b0[0] + b1[0]) / 2 + ann.offsetX,
+                            (b0[1] + b1[1]) / 2 + ann.offsetY,
+                        )
+                    }
+                    if (ann.type === "callout") {
+                        ctx.fillStyle = ann.color || "#ffffffcc"
+                        ctx.font = "bold " + (ann.size || 13) + "px monospace"
+                        ctx.textAlign = "center"
+                        ctx.fillText(ann.text, width * (ann.x || 0.5), height * (ann.y || 0.15))
+                        if (ann.subtext) {
+                            ctx.font = (ann.size || 13) - 3 + "px monospace"
+                            ctx.fillStyle = (ann.color || "#ffffff") + "88"
+                            ctx.fillText(ann.subtext, width * (ann.x || 0.5), height * (ann.y || 0.15) + 16)
+                        }
+                    }
+                }
+
+                // Legend
+                ctx.textAlign = "left"
+                for (var i = 0; i < labels.length; i++) {
+                    var totalLabelW = 0
+                    for (var k = 0; k < labels.length; k++) {
+                        totalLabelW += ctx.measureText("\u25CF  " + labels[k]).width + 20
+                    }
+                    var lx = (width - totalLabelW) / 2
+                    for (var j = 0; j < i; j++) {
+                        lx += ctx.measureText("\u25CF  " + labels[j]).width + 20
+                    }
+                    ctx.fillStyle = colors[i]
+                    ctx.font = "bold 10px monospace"
+                    ctx.fillText("\u25CF", lx, height - 10)
+                    ctx.fillStyle = COLORS.text
+                    ctx.font = "10px monospace"
+                    ctx.fillText(labels[i], lx + 14, height - 10)
+                }
+
+                // Title
+                ctx.fillStyle = COLORS.text
+                ctx.font = "bold 12px monospace"
+                ctx.textAlign = "center"
+                ctx.fillText(title, width / 2, 16)
+            }
+
+            // ── Weight Decay Diagram ──
+            function drawWeightDecayDiagram() {
+                var canvas = document.getElementById("canvas-wd-diagram")
+                if (!canvas) return
+                var ctx = canvas.getContext("2d")
+                var W = canvas.width
+                var H = canvas.height
+                var lambda = 0.12
+                var totalSteps = 20
+
+                var weights = [
+                    { w0: 4.5, color: "#fbbf24", label: "w\u2081 = 4.5" },
+                    { w0: 2.8, color: "#fb923c", label: "w\u2082 = 2.8" },
+                    { w0: 1.2, color: "#a78bfa", label: "w\u2083 = 1.2" },
+                    {
+                        w0: -1.8,
+                        color: "#34d399",
+                        label: "w\u2084 = \u22121.8",
+                    },
+                    {
+                        w0: -3.6,
+                        color: "#38bdf8",
+                        label: "w\u2085 = \u22123.6",
+                    },
+                ]
+
+                ctx.clearRect(0, 0, W, H)
+
+                var padL = 14
+                var padR = 14
+                var xRange = 5.5
+                function toX(val) {
+                    return padL + ((val + xRange) / (2 * xRange)) * (W - padL - padR)
+                }
+
+                var rowTop = 38
+                var rowH = 32
+                var lineY = rowTop + weights.length * rowH + 14
+
+                // Number line
+                ctx.beginPath()
+                ctx.strokeStyle = COLORS.border
+                ctx.lineWidth = 1.5
+                ctx.moveTo(padL, lineY)
+                ctx.lineTo(W - padR, lineY)
+                ctx.stroke()
+
+                // Zero emphasis
+                var zeroX = toX(0)
+                ctx.beginPath()
+                ctx.strokeStyle = COLORS.text + "66"
+                ctx.lineWidth = 1
+                ctx.setLineDash([2, 4])
+                ctx.moveTo(zeroX, rowTop - 6)
+                ctx.lineTo(zeroX, lineY)
+                ctx.stroke()
+                ctx.setLineDash([])
+                ctx.beginPath()
+                ctx.strokeStyle = COLORS.text + "aa"
+                ctx.lineWidth = 2
+                ctx.moveTo(zeroX, lineY - 5)
+                ctx.lineTo(zeroX, lineY + 5)
+                ctx.stroke()
+                ctx.fillStyle = COLORS.text
+                ctx.font = "bold 10px monospace"
+                ctx.textAlign = "center"
+                ctx.fillText("0", zeroX, lineY + 16)
+
+                // Tick marks
+                for (var v = -4; v <= 4; v += 2) {
+                    if (v === 0) continue
+                    var x = toX(v)
+                    ctx.beginPath()
+                    ctx.strokeStyle = COLORS.border
+                    ctx.lineWidth = 1
+                    ctx.moveTo(x, lineY - 3)
+                    ctx.lineTo(x, lineY + 3)
+                    ctx.stroke()
+                    ctx.fillStyle = COLORS.textMuted
+                    ctx.font = "9px monospace"
+                    ctx.textAlign = "center"
+                    ctx.fillText(v.toString(), x, lineY + 14)
+                }
+
+                // Title
+                ctx.fillStyle = COLORS.accent1Light
+                ctx.font = "bold 11px monospace"
+                ctx.textAlign = "center"
+                ctx.fillText(
+                    "Weight Decay: w \u2190 w \u00d7 (1 \u2212 \u03bb)   \u03bb = " + lambda.toFixed(2),
+                    W / 2,
+                    14,
+                )
+                ctx.fillStyle = COLORS.textMuted
+                ctx.font = "9px monospace"
+                ctx.fillText(totalSteps + " steps shown \u2014 larger weights shrink faster", W / 2, 28)
+
+                // Weight rows
+                for (var rowIdx = 0; rowIdx < weights.length; rowIdx++) {
+                    var wt = weights[rowIdx]
+                    var y = rowTop + rowIdx * rowH + rowH / 2
+                    var col = wt.color
+
+                    // Row guide line
+                    ctx.beginPath()
+                    ctx.strokeStyle = COLORS.grid + "44"
+                    ctx.lineWidth = 0.5
+                    ctx.moveTo(padL, y)
+                    ctx.lineTo(W - padR, y)
+                    ctx.stroke()
+
+                    // Compute positions
+                    var positions = []
+                    for (var s = 0; s <= totalSteps; s++) {
+                        positions.push(wt.w0 * Math.pow(1 - lambda, s))
+                    }
+
+                    // Trail line
+                    ctx.beginPath()
+                    ctx.strokeStyle = col + "33"
+                    ctx.lineWidth = 1.5
+                    ctx.moveTo(toX(positions[0]), y)
+                    for (var s = 1; s <= totalSteps; s++) {
+                        ctx.lineTo(toX(positions[s]), y)
+                    }
+                    ctx.stroke()
+
+                    // Dots
+                    for (var s = totalSteps; s >= 0; s--) {
+                        var dx = toX(positions[s])
+                        var dt = s / totalSteps
+                        var dr = 1.5 + (1 - dt) * 3.5
+                        var da = 0.25 + (1 - dt) * 0.75
+                        ctx.beginPath()
+                        ctx.arc(dx, y, dr, 0, Math.PI * 2)
+                        ctx.fillStyle =
+                            col +
+                            Math.round(da * 255)
+                                .toString(16)
+                                .padStart(2, "0")
+                        ctx.fill()
+                        if (s === 0) {
+                            ctx.strokeStyle = "#ffffffcc"
+                            ctx.lineWidth = 1
+                            ctx.stroke()
+                        }
+                    }
+
+                    // Label
+                    ctx.fillStyle = col
+                    ctx.font = "bold 9px monospace"
+                    ctx.textAlign = wt.w0 > 0 ? "left" : "right"
+                    var labelX = toX(positions[0]) + (wt.w0 > 0 ? 8 : -8)
+                    ctx.fillText(wt.label, labelX, y + 3)
+                }
+
+                // Step annotation
+                var annotW = weights[0]
+                ctx.fillStyle = COLORS.accent1 + "bb"
+                ctx.font = "8px monospace"
+                ctx.textAlign = "center"
+                var bracketY = rowTop + rowH / 2 + 11
+                ctx.fillText("step 0    \u2192    1    \u2192    2    \u2192  ...", toX(annotW.w0 * 0.65), bracketY)
+
+                // Bottom insight box
+                var boxY = lineY + 26
+                ctx.fillStyle = COLORS.surfaceLight
+                ctx.beginPath()
+                ctx.roundRect(10, boxY, W - 20, 36, 6)
+                ctx.fill()
+                ctx.strokeStyle = COLORS.accent1 + "44"
+                ctx.lineWidth = 1
+                ctx.beginPath()
+                ctx.roundRect(10, boxY, W - 20, 36, 6)
+                ctx.stroke()
+                ctx.fillStyle = COLORS.text
+                ctx.font = "bold 9px monospace"
+                ctx.textAlign = "center"
+                ctx.fillText("Key: decay is proportional to magnitude", W / 2, boxY + 14)
+                ctx.fillStyle = COLORS.textMuted
+                ctx.font = "9px monospace"
+                ctx.fillText("|w| = 4.5 shrinks by 0.54/step  vs  |w| = 1.2 shrinks by 0.14/step", W / 2, boxY + 28)
+                ctx.textAlign = "left"
+            }
+
+            // ── Dropout Diagram ──
+            function drawDropoutDiagram() {
+                var canvas = document.getElementById("canvas-dropout")
+                if (!canvas) return
+                var ctx = canvas.getContext("2d")
+                var W = canvas.width
+                var H = canvas.height
+                ctx.clearRect(0, 0, W, H)
+
+                var layers = [4, 6, 6, 3]
+                var snapshots = [
+                    {
+                        label: "Training pass 1",
+                        mask: [
+                            [1, 1, 1, 1],
+                            [1, 0, 1, 1, 0, 1],
+                            [1, 1, 0, 1, 1, 0],
+                            [1, 1, 1],
+                        ],
+                    },
+                    {
+                        label: "Training pass 2",
+                        mask: [
+                            [1, 1, 1, 1],
+                            [0, 1, 1, 0, 1, 1],
+                            [1, 0, 1, 1, 0, 1],
+                            [1, 1, 1],
+                        ],
+                    },
+                    {
+                        label: "Inference (all active, scaled)",
+                        mask: [
+                            [1, 1, 1, 1],
+                            [1, 1, 1, 1, 1, 1],
+                            [1, 1, 1, 1, 1, 1],
+                            [1, 1, 1],
+                        ],
+                        isInference: true,
+                    },
+                ]
+
+                var snapW = 200
+                var snapGap = 30
+                var totalW = snapshots.length * snapW + (snapshots.length - 1) * snapGap
+                var startX = (W - totalW) / 2
+                var netTop = 60
+                var netBottom = H - 55
+                var neuronR = 8
+
+                // Title
+                ctx.fillStyle = COLORS.text
+                ctx.font = "bold 12px monospace"
+                ctx.textAlign = "center"
+                ctx.fillText("Dropout: Training an Ensemble of Sub-Networks", W / 2, 18)
+                ctx.fillStyle = COLORS.textMuted
+                ctx.font = "10px monospace"
+                ctx.fillText("Each forward pass uses a different random subset of neurons (p = 0.5 shown)", W / 2, 34)
+
+                for (var sIdx = 0; sIdx < snapshots.length; sIdx++) {
+                    var snap = snapshots[sIdx]
+                    var ox = startX + sIdx * (snapW + snapGap)
+                    var cx = ox + snapW / 2
+
+                    // Border
+                    ctx.strokeStyle = snap.isInference ? COLORS.accent4 + "44" : COLORS.border
+                    ctx.lineWidth = 1
+                    ctx.beginPath()
+                    ctx.roundRect(ox - 4, netTop - 16, snapW + 8, netBottom - netTop + 36, 8)
+                    ctx.stroke()
+                    if (snap.isInference) {
+                        ctx.fillStyle = COLORS.accent4 + "08"
+                        ctx.fill()
+                    }
+
+                    // Label
+                    ctx.fillStyle = snap.isInference ? COLORS.accent4Light : COLORS.accent1Light
+                    ctx.font = "bold 10px monospace"
+                    ctx.textAlign = "center"
+                    ctx.fillText(snap.label, cx, netTop - 4)
+
+                    // Neuron positions
+                    var positions = []
+                    for (var lIdx = 0; lIdx < layers.length; lIdx++) {
+                        var nNeurons = layers[lIdx]
+                        var layerX = ox + (lIdx / (layers.length - 1)) * snapW
+                        var layerPositions = []
+                        for (var n = 0; n < nNeurons; n++) {
+                            var ny = netTop + 10 + (n / (nNeurons - 1)) * (netBottom - netTop - 20)
+                            layerPositions.push({
+                                x: layerX,
+                                y: ny,
+                                active: snap.mask[lIdx][n] === 1,
+                            })
+                        }
+                        positions.push(layerPositions)
+                    }
+
+                    // Connections
+                    for (var l = 0; l < positions.length - 1; l++) {
+                        for (var i = 0; i < positions[l].length; i++) {
+                            for (var j = 0; j < positions[l + 1].length; j++) {
+                                var src = positions[l][i]
+                                var dst = positions[l + 1][j]
+                                var bothActive = src.active && dst.active
+                                ctx.beginPath()
+                                ctx.strokeStyle = bothActive
+                                    ? snap.isInference
+                                        ? COLORS.accent4 + "22"
+                                        : COLORS.accent1 + "18"
+                                    : "#ff000008"
+                                ctx.lineWidth = bothActive ? 0.8 : 0.3
+                                if (!bothActive && !snap.isInference) {
+                                    ctx.setLineDash([2, 3])
+                                }
+                                ctx.moveTo(src.x, src.y)
+                                ctx.lineTo(dst.x, dst.y)
+                                ctx.stroke()
+                                ctx.setLineDash([])
+                            }
+                        }
+                    }
+
+                    // Neurons
+                    for (var lIdx = 0; lIdx < positions.length; lIdx++) {
+                        for (var ni = 0; ni < positions[lIdx].length; ni++) {
+                            var neuron = positions[lIdx][ni]
+                            ctx.beginPath()
+                            ctx.arc(neuron.x, neuron.y, neuronR, 0, Math.PI * 2)
+
+                            if (snap.isInference) {
+                                ctx.fillStyle = COLORS.accent4 + "bb"
+                                ctx.fill()
+                                ctx.strokeStyle = COLORS.accent4
+                                ctx.lineWidth = 1
+                                ctx.stroke()
+                            } else if (neuron.active) {
+                                ctx.fillStyle = COLORS.accent1
+                                ctx.fill()
+                                ctx.strokeStyle = COLORS.accent1Light
+                                ctx.lineWidth = 1.5
+                                ctx.stroke()
+                            } else {
+                                ctx.fillStyle = COLORS.bg
+                                ctx.fill()
+                                ctx.strokeStyle = COLORS.accent3 + "66"
+                                ctx.lineWidth = 1
+                                ctx.stroke()
+                                // X mark
+                                ctx.beginPath()
+                                ctx.strokeStyle = COLORS.accent3 + "88"
+                                ctx.lineWidth = 1.5
+                                ctx.moveTo(neuron.x - 4, neuron.y - 4)
+                                ctx.lineTo(neuron.x + 4, neuron.y + 4)
+                                ctx.moveTo(neuron.x + 4, neuron.y - 4)
+                                ctx.lineTo(neuron.x - 4, neuron.y + 4)
+                                ctx.stroke()
+                            }
+                        }
+                    }
+
+                    // Layer labels
+                    var layerLabels = ["Input", "Hidden 1", "Hidden 2", "Output"]
+                    for (var lIdx = 0; lIdx < layers.length; lIdx++) {
+                        var layerX = ox + (lIdx / (layers.length - 1)) * snapW
+                        ctx.fillStyle = COLORS.textMuted
+                        ctx.font = "8px monospace"
+                        ctx.textAlign = "center"
+                        ctx.fillText(layerLabels[lIdx], layerX, netBottom + 16)
+                    }
+                }
+
+                // Arrow between snapshots
+                var arrowX = startX + 2 * (snapW + snapGap) - snapGap / 2
+                ctx.fillStyle = COLORS.textMuted
+                ctx.font = "16px monospace"
+                ctx.textAlign = "center"
+                ctx.fillText("\u2192", arrowX, H / 2)
+
+                // Bottom insight
+                var boxY = H - 35
+                ctx.fillStyle = COLORS.surfaceLight
+                ctx.beginPath()
+                ctx.roundRect(40, boxY, W - 80, 30, 6)
+                ctx.fill()
+                ctx.strokeStyle = COLORS.border
+                ctx.lineWidth = 1
+                ctx.beginPath()
+                ctx.roundRect(40, boxY, W - 80, 30, 6)
+                ctx.stroke()
+                ctx.fillStyle = COLORS.text
+                ctx.font = "bold 9px monospace"
+                ctx.textAlign = "center"
+                ctx.fillText(
+                    "Each pass trains a different sub-network  \u2192  inference averages over all possible sub-networks  \u2192  implicit ensemble",
+                    W / 2,
+                    boxY + 12,
+                )
+                ctx.fillStyle = COLORS.textMuted
+                ctx.font = "9px monospace"
+                ctx.fillText(
+                    "Dropped neurons shown with \u2715   |   At inference, all neurons active but outputs scaled by (1 \u2212 p) to compensate",
+                    W / 2,
+                    boxY + 24,
+                )
+                ctx.textAlign = "left"
+            }
+
+            // ── Adam Pipeline Diagram ──
+            function drawAdamPipeline() {
+                var canvas = document.getElementById("canvas-adam-pipeline")
+                if (!canvas) return
+                var ctx = canvas.getContext("2d")
+                var W = canvas.width
+                var H = canvas.height
+                ctx.clearRect(0, 0, W, H)
+
+                var pipeY_sgd = 65
+                var pipeY_adam = 185
+                var boxH = 44
+                var startX = 30
+                var arrowLen = 28
+
+                function drawBox(x, y, w, h, label, sublabel, borderColor, fillColor) {
+                    ctx.fillStyle = fillColor
+                    ctx.beginPath()
+                    ctx.roundRect(x, y, w, h, 6)
+                    ctx.fill()
+                    ctx.strokeStyle = borderColor
+                    ctx.lineWidth = 1.5
+                    ctx.beginPath()
+                    ctx.roundRect(x, y, w, h, 6)
+                    ctx.stroke()
+                    ctx.fillStyle = COLORS.text
+                    ctx.font = "bold 10px monospace"
+                    ctx.textAlign = "center"
+                    ctx.fillText(label, x + w / 2, y + h / 2 - (sublabel ? 4 : 0))
+                    if (sublabel) {
+                        ctx.fillStyle = COLORS.textMuted
+                        ctx.font = "8px monospace"
+                        ctx.fillText(sublabel, x + w / 2, y + h / 2 + 10)
+                    }
+                }
+
+                function drawArrow(x1, y, x2) {
+                    ctx.beginPath()
+                    ctx.strokeStyle = COLORS.textMuted
+                    ctx.lineWidth = 1.5
+                    ctx.moveTo(x1, y)
+                    ctx.lineTo(x2 - 6, y)
+                    ctx.stroke()
+                    ctx.beginPath()
+                    ctx.fillStyle = COLORS.textMuted
+                    ctx.moveTo(x2, y)
+                    ctx.lineTo(x2 - 7, y - 4)
+                    ctx.lineTo(x2 - 7, y + 4)
+                    ctx.closePath()
+                    ctx.fill()
+                }
+
+                // Title
+                ctx.fillStyle = COLORS.text
+                ctx.font = "bold 12px monospace"
+                ctx.textAlign = "center"
+                ctx.fillText("Adam: The Update Pipeline", W / 2, 18)
+
+                // SGD Pipeline
+                ctx.fillStyle = COLORS.accent2Light
+                ctx.font = "bold 11px monospace"
+                ctx.textAlign = "left"
+                ctx.fillText("SGD", startX, pipeY_sgd - 12)
+                ctx.fillStyle = COLORS.textMuted
+                ctx.font = "9px monospace"
+                ctx.fillText("same learning rate for all parameters", startX + 40, pipeY_sgd - 12)
+
+                var x = startX
+                var sgdBoxW = 100
+                drawBox(
+                    x,
+                    pipeY_sgd,
+                    sgdBoxW,
+                    boxH,
+                    "\u2207L(w)",
+                    "raw gradient",
+                    COLORS.accent2 + "88",
+                    COLORS.accent2 + "15",
+                )
+                x += sgdBoxW
+                drawArrow(x, pipeY_sgd + boxH / 2, x + arrowLen)
+                x += arrowLen
+                drawBox(
+                    x,
+                    pipeY_sgd,
+                    120,
+                    boxH,
+                    "w \u2190 w \u2212 lr \u00b7 g",
+                    "fixed step size",
+                    COLORS.accent2 + "88",
+                    COLORS.accent2 + "15",
+                )
+                x += 120
+
+                // SGD problem annotation
+                var probX = x + 30
+                ctx.fillStyle = COLORS.accent3 + "cc"
+                ctx.font = "bold 9px monospace"
+                ctx.textAlign = "left"
+                ctx.fillText("\u26A0 Problem:", probX, pipeY_sgd + 6)
+                ctx.fillStyle = COLORS.textMuted
+                ctx.font = "9px monospace"
+                ctx.fillText("steep axis \u2192 huge gradient \u2192 overshoot", probX, pipeY_sgd + 20)
+                ctx.fillText("flat axis \u2192 tiny gradient \u2192 barely moves", probX, pipeY_sgd + 32)
+                ctx.fillText("\u2192 zigzag on elongated loss surfaces", probX, pipeY_sgd + 44)
+
+                // Adam Pipeline
+                ctx.fillStyle = COLORS.accent1Light
+                ctx.font = "bold 11px monospace"
+                ctx.textAlign = "left"
+                ctx.fillText("Adam", startX, pipeY_adam - 12)
+                ctx.fillStyle = COLORS.textMuted
+                ctx.font = "9px monospace"
+                ctx.fillText("adapts learning rate per-parameter using gradient history", startX + 48, pipeY_adam - 12)
+
+                x = startX
+                var adamBoxes = [
+                    {
+                        w: 80,
+                        label: "\u2207L(w)",
+                        sub: "raw gradient",
+                        color: COLORS.accent1,
+                    },
+                    {
+                        w: 110,
+                        label: "m \u2190 \u03B2\u2081m+(1-\u03B2\u2081)g",
+                        sub: "1st moment (momentum)",
+                        color: COLORS.accent1,
+                    },
+                    {
+                        w: 108,
+                        label: "v \u2190 \u03B2\u2082v+(1-\u03B2\u2082)g\u00B2",
+                        sub: "2nd moment (variance)",
+                        color: COLORS.accent1,
+                    },
+                    {
+                        w: 85,
+                        label: "m\u0302, v\u0302",
+                        sub: "bias correction",
+                        color: COLORS.accent1,
+                    },
+                    {
+                        w: 120,
+                        label: "w \u2190 w \u2212 lr\u00B7m\u0302/\u221Av\u0302",
+                        sub: "adaptive update",
+                        color: COLORS.accent4,
+                    },
+                ]
+
+                for (var bi = 0; bi < adamBoxes.length; bi++) {
+                    var box = adamBoxes[bi]
+                    drawBox(x, pipeY_adam, box.w, boxH, box.label, box.sub, box.color + "88", box.color + "15")
+                    x += box.w
+                    if (bi < adamBoxes.length - 1) {
+                        drawArrow(x, pipeY_adam + boxH / 2, x + arrowLen)
+                        x += arrowLen
+                    }
+                }
+
+                // Insight box
+                var insightY = pipeY_adam + boxH + 14
+                ctx.fillStyle = COLORS.surfaceLight
+                ctx.beginPath()
+                ctx.roundRect(startX, insightY, W - 60, 28, 6)
+                ctx.fill()
+                ctx.strokeStyle = COLORS.accent1 + "33"
+                ctx.lineWidth = 1
+                ctx.beginPath()
+                ctx.roundRect(startX, insightY, W - 60, 28, 6)
+                ctx.stroke()
+                ctx.fillStyle = COLORS.text
+                ctx.font = "bold 9px monospace"
+                ctx.textAlign = "center"
+                ctx.fillText(
+                    "Key: dividing by \u221Av\u0302 normalizes each parameter\u2019s update by its gradient magnitude \u2192",
+                    W / 2,
+                    insightY + 11,
+                )
+                ctx.fillStyle = COLORS.accent1Light
+                ctx.fillText(
+                    "large gradients get smaller steps, small gradients get larger steps \u2014 no more zigzag",
+                    W / 2,
+                    insightY + 23,
+                )
+                ctx.textAlign = "left"
+            }
+
+            // ── Tab navigation ──
+            var sections = [
+                { id: "adam_intro", title: "What is Adam?", icon: "\u26A1" },
+                {
+                    id: "regularization",
+                    title: "What is Regularization?",
+                    icon: "\uD83D\uDCDA",
+                },
+                { id: "dropout", title: "Dropout", icon: "\uD83C\uDFB2" },
+                {
+                    id: "intuition",
+                    title: "Weight Decay vs L2",
+                    icon: "\uD83D\uDCA1",
+                },
+                {
+                    id: "sgd",
+                    title: "SGD: They're Equivalent",
+                    icon: "\u2261",
+                },
+                {
+                    id: "adam",
+                    title: "Adam: Where They Diverge",
+                    icon: "\uD83D\uDCA5",
+                },
+                { id: "adamw", title: "AdamW: The Fix", icon: "\u2713" },
+                {
+                    id: "modern",
+                    title: "Modern Practice",
+                    icon: "\uD83D\uDD2C",
+                },
+            ]
+
+            var activeSection = "adam_intro"
+
+            function switchSection(id) {
+                activeSection = id
+                // Update tabs
+                var btns = document.querySelectorAll(".tab-btn")
+                for (var i = 0; i < btns.length; i++) {
+                    btns[i].classList.toggle("active", btns[i].dataset.id === id)
+                }
+                // Update sections
+                var sects = document.querySelectorAll(".section")
+                for (var i = 0; i < sects.length; i++) {
+                    sects[i].classList.toggle("active", sects[i].id === "section-" + id)
+                }
+                // Draw canvases for the active section
+                drawActiveCanvases()
+            }
+
+            function drawActiveCanvases() {
+                switch (activeSection) {
+                    case "adam_intro":
+                        drawAdamPipeline()
+                        drawContourPlot(
+                            "canvas-adam-intro",
+                            [plainSGD, plainAdam],
+                            ["SGD (solid)", "Adam (dashed)"],
+                            [COLORS.accent2, COLORS.accent1],
+                            "SGD vs Adam on an elliptical loss surface",
+                            [
+                                {
+                                    type: "callout",
+                                    text: "Adam: smooth, direct path to optimum",
+                                    subtext: "per-parameter scaling eliminates zigzag along steep axis",
+                                    x: 0.57,
+                                    y: 0.08,
+                                    size: 10,
+                                    color: COLORS.accent1Light,
+                                },
+                            ],
+                        )
+                        break
+                    case "dropout":
+                        drawDropoutDiagram()
+                        break
+                    case "intuition":
+                        drawWeightDecayDiagram()
+                        break
+                    case "sgd":
+                        drawContourPlot(
+                            "canvas-sgd",
+                            [sgdL2, sgdWD],
+                            ["SGD + L2 reg (solid)", "SGD + weight decay (dashed)"],
+                            [COLORS.accent2, COLORS.accent1],
+                            "SGD: Both methods trace the same path",
+                            [
+                                {
+                                    type: "callout",
+                                    text: "IDENTICAL TRAJECTORIES",
+                                    subtext: "paths overlap completely \u2014 only dashing distinguishes them",
+                                    x: 0.55,
+                                    y: 0.08,
+                                    size: 11,
+                                    color: "#ffffff",
+                                },
+                            ],
+                        )
+                        break
+                    case "adam":
+                        drawContourPlot(
+                            "canvas-adam-diverge",
+                            [adamL2, adamWD],
+                            ["Adam + L2 (solid)", "Adam + weight decay (dashed)"],
+                            [COLORS.accent3, COLORS.accent1],
+                            "Adam: L2 \u2260 Weight Decay",
+                            [
+                                {
+                                    type: "bracket",
+                                    offsetX: -16,
+                                    offsetY: -10,
+                                },
+                                {
+                                    type: "callout",
+                                    text: "PATHS DIVERGE",
+                                    subtext: "same \u03bb, same optimizer \u2014 different regularization mechanism",
+                                    x: 0.55,
+                                    y: 0.08,
+                                    size: 11,
+                                    color: "#ffffff",
+                                },
+                            ],
+                        )
+                        break
+                    case "adamw":
+                        drawContourPlot(
+                            "canvas-adamw",
+                            [adamL2, adamWD],
+                            ["Adam + L2 (solid)", "AdamW (dashed)"],
+                            [COLORS.accent3, COLORS.accent4],
+                            "Adam+L2 vs AdamW \u2014 different convergence",
+                            [
+                                {
+                                    type: "bracket",
+                                    offsetX: -16,
+                                    offsetY: -10,
+                                },
+                                {
+                                    type: "callout",
+                                    text: "DECOUPLING CHANGES THE OUTCOME",
+                                    subtext: "same hyperparameters, different final weights",
+                                    x: 0.55,
+                                    y: 0.08,
+                                    size: 10,
+                                    color: "#ffffff",
+                                },
+                            ],
+                        )
+                        break
+                }
+            }
+
+            // ── Precompute all paths ──
+            var maxSteps = 60
+            var w0 = [-2, 3.5]
+            var lr = 0.05
+            var lambda = 0.15
+
+            var plainSGD = runSGD(w0, lr, 0, maxSteps, false)
+            var plainAdam = runAdam(w0, lr, 0, maxSteps, false)
+            var sgdL2 = runSGD(w0, lr, lambda, maxSteps, false)
+            var sgdWD = runSGD(w0, lr, lambda, maxSteps, true)
+            var adamL2 = runAdam(w0, lr, lambda, maxSteps, false)
+            var adamWD = runAdam(w0, lr, lambda, maxSteps, true)
+
+            // ── Build tabs ──
+            var tabsContainer = document.getElementById("tabs")
+            for (var i = 0; i < sections.length; i++) {
+                var btn = document.createElement("button")
+                btn.className = "tab-btn" + (sections[i].id === activeSection ? " active" : "")
+                btn.dataset.id = sections[i].id
+                btn.textContent = sections[i].icon + " " + sections[i].title
+                btn.addEventListener(
+                    "click",
+                    (function (id) {
+                        return function () {
+                            switchSection(id)
+                        }
+                    })(sections[i].id),
+                )
+                tabsContainer.appendChild(btn)
+            }
+
+            // ── Initial draw ──
+            switchSection("adam_intro")
+        </script>
+    </body>
+</html>

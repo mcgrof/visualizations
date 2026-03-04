@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Educational issues with polynomiography — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2011-09-01">Sep 1, 2011</time>
+                    <span class="category-badge badge-ai">AI / Tech</span>
+                </div>
+                <h1>Educational issues with polynomiography</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2011/09/educational-issues-with-polynomiography.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <div>
+                    <a
+                        href="http://www.flickr.com/photos/shehal/2259471847/"
+                        title="Charles Darwin by shehal, on Flickr"
+                    >
+                        <img
+                            alt="Charles Darwin"
+                            height="350"
+                            src="https://web.archive.org/web/20131101183357im_/http://farm3.static.flickr.com/2381/2259471847_dc35b55bf6.jpg"
+                            width="300"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                <span class="Apple-style-span">
+                    Today I heard the news of
+                    <a href="http://bit.ly/oJrezD">Intel promoting open research in Universities</a>
+                    . In short, Intel is
+                    <b>requiring</b>
+                    Universities that receive funding from them for specific research to not only
+                    <b>open source</b>
+                    the software they come up with, but also to promote
+                    <b>open research</b>
+                    by
+                    <b>prohibiting</b>
+                    the universities on staking
+                    <b>claims on patents.</b>
+                    This is priceless, I applaud Intel for this, its an evolutionary step in research and I hope it
+                    proves pivotal and others will follow.
+                </span>
+                <br />
+                <span class="Apple-style-span">
+                    <br />
+
+                    <a
+                        href="http://www.flickr.com/photos/zooboing/4743616313/"
+                        title="774 - Neuron Connection - Pattern by Patrick Hoesly, on Flickr"
+                    >
+                        <img
+                            alt="774 - Neuron Connection - Pattern"
+                            height="400"
+                            src="https://web.archive.org/web/20130117111629im_/http://farm5.staticflickr.com/4073/4743616313_79ce4b65d3.jpg"
+                            width="400"
+                        />
+                    </a>
+
+                    <br />
+                    <br />
+                    <br />
+                    This news bit triggered some synapses in my brain and brought back memories of an unpleasant
+                    experience while studying at my University,
+                    <a href="http://bit.ly/npvUYM">Rutgers</a>
+                    , which I'd like to finally
+                    <b>document</b>
+                    and
+                    <b>rant</b>
+                    about publicly.
+                </span>
+                <br />
+                <div>
+                    <span class="Apple-style-span">
+                        <br />
+                        <br />
+                        <a
+                            href="http://www.flickr.com/photos/13523064@N03/4668228155/"
+                            title="Rutgers University 2010 毕业典礼 by llee_wu, on Flickr"
+                        >
+                            <img
+                                alt="Rutgers University 2010 毕业典礼"
+                                height="250"
+                                src="http://farm5.static.flickr.com/4018/4668228155_4250ec2e98.jpg"
+                                width="300"
+                            />
+                        </a>
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        While studying
+                        <b>Computer Science</b>
+                        at Rutgers University (
+                        <i>Class 2003</i>
+                        ) I realized I really enjoyed
+                        <b>mathematics</b>
+                        . I liked math so much I had even decided to co-found the University's
+                        <i>math club</i>
+                        during my time there. Even though the
+                        <i>Bachelor of Science</i>
+                        undergraduate degree only required up to
+                        <b>Calculus II</b>
+                        (integral calculus) as a requirement, I decided to take a few extra math courses --
+                        <i>just for fun</i>
+                        . One of them was
+                        <b>Calculus III</b>
+                        (multivariable calculus), another was new shiny course on
+                        <a href="http://bit.ly/qsKftK"><b>Polynomiography</b></a>
+                        . Its my experience with
+                        <b>Polynomiography</b>
+                        while at Rutgers which I'd like to document.
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span"><br /></span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        <br />
+                        <br />
+                        <a
+                            href="http://www.flickr.com/photos/fractal_ken/3388642205/"
+                            title="Eight is Enough by Fractal Ken, on Flickr"
+                        >
+                            <img
+                                alt="Eight is Enough"
+                                height="300"
+                                src="https://web.archive.org/web/20160415042830im_/http://farm4.static.flickr.com/3621/3388642205_ac1d9c768d.jpg"
+                                width="350"
+                            />
+                        </a>
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        <b>Polynomiography</b>
+                        is a coin termed by
+                        <a href="http://bit.ly/qL8YmH">Dr. Bahman Kalantari</a>
+                        , it deals with a method of visualizing polynomials. It does this by using algorithms to find
+                        the roots of the polynomial and colorizing the complex plane based on tendencies of coordinates
+                        on the plane to being close to one root or another. If you don't get this description do not
+                        worry, even for me its all fuzzy at this point, but understand its a neat way to make art out of
+                        math. The course was fun, and the idea was surely innovative. This course set itself apart from
+                        other math courses in that in the end of the course you can write software using the materials
+                        learned as part of your final class project. Since I was starting to become passionate about
+                        software development then I was really excited about the course.
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        <br />
+                        <br />
+                        <a
+                            href="http://www.flickr.com/photos/acidzebra/145266/"
+                            title="Debian GNU/linux by Acid Zebra, on Flickr"
+                        >
+                            <img
+                                alt="Debian GNU/linux"
+                                height="200"
+                                src="http://farm1.static.flickr.com/1/145266_25b403ce7c.jpg"
+                                width="200"
+                            />
+                        </a>
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        There is one thing that set me apart from my classmates and gives this short story a twist,
+                        apart from mathematics I was also passionately into
+                        <a href="http://bit.ly/nVO5pP">Free and Open Source Software</a>
+                        , for both the
+                        <b>philosophical</b>
+                        aspects of it, and the
+                        <b>technical merits</b>
+                        of it. Its to the extent I also co-founded the
+                        <a href="http://bit.ly/pPhaJG">Rutgers University Student Linux Users' Group</a>
+                        to help find other locals interested in talking about and geeking out about FOSS. Because of my
+                        involvements with
+                        <b>both passions</b>
+                        and my new course I decided I was going to
+                        <i>release the software</i>
+                        I come up with as
+                        <i>free software</i>
+                        under the
+                        <a href="http://bit.ly/pVKnbs">GPLv2</a>
+                        . Neat,
+                        <b>right</b>
+                        ?
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        <br />
+                        <br />
+                        <a href="http://www.flickr.com/photos/lwr/5979108745/" title="C99 by Leo Reynolds, on Flickr">
+                            <img
+                                alt="C99"
+                                height="150"
+                                src="http://farm7.static.flickr.com/6136/5979108745_cd6c0ab44f.jpg"
+                                width="150"
+                            />
+                        </a>
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        One technical aspect about polynomiography which made it even more interesting for me was that
+                        it dealt with complex math. As it turned out the programming language I chose to write the
+                        software in, C, only recently had gotten complex math added to it, via the
+                        <a href="http://bit.ly/qSWs0k">ISO/IEC 9899:199 standard, referred to as C99</a>
+                        . At that time there wasn't much code out that used complex math in C, let alone Graphical User
+                        Interface applications using complex math, and the landscape was
+                        <i>even worse</i>
+                        for FOSS software using complex math. As I envisioned it, my software would enable a lot of
+                        users be able to learn from programming with complex numbers in C, but also educate folks on
+                        Polynomiography and on graphical user interface development. I was stoked!
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        <br />
+                        <br />
+                        <a
+                            href="http://www.flickr.com/photos/nexus_icon/3388868869/"
+                            title="Rorschach by Christian Cable, on Flickr"
+                        >
+                            <img
+                                alt="Rorschach"
+                                height="150"
+                                src="http://farm4.static.flickr.com/3537/3388868869_959fc6509d.jpg"
+                                width="350"
+                            />
+                        </a>
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        I remember the day I presented my final project. The Teaching Assistant (TA) of the course
+                        present. Everything went well until I mentioned my intent on releasing the software as free and
+                        open under the GPLv2 license. My professor's eyes opened widely, eyebrows to the top,
+                        <i>he spilled his coffee on the floor</i>
+                        while staring at me, and immediately told me
+                        <b>I could not release the software</b>
+                        . I was shocked! I believe the TA was just as shocked.
+                        <i>Ackward moment</i>
+                        .
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        <br />
+                        <br />
+                        <a
+                            href="http://www.flickr.com/photos/gwilmore/75404102/"
+                            title="Legal research by gwilmore, on Flickr"
+                        >
+                            <img
+                                alt="Legal research"
+                                height="300"
+                                src="http://farm1.static.flickr.com/41/75404102_7d6826d75a.jpg"
+                                width="350"
+                            />
+                        </a>
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        I decided to reach out to Rutgers
+                        <b>legal team</b>
+                        and talk bout this. If you have never visited your University's legal department, specially the
+                        one that deals with Intellectual Property I encourage you to do so.
+                        <b>Fancy</b>
+                        . I have carried around for years the business card of the person who I met with but for the
+                        life of me I cannot find it right now. It was explained I could not release the software, that
+                        they could try to talk to Dr. Kalantari but that he had a firm position on this. I had been
+                        holding the attorney's business card because I meant to eventually try to
+                        <i>fight this</i>
+                        but I never had enough time.
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span"><br /></span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        And now comes the
+                        <b>rant</b>
+                        part.
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        <br />
+                        <br />
+                        <a
+                            href="http://www.flickr.com/photos/elblogazo/10675300/"
+                            title="niña mala by Arturo J. Paniagua, on Flickr"
+                        >
+                            <img
+                                alt="niña mala"
+                                height="300"
+                                src="http://farm1.static.flickr.com/8/10675300_aa37cabd63.jpg"
+                                width="350"
+                            />
+                        </a>
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        Almost 10 years have gone by now and Patent
+                        <a href="http://bit.ly/qdXuLA">6,894,705</a>
+                        sits protected, assigned to my alma mater,
+                        <i>Rutgers, The State University of New Jersey</i>
+                        , and I never was able to release software for a course I took at Rutgers. Dear Rutgers, for
+                        what purpose do you hold this position?
+                        <i>
+                            Why do you offer a course if I cannot even write free software with the stuff you taught me
+                        </i>
+                        ?
+                        <b>Are you fucking kidding me? What the fuck!</b>
+                        What kind of
+                        <b>shit</b>
+                        is this?
+                        <b>Fuck you</b>
+                        . To future students: ask and
+                        <b>do not tolerate this shit</b>
+                        , go beyond where I got --
+                        <b>take this to the top</b>
+                        . This is unacceptable for educational institutions.
+                    </span>
+                </div>
+                <div>
+                    <span class="Apple-style-span"><br /></span>
+                </div>
+                <div>
+                    <span class="Apple-style-span">
+                        Glad I let that out... For those curious, I did manage to pass though, with a
+                        <b>B+</b>
+                        .
+                    </span>
+                </div>
+                <br />
+                <br />
+                <a
+                    href="http://www.flickr.com/photos/ehvah/4657105789/"
+                    title="happiness is a warm gun.  by midniteboom, on Flickr"
+                >
+                    <img
+                        alt="happiness is a warm gun. "
+                        height="300"
+                        src="http://farm5.static.flickr.com/4024/4657105789_be549a1b35.jpg"
+                        width="350"
+                    />
+                </a>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

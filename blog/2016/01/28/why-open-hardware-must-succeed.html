@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Why open hardware must succeed — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2016-01-28">Jan 28, 2016</time>
+                    <span class="category-badge badge-opensource">Open Source</span>
+                </div>
+                <h1>Why open hardware must succeed</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2016/01/why-open-hardware-must-succeed.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source &#8599;
+                </a>
+            </header>
+            <div class="post-content">
+                <p>
+                    <a
+                        href="http://3.bp.blogspot.com/-kKi0ashfWpc/Vpq_GJrpAiI/AAAAAAACjL0/zPAfVwLN5C4/s1600/GOPR3785.JPG"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="300"
+                            src="http://3.bp.blogspot.com/-kKi0ashfWpc/Vpq_GJrpAiI/AAAAAAACjL0/zPAfVwLN5C4/s400/GOPR3785.JPG"
+                            width="400"
+                        />
+                    </a>
+                </p>
+                <p>
+                    To the average person open hardware simply sounds like a good idea... They may have heard of this
+                    thing called "open source" that some "disruptive" hipster companies may have used and embraced to
+                    create new business models, so open source hardware seems like a natural progression. There's more
+                    to this though. The average person will not understand why its not just a great idea but also that
+                    we are in dire need for open hardware in the industry, the average person will not understand why
+                    its vital to the success of the open source movement. The average person will not understand that
+                    because open hardware follows a better development model -- the collaborative model -- it will grow
+                    very fast but also face a lot of very
+                    <b>serious</b>
+                    challenges. This post tries to address this gap.
+                </p>
+                <p>
+                    Back in 2013 I wrote a
+                    <a href="http://www.do-not-panic.com/2014/03/free-software-patents-surveillance-and.html">
+                        trilogy on the dangers of Free Software, the Free Software patent paradox and even threw in a
+                        quip over this topic and their relationship to the cosmos
+                    </a>
+                    . I wrote this in desperation because, as I saw it at that time, there were really no good prospects
+                    in the near sight, it was unclear when we'd see a steady change towards the right direction, my post
+                    was meant more as an alarm -- to create consciousness over
+                    <b>fundamental issues in our community</b>
+                    . The tide is changing though, fast, and for the better. I recall reading about the open hardware
+                    summit efforts in 2010, back then I was not impressed though and the prospects seemed fuzzy. The
+                    <a href="http://2015.oshwa.org/">2015 Open Hardware summit</a>
+                    passed a little while ago and upon reading about some of the talks and presentations, its clear now
+                    that momentum has built up significantly. This is slightly relieving but its not enough, we really
+                    need to create awareness that open hardware is not just about it being cool, fun and trendy, but
+                    also:
+                    <br />
+                </p>
+                <ul>
+                    <li>Open Hardware development is a key requirement to the success of the open source community</li>
+                    <li>
+                        Open Hardware development is very likely where the best evolutionary methodology for the
+                        combination of best hardware and software will come about
+                    </li>
+                </ul>
+                <p>
+                    <b>
+                        Ignoring these two principles will belittle any serious disruptive open hardware efforts as side
+                        projects.
+                    </b>
+                </p>
+                <p>
+                    <a
+                        href="http://3.bp.blogspot.com/-W7ScM8HA_0w/VnrxVlWXDvI/AAAAAAACfaw/ZJJOrDHbK94/s1600/Copy%2Bof%2B20141220_120629.jpg"
+                        style="margin-left: 1em; margin-right: 1em; text-align: center"
+                    >
+                        <img
+                            border="0"
+                            height="225"
+                            src="http://3.bp.blogspot.com/-W7ScM8HA_0w/VnrxVlWXDvI/AAAAAAACfaw/ZJJOrDHbK94/s400/Copy%2Bof%2B20141220_120629.jpg"
+                            width="400"
+                        />
+                    </a>
+                </p>
+                <p>
+                    Statistically there really are only a few who will care about this topic -- those folks should know
+                    <b>there is an uphill fight for the success of Open Hardware</b>
+                    . Open hardware can be extremely disruptive and the type of changes to be expected from it can have
+                    significant economic effects on existing businesses, if existing businesses do not adapt. I've
+                    learned the hard way though that businesses not only are hard to change, they simply may not want
+                    to, even if you are certain you have a solution for them. Companies may have really good reasons to
+                    not change and one cannot not take this personal. You have to really think of the bigger picture,
+                    for instance if we shift the conversation of the possible disruption of "open hardware" from impact
+                    to existing businesses towards to the possible economic impact though it changes things
+                    considerably. Having an impact to a few companies should really be the least of concerns to the Open
+                    Hardware movement. The dangers involved with open hardware could mean huge shifts in state
+                    economics,
+                    <i>but only those companies who could not afford to change or embrace change</i>
+                    . In the worst case these days, where a possible Trump president seems sadly statistically possible,
+                    that's loose lingo which could easily be twisted by the craziest in America towards the topic of
+                    "national security". There always is plenty of work to trying to prevent unexpected huge tidal
+                    economic shifts in nation states, the TPP is one, but one should also consider funding in research
+                    as well. Although not related to open hardware, I'll mention a recent issue of relevance with an
+                    amazing FOSS project: sage. Last year William Stein made some effort to create awareness over issues
+                    of funding towards his open source mathematical suite which I'd like to use for some perspective.
+                    For a bit of background on how he started Sage read his "
+                    <a href="http://wstein.org/mathsoftbio/history.pdf">
+                        Mathematical Software and Me: A Very Personal Recollection
+                    </a>
+                    ". You really do have to ask yourselves then why would the Simmons Foundation in their right mind
+                    would pick a
+                    <b>proprietary product</b>
+                    over an open source project at a funding event which actually listed as a goal to
+                    <i>
+                        "to investigate what sorts of support would facilitate the development, deployment and
+                        maintenance of
+                        <b>open-source software</b>
+                        used for fundamental research in mathematics"
+                    </i>
+                    . Stein explained in details on his trials over this effort on his post "
+                    <a href="http://sagemath.blogspot.com/2015/09/the-simons-foundation-and-open-source.html">
+                        The Simons Foundation and Open Source Software
+                    </a>
+                    " (refer to
+                    <a href="https://news.ycombinator.com/item?id=10175563">hackers news discussion</a>
+                    ). One of the only sensible things that comes to mind is the possible impact on economics,
+                    disruptive economics to existing proprietary mathematical suites in the United States. Naturally,
+                    you should then expect different economic regions with different interests to have different
+                    motivations and perhaps more keenly interested in supporting these efforts, that actually happens to
+                    be the case, refer to the European "
+                    <a href="http://opendreamkit.org/">
+                        OpenDreamKit: Open Digital Research Environment Toolkit for the Advancement of Mathematics
+                    </a>
+                    ", which will "
+                    <i>
+                        provide substantial funding to the open source computational mathematics ecosystem, and in
+                        particular popular tools such as LinBox, MPIR,
+                        <b>SageMath</b>
+                        , GAP, Pari/GP, LMFDB, Singular, MathHub, and the IPython/Jupyter interactive computing
+                        environment".
+                    </i>
+                     The point I'm trying to make here using Sage as an example if you do not get much support for open
+                    hardware research at your University, don't be surprised, realize what you're up against,
+                    <b>the entire evolution of silicon valley and the economics behind that</b>
+                    .
+                </p>
+                <p>
+                    Fret not though, I wrote this post also make emphasis on both principles stated above, the second
+                    one deals with my own
+                    <a href="http://www.do-not-panic.com/2015/04/god-complex-why-open-models-will-win.html">
+                        conjecture on that open models will win
+                    </a>
+                    .What we need is math, tons of fucking math, semantics, grammar, and more precise science behind
+                    what we do with open models. If you are not using the scientific method for evaluation of progress /
+                    gains / bugs /etc in any way for your own project I highly suggest you consider it. Be pedantic over
+                    everything you can measure. Do not get discouraged to find out that the respective proprietary piece
+                    you are trying to replace has no such metrics for comparisons. That's not coincidence, its why it
+                    survives after all. I'm delighted to report that since my last calling for metrics on FOSS we have
+                    had a huge shift, not only are people really meeting up just for this topic alone (
+                    <a href="http://flosscommunitymetrics.org/">FLOSS community metrics meeting in Brussells</a>
+                    ) but there are companies spawning (
+                    <a href="http://bitergia.com/">bitergia</a>
+                    ) and dedicating themselves to this end, and I'm also seeing a lot of folks starting to talk about
+                    this at conferences I attend.
+                </p>
+                <p>
+                    Academia can also help shape economics for the better. When it stop doing this, academia has failed
+                    us. Its fairly understandable that economic pressures may have historically influenced academia, but
+                    if business and economics theories do not account for the need for self reinventing and dynamic
+                    changes in the market, then those economics and market theories should also be re-considered,
+                    specially in a time of age where the speak of exponential growth, evolution and change is becoming
+                    standard. Intellectual Property remains a clear challenge, I've been dealing with patent issues
+                    since my 
+                    <a href="http://www.do-not-panic.com/2011/09/educational-issues-with-polynomiography.html">
+                        University study days when learning about polynomiography
+                    </a>
+                     when I was told I could not release a piece of code as open source to the community as my professor
+                    had patents over the subject, but surprisingly its still a
+                    <a href="http://www.do-not-panic.com/2014/04/open-research-through-collaborative-development.html">
+                        lingering issue even for new trendy University efforts such as Singularity University
+                    </a>
+                    . Open Hardware will suffer because of patents, its why Open Hardware is key to the success of the
+                    open source movement: the open source movement has historically faced challenges with patents, but
+                    in the worst case the dangers here lie in that free software developers
+                    <b>could</b>
+                    become a
+                    <b><u>dying breed</u></b>
+                    (for details refer to this
+                    <a href="http://www.do-not-panic.com/2014/03/free-software-patents-surveillance-and.html">
+                        trilogy post on the patent paradox
+                    </a>
+                    ). Open source developers include free software developers but free software hackers do it for a
+                    cause as well. Patent bloat companies want to hire zombie open source developers, that do not care
+                    about these issues, they will do anything in their power to keep the status quo. Because of this
+                    Open Hardware development is a key requirement to the success of the open source community, not only
+                    will it provide an outlet for free software developers but it also enables open source developers to
+                    get better hardware without bullshit restrictions.
+                </p>
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </footer>
+    </body>
+</html>

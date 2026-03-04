@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Open Research through collaborative development — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">← back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2014-04-08">Apr 8, 2014</time>
+                    <span class="category-badge badge-opensource">Open Source</span>
+                </div>
+                <h1>Open Research through collaborative development</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2014/04/open-research-through-collaborative-development.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <br />
+                Academia helps shape our lives but it also helps with
+                <b>economics</b>
+                whether that be privately funded or publicly funded for evaluation of exploring new markets for capital
+                gain, general well being and progress. One aspect of both type of funded research efforts are concerns
+                over getting your ideas taken (being "
+                <i>scooped</i>
+                " seems to be the term used) and not getting any funding all together even if your ideas are very
+                promising. If you follow my blog posts I hope its clear by now that I am terribly
+                <a href="http://www.do-not-panic.com/2014/03/free-software-patents-surveillance-and.html">
+                    concerned over rapid evolution
+                </a>
+                but are looking for
+                <a href="http://www.do-not-panic.com/2013/08/evolving-capitalism-with-ethical.html">solutions</a>
+                . As a collateral to the Internet and efforts behind
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                and
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source</b></a>
+                software we have spawned new mechanisms that can help research tremendously with rapid progress, one of
+                them obviously being
+                <a href="http://en.wikipedia.org/wiki/Collaborative_software_development_model">
+                    collaborative development
+                </a>
+                models. In this post I will explain and encourage folks to look into a few new areas of development in
+                research and to consider a bit more seriously how they're spending their time and money.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://3.bp.blogspot.com/-hfqsqoGxteQ/T8OUaJxBoaI/AAAAAAAAyn4/f-aCyLXDzoU/s1600/photo.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://3.bp.blogspot.com/-hfqsqoGxteQ/T8OUaJxBoaI/AAAAAAAAyn4/f-aCyLXDzoU/s1600/photo.jpg"
+                            height="206"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                Things have changed quite a bit since the inception of the Internet and one example of a prominent
+                innovative pioneer that has been very vocal about preparing us for a series of new advances is
+                <a href="http://en.wikipedia.org/wiki/Ray_Kurzweil">Ray Kurzeweil</a>
+                . For example he's very vocal about expressing concerns over
+                <b>legacy roadmaps</b>
+                on currently established and well known schools such as
+                <a href="http://en.wikipedia.org/wiki/Massachusetts_Institute_of_Technology">MIT</a>
+                , its in fact one of the reasons why we have the spawning of
+                <a href="http://en.wikipedia.org/wiki/Singularity_University">Singularity University</a>
+                backed by NASA, Google and
+                <a href="https://singularityu.org/community/partners/">others partners</a>
+                . If we are going to start trying to even consider to address the "
+                <b>humanity's greatest challenges</b>
+                ", which actually was a requirement by Google to back
+                <a href="http://en.wikipedia.org/wiki/Singularity_University">Singularity University</a>
+                <a href="https://www.youtube.com/watch?v=HMYVH-hBGWg%20">(6:54)</a>
+                , we need research to be transparent, embracing and shepherding
+                <a href="http://en.wikipedia.org/wiki/Collaborative_software_development_model">
+                    collaborative development
+                </a>
+                models, and even addressing fair use of "Intellectual Property". Fortunately at a
+                <a href="https://www.youtube.com/watch?v=HMYVH-hBGWg%20">
+                    Ted talk where Ray announced Singularity University he sated
+                </a>
+                that (7:30) "these projects [which started as intensive group summer sessions in 2009 to address
+                <b>humanity's greatest challenges</b>
+                ] will continue past these sessions using collaborative development methods and all the
+                <b>Intellectual Property</b>
+                that is created will be online and available and developed online in a collaborative development
+                fashion". I'm hoping that Google will live up to its promise to ensure that
+                <a href="http://en.wikipedia.org/wiki/Singularity_University">Singularity University</a>
+                lives up to its promise and that any concerns over
+                <b>Intellectual Property</b>
+                will be addressed.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://1.bp.blogspot.com/-CsZEaxTS7Lk/UAby6ZyVLXI/AAAAAAAA2do/GQBSjaIfJCQ/s1600/IMG_20120715_063233.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://1.bp.blogspot.com/-CsZEaxTS7Lk/UAby6ZyVLXI/AAAAAAAA2do/GQBSjaIfJCQ/s1600/IMG_20120715_063233.jpg"
+                            height="320"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                Another new research effort announced recently was the
+                <a href="https://www.newschallenge.org/challenge/2014/brief.html">Knight News Challenge</a>
+                . In June 2014&nbsp; they will award $2.75 million, including $250,000 from the Ford Foundation, to
+                support the most compelling ideas and projects that make the Internet better. A recent entry into the
+                competition
+                <a href="https://www.newschallenge.org/challenge/2014/submissions/opening-up-research-proposals#_=_">
+                    addresses the concerns of funding and folks taking your ideas (scooping)
+                </a>
+                :
+                <br />
+                <blockquote class="tr_bq">
+                    "
+                    <i>
+                        If everyone knows you were the first to propose (and actually pursue) that idea, anyone who
+                        tries to sell it as their own will risk loosing reputation
+                    </i>
+                    "
+                </blockquote>
+                Also there are two carrots: 1) for the
+                <a href="https://www.newschallenge.org/challenge/2014/submissions/opening-up-research-proposals">
+                    casino fund
+                </a>
+                (1% funding to this pool by different parties funding legacy research) contributors there is expected
+                research studies that will take place on increasing efficiency of funding research, and 2) for
+                researchers there are new incentives provided by the slew of new changes incurred by an open strategy
+                such as news coverage, public documentation, and of course the ability to socialize ideas for more
+                funding and of course... the gains from public
+                <a href="http://en.wikipedia.org/wiki/Collaborative_software_development_model">
+                    collaborative development
+                </a>
+                . Folks who get already established grants through legacy research could also help contribute 1% to the
+                funds for promising but unfundable by traditional means. I'm pretty
+                <b>confident</b>
+                <a href="http://en.wikipedia.org/wiki/Bradley_M._Kuhn">Bradley M. Kuhn</a>
+                would
+                <u>cringe</u>
+                at the idea that it seems this research effort however is underselling it by trying to target research
+                only in the current category of "
+                <a href="https://www.newschallenge.org/challenge/2014/submissions/opening-up-research-proposals">
+                    promising but unfundable by traditional means
+                </a>
+                ", as he recently posted about
+                <a href="http://ebb.org/bkuhn/blog/2014/04/03/last-resort.html">Open Surce as a last resort</a>
+                . He'd be right and the fact that tons of money and interest is pouring into
+                <a href="http://en.wikipedia.org/wiki/Singularity_University">Singularity University</a>
+                through a different approach should be proof that new research using
+                <a href="http://en.wikipedia.org/wiki/Collaborative_software_development_model">
+                    collaborative development
+                </a>
+                models
+                <u><b>should not be undersold</b></u>
+                only to "
+                <a href="https://www.newschallenge.org/challenge/2014/submissions/opening-up-research-proposals">
+                    promising but unfundable by traditional means
+                </a>
+                ". With that said, it
+                <b>doesn't mean</b>
+                that they are restricting their ideas submitted only to that category... so any daring researcher with
+                an idea to help spawn "
+                <a href="https://www.newschallenge.org/challenge/2014/brief.html">
+                    projects that make the Internet better
+                </a>
+                " but confident or
+                <b>curious</b>
+                on the gains of
+                <a href="http://en.wikipedia.org/wiki/Collaborative_software_development_model">
+                    collaborative development
+                </a>
+                should seriously consider submitting their proposal for evaluation. Two biophysicists have signed up for
+                the competition already, who's next?
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://4.bp.blogspot.com/-Zp-eYYh7g1w/T8OUaDssH0I/AAAAAAAAyn4/ATO4WSJ7Cnk/s1600/photo.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://4.bp.blogspot.com/-Zp-eYYh7g1w/T8OUaDssH0I/AAAAAAAAyn4/ATO4WSJ7Cnk/s1600/photo.jpg"
+                            height="185"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                The prospects can set great precedents, its the type of stuff that I think we ultimately need to avoid
+                the next big "race", the last one being the atomic race, the next one, in my opinion, likely being the
+                Artificial Intelligent race or collateral because of it in light of other research. Another curious
+                thing is that there seems to be an intersection between the folks at
+                <a href="http://en.wikipedia.org/wiki/Singularity_University">Singularity University</a>
+                and the
+                <a href="https://www.newschallenge.org/challenge/2014/brief.html">Knight News Challenge</a>
+                and I'd be curious to know if they have considered... you know, collaborating together. Just a thought
+                ;)
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">← back to timeline</a>
+        </footer>
+    </body>
+</html>

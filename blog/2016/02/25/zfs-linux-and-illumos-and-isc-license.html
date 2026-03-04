@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ZFS, Linux, illumos and the ISC license — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2016-02-25">Feb 25, 2016</time>
+                    <span class="category-badge badge-opensource">Open Source</span>
+                </div>
+                <h1>ZFS, Linux, illumos and the ISC license</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2016/02/zfs-linux-and-illumos-and-isc-license.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source &#8599;
+                </a>
+            </header>
+            <div class="post-content">
+                <p>
+                    People are discussing whether or not Canonical including and shipping ZFS as a Linux kernel module
+                    of the GPLv2 licensed Linux kernel might be a GPL violation or not. James Bottomley recently
+                    <a href="http://blog.hansenpartnership.com/are-gplv2-and-cddl-incompatible/">
+                        posted an interesting opinion
+                    </a>
+                     in that although it is a technical GPL violation "it’s difficult to develop a theory of harm and
+                    thus the combination is allowable" given that you'd need to prove the harm is done to prosecute.
+                    Meanwhile just today Conservancy has released a
+                    <a href="https://sfconservancy.org/blog/2016/feb/25/zfs-and-linux/">
+                        Statement on ZFS and Linux combinations
+                    </a>
+                    . In it are very important pieces of information on serious incompatibilities which takes this a bit
+                    further outside of the scope simply adhering to the GPL compliance standards to make people happy
+                    and not harm people. I'll review those but also explain a bit more of the history of why ZFS is
+                    under CDDLv1 and why Oracle no longer benefits ZFS being licensed under CDDLv1. We should be
+                    focusing more on the illumos community, the BSD community, what their goals are and thinking about
+                    what they can do and why they should do anything anyway. If we want a middle ground where we can all
+                    benefit, including the proprietary folks, we should all just lobby for the ISC license as a
+                    reasonable compromise for ZFS community. I'll explain why.
+
+                    <br />
+                </p>
+                <h3>You can currently only use CDDLv1 for ZFS</h3>
+                <p>
+                    <a
+                        href="https://4.bp.blogspot.com/-gOzfQbJzcIU/Vpr0AmKwAhI/AAAAAAACmOA/TklaMzNQ-D8/s1600/otro%2Brobot.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="400"
+                            src="https://4.bp.blogspot.com/-gOzfQbJzcIU/Vpr0AmKwAhI/AAAAAAACmOA/TklaMzNQ-D8/s400/otro%2Brobot.jpg"
+                            width="372"
+                        />
+                    </a>
+                    <br />
+                    CDDLv1 says that if you redistribute any binaries the software must be distributed only under the
+                    CDDLv1. There are a series of issues with this. The easiest to grok is that modules can be built-in,
+                    and that the kernel as whole is GPLv2. Canonical will ensure ZFS might live as a Linux kernel module
+                    only though it seems, however there are a series of serious issues with this as well. I won't list
+                    them all and I'll purposely be vague about it as I do not want to do anyone's dirty homework, but
+                    I'll at least describe one item that you can find discussed on archives today. We have only:
+                    <br />
+
+                    <code>MODULE_LICENSE("Dual BSD/GPL")</code>
+                </p>
+                <p>We do not have:</p>
+                <p><code>MODULE_LICENSE("GPL-Compatible")</code></p>
+                <p>
+                    This is on purpose. I know because 
+                    <b>I actually proposed such a change years ago!</b>
+                     I did this because at that time I was on the hippie bandwagon wanting to help Linux and the BSD
+                    camp sing kumbaya together on the 802.11 front. The "Dual BSD/GPL" thing was added for historical
+                    purposes to account for old BSD incompatibility, but for all intents and purposes all upstream Linux
+                    kernel modules currently using the dual declaration might as well just outright be declared as:
+                </p>
+                <p><code>MODULE_LICENSE("GPL")</code></p>
+                <p>
+                    This hasn't been done and we keep the dual thing just to avoid confusion, but its perfectly possible
+                    to use the GPL declaration on even only permissively licensed Linux kernel modules. Another just
+                    utterly stupid issue with this incompatibility is you can't hack on ZFS unless you use the CDDLv1
+                    license. As I'll describe below perhaps this might have been a good thing for Sun, but as things
+                    stand now even or Oracle -- this is not really a good thing.
+                </p>
+                <h3>When shipping binaries the GPLv2 applies</h3>
+                <br />
+                CDDLv1 prohibits you to abide by this. This is perhaps one of the more obscure incompatibilities, but
+                I've tried to summarize it as best as possible with the above statement.
+                <h3>CDDLv1 was not purposely incompatible with GPLv2</h3>
+                <div>
+                    <br />
+                </div>
+                CDDLv1 was not just the license of ZFS, it was the license chosen for OpenSolaris. Some ex-Sun employees
+                have claimed that the CDDLv1 was purposely made incompatible with GPLv but according to Bryan M.
+                Cantrill, one of the Sun employees who actually ended up staying even after Oracle acquired Sun, at
+                <a href="http://static.usenix.org/events/lisa11/">USENIX Lisa XXV</a>
+                clarified this is not true.
+                <a href="https://www.youtube.com/watch?v=-zRN7XLCRhc&t=20m00s">He clarified</a>
+                 (starting at video 22:00) that part of the incompatibilities came from the fact that although they
+                wanted copyleft they needed
+                <i>a form of copyleft</i>
+                that enabled proprietary drivers such as drivers for partners such as EMC and Veritas. This shows that
+                even if you have great intentions and want to use copyleft,
+                <i>if you are have any proprietary strings attached</i>
+                , you'll be affected and can only produce GPL incompatible solutions.
+                <h3>Oracle does not benefit from CDDLv1 ZFS anymore</h3>
+                <div>
+                    <br />
+                </div>
+
+                <a
+                    href="https://1.bp.blogspot.com/-j-6aSkTSCCw/Vprz_NNRJ0I/AAAAAAACmNk/fv7eU0pMprE/s1600/Moondancing.jpg"
+                    style="margin-left: 1em; margin-right: 1em"
+                >
+                    <img
+                        border="0"
+                        height="400"
+                        src="https://1.bp.blogspot.com/-j-6aSkTSCCw/Vprz_NNRJ0I/AAAAAAACmNk/fv7eU0pMprE/s400/Moondancing.jpg"
+                        width="315"
+                    />
+                </a>
+                <div>
+                    <br />
+                </div>
+                To understand this we'll have to review a bit of history. ZFS was just part of OpenSolaris. Let's
+                consider the original motivation at Sun to be enable them to keep proprietary drivers, how this aligns
+                to Sun's old business model and then review Oracle's current business model for "Solaris", and obviously
+                what remains from the OpenSolaris effort and how this can impact in any way Oracle's business.
+                <p>
+                    First credit where due. Bryan credits Jonathan Schwartz for making it a priority to open source the
+                    operating system, he mentions that OpenSolaris started in January of 2005 when DTrace became the
+                    first of the system to be open sourced, and that the rest of the OS was open sourced in June 2005.
+                    Sun was bought out by Oracle in 2009, the acquisition closed on February 2010. Ben stayed at Oracle
+                    until July 25, 2010.
+                    <br />
+                    On August 3, 2010 illumos was born, not as a fork but rather an entirely open downstream repository
+                    of OpenSolaris with all the proprietary pieces rewritten from scratch or ported from BSD. On Friday
+                    August 13, 2010 however an internal memo was circulated by the new Solaris leadership to say that
+                    they will no longer distribute source code for the entirety of the Solaris Operating System in
+                    real-time as it is developed. It seems this was never publicly announced, and that updates just
+                    stopped on August 18th, 2010. Solaris 11 was released on November 9, 2011 and there was no source
+                    code released to go with it.
+                </p>
+                <p><b>That marked the end of OpenSolaris...</b></p>
+                <p>
+                    <b>Oracle decided to keep Solaris proprietary then</b>
+                    , and they were able to do this as OpenSolaris development required copyright assignment. Although
+                    OpenSolaris died, the illumos project continued to chug on, independent of Oracle, with a striking
+                    difference, copyright assignment was not required. This means Oracle does not own copyright on the
+                    illumos project and its new innovations. Oracle cannot use illumos versions of ZFS unless they also
+                    release their own Oracle Solaris under the copyleft CDDLv1. Oracle Solaris cannot reap benefit of
+                    the illumos version of ZFS, 
+                    <b>unless they open source their own source code again, </b>
+                    and the reason is that
+                    <b> the little pieces of GPLv2 incompatibility require them to use the CDDLv1</b>
+                    .
+                </p>
+                <h3>
+                    <code>illumos innovations can never be part of proprietary Oracle Solaris</code>
+                </h3>
+                <p>
+                    <a
+                        href="https://4.bp.blogspot.com/-utgpU_QMRws/Vprz-TVA2wI/AAAAAAACmNY/G0Q-seAJ5ws/s1600/Guepardo%2Bde%2BH%25C3%25A9ctor.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="290"
+                            src="https://4.bp.blogspot.com/-utgpU_QMRws/Vprz-TVA2wI/AAAAAAACmNY/G0Q-seAJ5ws/s400/Guepardo%2Bde%2BH%25C3%25A9ctor.jpg"
+                            width="400"
+                        />
+                    </a>
+                </p>
+                <p>
+                    <br />
+                    illumos has seen critical innovations and bug fixes to ZFS, Dtrace, Zones and other core
+                    technologies. The real kernel architects behind ZFS have left Oracle, are not in favor or Oracle's
+                    idea to stop OpenSolaris, and have gone to great lengths to ensure that Oracle play by the archaic
+                    copyleft CDDLv1 license. Examples of a features added to illumos ZFS are SPA versioning that allows
+                    disjoint features from different vendors without requiring conflicting versions, UNMAP for STMF,
+                    allowing for better ZFS-backed ISCSI LUNs, getting estimates for ZFS send and receive. To top this
+                    all off, even if the Linux community made changes to ZFS to fix issues or add new innovations Oracle
+                    could not benefit from it. The BSD community would have contributed first to ZFS than the Linux
+                    community, but those contributions also could not be used by Oracle.
+                </p>
+                <h3>Why the ISC is a win for all</h3>
+                <div>
+                    <br />
+                </div>
+
+                <a
+                    href="https://3.bp.blogspot.com/-NAwgfheYdtw/Vs-tkZL0x9I/AAAAAAACvuc/NwsGq_bC8tM/s1600/20160220_175146.jpg"
+                    style="margin-left: 1em; margin-right: 1em"
+                >
+                    <img
+                        border="0"
+                        height="225"
+                        src="https://3.bp.blogspot.com/-NAwgfheYdtw/Vs-tkZL0x9I/AAAAAAACvuc/NwsGq_bC8tM/s400/20160220_175146.jpg"
+                        width="400"
+                    />
+                </a>
+                <div>
+                    <br />
+                </div>
+                Are the old reasons for Sun to use CDDLv1, to enable proprietary drivers, still part of illumos' and the
+                BSD community's own goals ? If not can someone confirm if the illumos or BSD community is forever stuck
+                with the CDDLv1 ? If so would they be perfectly happy with that? Is the potential gain of contributing
+                with the Linux community worthy enough for illumos to wish to want a relicense that would make things
+                work for all parties involved ? What would it take for them to relicense? Does the illumos community
+                really want Oracle to release Oracle Solaris under the CDDLv1 ? If Oracle wanted to upkeep the Oracle
+                Solaris solution, help illumos collaborations on the Linux front, enable contributions on Linux to be
+                usable even on proprietary Solaris solutions the ISC license would make a good middle ground for all
+                parties involved. We did this with on the 802.11 front, it should easily apply as a reasonable
+                compromise to ZFS as well, if parties really wanted a good middle ground.
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </footer>
+    </body>
+</html>

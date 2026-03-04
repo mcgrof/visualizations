@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Patagonia: Trekking around Fitz Roy — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2013-03-03">Mar 3, 2013</time>
+                    <span class="category-badge badge-travel">Travel / Outdoors</span>
+                </div>
+                <h1>Patagonia: Trekking around Fitz Roy</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2013/03/patagonia-trekking-around-fitz-roy.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <a
+                    href="http://4.bp.blogspot.com/-b2UqfIDWtrk/UTFV_cEaJjI/AAAAAAABPg8/uxlgU9SegHY/s1600/250672_10102342704213859_1129929394_n.jpg"
+                >
+                    <img
+                        src="http://4.bp.blogspot.com/-b2UqfIDWtrk/UTFV_cEaJjI/AAAAAAABPg8/uxlgU9SegHY/s400/250672_10102342704213859_1129929394_n.jpg"
+                    />
+                </a>
+
+                <p></p>
+                <div>
+                    I read so much about this place and I was finally there.
+                    <b>I could not fucking believe it</b>
+                    . You get to Fitz Roy through a small town called
+                    <a href="http://en.wikipedia.org/wiki/El_Chalt%C3%A9n">El Chaltén</a>
+                    . Mount Fitz Roy is located inside Parque Nacional Los Glaciares, and  
+                    <a href="http://en.wikipedia.org/wiki/El_Chalt%C3%A9n">El Chaltén</a>
+                     happens to be in it as well. You can see Mount Fitz Roy from 
+                    <a href="http://en.wikipedia.org/wiki/El_Chalt%C3%A9n">El Chaltén</a>
+                    ! There are two main trekking attractions, you either trek to the base of Laguna De Los Tres to see
+                    the Mount Fitz Roy range of mountains or you trek towards to Laguna Torre to see Cerro Torre. I had
+                    only 2 days to see around Mount Fitz Roy, so I had to jam in somehow a few days of trek into two
+                    days. I was really nervous given that this would be my first time trekking or camping alone, but yet
+                    so excited as I knew this was going to be epic.
+                    <p></p>
+                    <p>
+                        <a href="http://pataclimb.com/images/guidebook/PatagoniaVertical_cover.jpg">
+                            <img src="http://pataclimb.com/images/guidebook/PatagoniaVertical_cover.jpg" />
+                        </a>
+                        <br />
+                        I crashed at the
+                        <a href="http://www.ranchograndehostel.com/?l=en">Hostel Rancho Grande</a>
+                        , where tons of other back packers typically crash. Prior to settling in I went to look for
+                        local guide books and I found what they call here the local 
+                        <b>climbing bible</b>
+                        , a book called
+                        <a href="http://pataclimb.com/guidebook/guidebook.html">Patagonia Vertical</a>
+                        . I ordered a pizza, thinking I ordered only a slice but got a medium pie... I reluctantly ate
+                        it, but its a good thing as I would need the carbohydrates the next day, although I didn't know
+                        it yet. Back at the hostel a guy crashing in my room mentioned he worked in Antarctica doing
+                        guide work for scientists. This fucker was bad ass... and was on his way back home from his
+                        season work, figured he'd come check out Fitz Roy prior to his departure. The day prior had just
+                        finished a long trek path he advised I should take given the short amount of time I'd have to
+                        see things. His recommendation was that I go to Campamento Poincenot, do Laguna De Los Tres to
+                        see Fitz Roy and then do Refugio Los Troncos and then head straight to Campamento De Agostini to
+                        see Cerro Torre. Cerro Torre was not part of my plans but he insisted it was worth it.
+                        The recommended trek seemed a bit ambitious for my experience, I had only trekked once so far
+                        and I'd be doing it alone. I wasn't sure if I'd do it yet.
+                    </p>
+                    <p>
+                        <a
+                            href="http://3.bp.blogspot.com/-ECZ7GtVP5nA/US2V3H1r7yI/AAAAAAABPVw/4ooFkNXr4mg/s1600/20130204_113839.jpg"
+                        >
+                            <img
+                                src="http://3.bp.blogspot.com/-ECZ7GtVP5nA/US2V3H1r7yI/AAAAAAABPVw/4ooFkNXr4mg/s400/20130204_113839.jpg"
+                            />
+                        </a>
+                        <br />
+                        <b>Fuck it</b>
+                        , I said. On my first day I trekked 37.72 km just 4.47 km short of trekking a marathon. I
+                        managed to record that trek with my phone's GPS, you can view that trek on
+                        <a
+                            href="https://maps.google.com/maps/ms?msid=212834348000222068419.0004d517b36f4b2b35bd8&amp;msa=0"
+                        >
+                            Google Maps here
+                        </a>
+                        . Due to fall I had, and being attacked by a bird it will likely be the last time I trek alone.
+                        I know what you're thinking... I had seen the movie
+                        <a href="http://www.imdb.com/title/tt1542344/">127 Hours (2010)</a>
+                         a while ago and after watching that I always told myself I'd never do similar activity alone,
+                        but hey -- sometimes we learn the hard way. You might not believe me I got attacked by a bird,
+                        but I
+                        <a href="http://www.youtube.com/watch?v=uJjB7SZOJs0">
+                            recorded two attempts of this fucker bird
+                        </a>
+                        taking a dive at me. You can see one dive at 7:22 and another at 8:01. Not sure what type of
+                        bird this is, let me know if you can make it out. Nothing serious, all in all it was fun, and
+                        the scenery and peace I felt was just amazing.
+                    </p>
+                    <p>
+                        <a
+                            href="http://2.bp.blogspot.com/-k3dojiHZ9k4/US2V3EAUpwI/AAAAAAABPVw/DsJMQigbg1E/s1600/20130204_102657.jpg"
+                        >
+                            <img
+                                src="http://2.bp.blogspot.com/-k3dojiHZ9k4/US2V3EAUpwI/AAAAAAABPVw/DsJMQigbg1E/s400/20130204_102657.jpg"
+                            />
+                        </a>
+                        <br />
+                        This was my camp site and that was the view I had all to myself. By now I was comfortable with
+                        Satanic Patagonia winds, but the insane winds would not come, at least not at Campamento
+                        Poincenot. Across the river there is another camp site called Campamento Rio Blanco and the
+                        trekking book I had indicated it was used by Rock Climbers. The holy climbing bible would later
+                        reveal to me that such claims were blasphemy, these days given that 
+                        <a href="http://en.wikipedia.org/wiki/El_Chalt%C3%A9n">El Chaltén</a>
+                         had so many allocation options rock climbers would not use this camp site to avoid erosion on
+                        the park and instead they would go straight to the glacier base camps and camp there. A typical
+                        journey to start rock climbing then could take as little as two days. I was pleased, after
+                        trekking 37.72 km successfully I knew at the very least I could make it one day to a base camps
+                        at Fitz Roy. Now I just have to work on my rock climbing, maybe for the next 20 years, and one
+                        day hope to come back for a second type of adventure.
+                    </p>
+                    <p>
+                        <a
+                            href="http://4.bp.blogspot.com/-HUhPvQQTAGI/US2V3ERIasI/AAAAAAABPWk/TaeEHlcscmU/s1600/20130206_065159.jpg"
+                        >
+                            <img
+                                src="http://4.bp.blogspot.com/-HUhPvQQTAGI/US2V3ERIasI/AAAAAAABPWk/TaeEHlcscmU/s400/20130206_065159.jpg"
+                            />
+                        </a>
+                        <br />
+                        I didn't know much about Cerro Torre but the climbing bible would enlighten me as I camped at
+                        Campamento De Agostini the second day waiting for the insane conditions I had always read about
+                        to clear up. I woke up before sunrise and managed once again to see the sun melt over rock, this
+                        time over Cerro Torre. I looked at Cerro Torre differently this morning with an appreciation of
+                        all of the history of effort, lies, death, deceit, anger, effort, and climbing ethics. Never
+                        have I read about so much drama over a piece of rock. The closest I can find online for you
+                        about this is through
+                        <a href="http://www.climbing.com/route/cerro-torre-the-lie-and-the-desecration/">
+                            climbing.com's article on Cerro Torre
+                        </a>
+                        . Grab some popcorn and read it for your amusement, in particular the parts about the Compressor
+                        Route. If you're lazy a movie seems to cover some of the history with some modifications,
+                        <a href="http://en.wikipedia.org/wiki/Scream_of_Stone">Scream Of Stone</a>
+                        , I haven't watched it yet.
+                    </p>
+                    <p>
+                        <a
+                            href="http://2.bp.blogspot.com/-0mO64Z0ZY9o/US2V3PjV2DI/AAAAAAABPVw/nVelK4hQSJQ/s1600/20130206_091134.jpg"
+                        >
+                            <img
+                                src="http://2.bp.blogspot.com/-0mO64Z0ZY9o/US2V3PjV2DI/AAAAAAABPVw/nVelK4hQSJQ/s400/20130206_091134.jpg"
+                            />
+                        </a>
+                        <br />
+                        I ended up climbing Cerro Dos Condores past the Mirador Torre by mistake, thinking there was a
+                        path towards 
+                        <a href="http://en.wikipedia.org/wiki/El_Chalt%C3%A9n">El Chaltén</a>
+                         there. This mistake set me back by an hour or two but its a good thing as I managed to see this
+                        view, probably one of the most fascinating and rewarding views I got to see in all of Patagonia.
+                    </p>
+                    <p>
+                        <a
+                            href="http://3.bp.blogspot.com/-PQwpQrji9Gk/US2V3NRWdlI/AAAAAAABPVw/XHIMPjogsJ4/s1600/20130203_113517.jpg"
+                        >
+                            <img
+                                src="http://3.bp.blogspot.com/-PQwpQrji9Gk/US2V3NRWdlI/AAAAAAABPVw/XHIMPjogsJ4/s400/20130203_113517.jpg"
+                            />
+                        </a>
+                        <br />
+                        <b>Glacier porn</b>
+                        . That's what I call this. Now, this is not part of the Fitz Roy area but since Fitz Roy is part
+                        of Parque Nacional Glaciares I figured I'd show in this post the southern part of that park.
+                        There lies a huge glacier called Perito Moreno. The glacier is about as tall as half the size of
+                        a football field. I learned what glacier speed is. Boring. It is still beautiful, but very
+                        boring. All these signs about not getting close. Bleh. I should have gone ice trekking with my
+                        friend.
+                    </p>
+                    <p>
+                        <a
+                            href="http://1.bp.blogspot.com/-jMFE02W2vv4/US2V3AF7kTI/AAAAAAABPVw/QmlQ96_M-4Y/s1600/20130204_121913.jpg"
+                        >
+                            <img
+                                src="http://1.bp.blogspot.com/-jMFE02W2vv4/US2V3AF7kTI/AAAAAAABPVw/QmlQ96_M-4Y/s400/20130204_121913.jpg"
+                            />
+                        </a>
+                        <br />
+                        I don't know when but I have to come back to 
+                        <a href="http://en.wikipedia.org/wiki/El_Chalt%C3%A9n">El Chaltén</a>
+                         and next time I'd stay in the town and take advantage of all the little random things to do
+                        there. There is good local rock climbing crags, and I have a top guide for it, you can get to
+                        most places by just walking! I dream of seeing that little small town again even in the winter.
+                        It must be amazing.
+                    </p>
+                </div>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

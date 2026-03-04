@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Hacking on systemd with OpenSUSE — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">← back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2014-08-25">Aug 25, 2014</time>
+                    <span class="category-badge badge-linux">Linux / Kernel</span>
+                </div>
+                <h1>Hacking on systemd with OpenSUSE</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2014/08/hacking-on-systemd-with-opensuse.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-66IfR0Fz450/U_wGEFpTwXI/AAAAAAABrGw/B9__0KE-qy0/s1600/bleed.png"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://2.bp.blogspot.com/-66IfR0Fz450/U_wGEFpTwXI/AAAAAAABrGw/B9__0KE-qy0/s1600/bleed.png"
+                            height="318"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                I&nbsp;had recently had no other option but to hack on systemd
+                <span style="color: yellow">:*(</span>
+                and found there wasn't any documentation on how to do this on OpenSUSE. Replacing your /sbin/init isn't
+                as simple as it used to be back in the day, eventually I figured things out with a few
+                <span style="color: red">hiccups</span>
+                but apart from the actual ability to hack and install systemd I also picked up a bit of good
+                <b><span style="color: #274e13">best practices</span></b>
+                you can use to help while testing, and dealt with installing
+                <a href="http://d-bus.googlecode.com/git/kdbus.txt">kdbus</a>
+                as I was tired of seeing those pesky warnings from systemd without it. My first assumption that things
+                would just work if I installed over my base install proved incorrect, so avoid that ;), I'll cover doing
+                this with containers. While I don't yet have access to edit the freedesktop wiki I figured I'd document
+                my steps here and later move that documentation once and if granted access.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://4.bp.blogspot.com/-oD1hlMjvsmM/U_wGQrqNYHI/AAAAAAABrG4/UKEV9Vn5sIo/s1600/chespi.png"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://4.bp.blogspot.com/-oD1hlMjvsmM/U_wGQrqNYHI/AAAAAAABrG4/UKEV9Vn5sIo/s1600/chespi.png"
+                            height="320"
+                            width="319"
+                        />
+                    </a>
+                </div>
+                <br />
+                First you need the equivalent of a deboostrap a la OpenSUSE. Since
+                <a href="http://en.opensuse.org/openSUSE:Factory_installation">
+                    OpenSUSE is now a rolling distribution
+                </a>
+                this documentation will focus on using those repositories. Since OpenSUSE embraces
+                <a href="https://btrfs.wiki.kernel.org/">btrfs</a>
+                fully and it has copy-on-write bells and whistles to help you save space this small little guide will
+                also provide instructions on using the
+                <a href="https://btrfs.wiki.kernel.org/index.php/FAQ#What_is_a_snapshot.3F">btrfs snapshot</a>
+                capability of btrfs to help you use a base OpenSUSE install for further "branch" type of hacking. This
+                will let your copies of the original install
+                <b>share</b>
+                the same base size / blocks on the hard drive and only make changes once you've modified the system. If
+                you don't want to use the btrfs snapshot feature just ignore the btrfs commands and create a directory
+                instead of the creation commands. This should let you hack without using up gobs of space. This should
+                be considered a small supplement on
+                <a href="http://www.freedesktop.org/wiki/Software/systemd/VirtualizedTesting/">
+                    hacking and testing systemd in a virtualized environment
+                </a>
+                . As of 2014-08-05 the instructions here will create a small container for you that will take about 333
+                MiB of space.
+                <br />
+                <br />
+                First get your repos set up with the latest rolling distribution repo, if using btrfs might as well use
+                the btrfs snapshot feature:
+                <br />
+                <span style="font-size: small"><br /></span>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: small">
+                    $ sudo btrfs sub create /opt/opensuse/
+                    <br />
+                    # If you don't want to use the snapshot just create the directory
+                    <br />
+                    $ sudo mkdir -p /opt/opensuse
+                </span>
+                <br />
+                This will let you install package binaries with zypper install
+                <br />
+                <span style="font-size: small"><br /></span>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: small">
+                    $ sudo zypper --root /opt/opensuse/ ar http://download.opensuse.org/factory/repo/oss repo-oss
+                </span>
+                <br />
+                <br />
+                Quite a bit of packages require /dev/zero to be available.
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">&nbsp;</span>
+                </span>
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: small">
+                    $ sudo mkdir /opt/opensuse/dev/
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: small">
+                    $ sudo mknod /opt/opensuse/dev/zero c 1 5
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: small">
+                    $ sudo chmod 666 /opt/opensuse/dev/zero
+                </span>
+                <br />
+                <br />
+                Then install a minimal set for hacking:
+                <br />
+                <span style="font-size: small"><br /></span>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: small">
+                    $ sudo zypper --root /opt/opensuse/ install rpm zypper wget vim sudo
+                </span>
+                <br />
+                <br />
+                Now get qemu-kvm and load then the kvm module.
+                <br />
+                <span style="font-size: small"><br /></span>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: small">
+                    $ sudo zypper install qemu-kvm
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace; font-size: small">
+                    $ sudo modprobe kvm-intel
+                </span>
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://3.bp.blogspot.com/-c7EGJbI6cP8/U_wGwMe5UHI/AAAAAAABrHA/4qIWFwB2P70/s1600/thorne.png"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://3.bp.blogspot.com/-c7EGJbI6cP8/U_wGwMe5UHI/AAAAAAABrHA/4qIWFwB2P70/s1600/thorne.png"
+                            height="253"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                &nbsp;Next you should launch systemd-nspawn (the systemd chroot equivalent) and change your root
+                password before booting into it, and enable root login from the console.
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: x-small">
+                        <br />
+                        <span style="font-size: small">
+                            $ sudo systemd-nspawn -D /opt/opensuse
+                            <br />
+                            Timezone America/New_York does not exist in container, not updating container timezone.
+                            <br />
+                            Directory: /root
+                            <br />
+                            Tue Aug 5 17:39:47 UTC 2014
+                            <br />
+                            opensuse:~ # passwd
+                            <br />
+                            New password:
+                            <br />
+                            Retype new password:
+                            <br />
+                            passwd: password updated successfully
+                        </span>
+                    </span>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: x-small"></span>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: x-small"></span>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: x-small"></span>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: x-small"></span>
+                </span>
+                <br />
+                <br />
+                By default OpenSUSE won't let you log in to the console as root, to enable that do:
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: x-small"></span>
+                </span>
+                <br />
+                <span style="font-size: small">
+                    <br />
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        opensuse:~ # echo console &gt;&gt; /etc/securetty
+                    </span>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: x-small">
+                        <span style="font-size: small">
+                            opensuse:~ # sed -i 's/session\s*required\s*pam_loginuid.so/#session&nbsp;&nbsp;&nbsp;
+                            required&nbsp;&nbsp;&nbsp;&nbsp; pam_loginuid.so/' /etc/pam.d/login
+                        </span>
+                    </span>
+                </span>
+                <br />
+                <br />
+                <br />
+                To make it easier to hack on it'd be ideal to also just enable root access without a password, the
+                involves making some PAM changes, and disabling the password for root, this still doesn't work for me so
+                this is incomplete for now, ignore the next steps for now, I leave them here if anyone wants to continue
+                to chug on that route and figure out the other steps.
+                <br />
+                <span style="font-size: small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace"><br /></span>
+                </span>
+                <span style="font-size: small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        opensuse:~ # sed -i 's/root:.*:\([0-9]*\)::::::/root::\1::::::/' /etc/shadow
+                    </span>
+                </span>
+                <br />
+                <br />
+                Now you should be able to just boot into it using a container, shut down the container you were just in:
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    opensuse:~ # systemctl halt
+                </span>
+                <br />
+                <br />
+                Now give your new container a fresh spin with -b
+                <br />
+                <pre><span style="font-size: small;"><code>
+</code></span></pre>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    $ sudo systemd-nspawn -bD /opt/opensuse 3
+                </span>
+                <pre><span style="font-size: x-small;"><span style="font-family: &quot;Courier New&quot;,Courier,monospace;">&nbsp;</span></span></pre>
+                The -b will tell systemd to run init on the container and the number 3 tells systemd to launch the
+                various services required for the runlevel3.target. A target is a way to group up required services. You
+                should be able to log in using root.
+                <br />
+                <br />
+                Eventually you want to list and manage any deployed container, this includes killing them. For that you
+                can use machinectl within your own system, not within the container.
+                <br />
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        $ machinectl
+                        <br />
+                        MACHINE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        CONTAINER SERVICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <br />
+                        opensuse&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        container nspawn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <br />
+                        <br />
+                        1 machines listed.
+                    </span>
+                </span>
+                <br />
+                <br />
+                To kill the one you just started for example:
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: Georgia, &quot;Times New Roman&quot;, serif"><br /></span>
+                </span>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: x-small">$ sudo machinectl terminate opensuse</span>
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    <span style="font-size: x-small">
+                        $ machinectl
+                        <br />
+                        MACHINE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        CONTAINER SERVICE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <br />
+                        <br />
+                        0 machines listed.
+                    </span>
+                </span>
+                <br />
+                <br />
+                To start hacking create new snapshot based on the original. This will let us easily create new OpenSUSE
+                containers to hack on. Kill the base container first with machinectl before doing this though.
+                <br />
+                <span style="font-size: x-small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace"><br /></span>
+                </span>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    $ sudo btrfs sub snap /opt/opensuse /opt/opensuse-hack1
+                </span>
+                <br />
+                <br />
+                And then go at it on /opt/opensuse-hack1 to hack on your stuff. You can now follow
+                <a href="http://www.freedesktop.org/wiki/Software/systemd/VirtualizedTesting/">
+                    the instructions on the freedesktop wiki on hacking on systemd on virtualized environment
+                </a>
+                but it doesn't tell you to uninstall the distribution's version of systemd -- this is recommended, at
+                least I ran into issues without doing this. To do that just remove the files the rpm installs. You can
+                do this several ways:
+                <br />
+                <br />
+                From within your system, targeting the new container path:
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    $ rpm -ql --root /opt/opensuse-hack1/ systemd | sed -e 's|\(.*\)|/opt/opensuse-hack1\1|' | xargs rm
+                    -f
+                </span>
+                <br />
+                Something a bit more safe if you don't trust the above:
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    $ CONT="/opt/opensuse-hack1/"
+                    <br />
+                    $ for i in $(rpm -ql --root $CONT systemd); do if [[ -f $CONT/$i ]]; then sudo rm -f $CONT/$i ; fi ;
+                    done
+                </span>
+                <br />
+                And finally another simpler / secure way to do this from within the container, your container will just
+                become useless after this though so you'll have to kill it from your system with machinectl after this.
+                <br />
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    linux:~ # rpm -ql systemd | xargs rm -f
+                </span>
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-U4UGg8c3ohE/U_wH7v_WyoI/AAAAAAABrHM/KXy0D-NPiBo/s1600/hippie.png"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://2.bp.blogspot.com/-U4UGg8c3ohE/U_wH7v_WyoI/AAAAAAABrHM/KXy0D-NPiBo/s1600/hippie.png"
+                            height="280"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                All you need now is to compile systemd from sources from your system locally and then use
+                DESTDIR=/opt/opensuse-hack1/, but be very sure to also the
+                <span style="color: yellow">--with-rootprefix=</span>
+                option as by default systemd will leave it blank.
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace"><br /></span>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">$ ./autogen.sh</span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    $ ./configure CFLAGS='-g -O0 -ftrapv' --enable-compat-libs --enable-kdbus --sysconfdir=/etc
+                    --localstatedir=/var --libdir=/usr/lib64 --enable-gtk-doc
+                    <span style="color: yellow">--with-rootprefix=/usr/</span>
+                    --with-rootlibdir=/lib64&nbsp;&nbsp;
+                </span>
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    $ sudo DESTDIR=/opt/opensuse-hack1/ make install
+                </span>
+                <br />
+                <br />
+                As of 2014-08-05 systemd from source by default will want the shiny new
+                <a href="http://d-bus.googlecode.com/git/kdbus.txt">kdbus</a>
+                . Go read up on the
+                <a href="http://lwn.net/Articles/580194/">lwn kdbus article</a>
+                , then since kdbus is not yet in the kernel you'll want to compile a fresh vanilla kernel (I don't
+                provide instructions here obviously), install that and later compile and install the kdbus as a module
+                form the external repo:
+                <br />
+                <span style="font-size: small"><br /></span>
+                <span style="font-size: small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        git clone https://github.com/gregkh/kdbus
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">cd kdbus</span>
+                </span>
+                <br />
+                <span style="font-size: small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        # Use a known compilable version at least if you're on v3.16.0-rc7
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                        git reset --hard 1f63f96686f9398eedde86b4e08581d14c6e403a
+                    </span>
+                </span>
+                <br />
+                <span style="font-size: small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">make</span>
+                </span>
+                <br />
+                <span style="font-size: small">
+                    <span style="font-family: &quot;Courier New&quot;, Courier, monospace">sudo make install</span>
+                </span>
+                <br />
+                <br />
+                Finally you can now give your container a spin.
+                <br />
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace"><br /></span>
+                <span style="font-family: &quot;Courier New&quot;, Courier, monospace">
+                    $ sudo systemd-nspawn -bD /opt/opensuse-hack1
+                </span>
+                <br />
+                <br />
+                To be sure you are getting a new systemd you can test the version systemd --version from the container.
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">← back to timeline</a>
+        </footer>
+    </body>
+</html>

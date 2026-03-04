@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>COVID19: don't think about tomorrow, it's too small — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2020-04-01">Apr 1, 2020</time>
+                    <span class="category-badge badge-philosophy">Philosophy</span>
+                </div>
+                <h1>COVID19: don't think about tomorrow, it's too small</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2020/04/covid19-tomorrow-is-too-small.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source &#8599;
+                </a>
+            </header>
+            <div class="post-content">
+                <p>
+                    Out of the few events I enjoy the most in San Francisco is attending the 
+                    <a href="https://en.wikipedia.org/wiki/Long_Now_Foundation">Long Now seminars</a>
+                    . Not all seminars are great, but the push to drive folks to come together and think about the
+                    really long term through talks is pretty unique, specially if afterwards you can then discuss the
+                    topics with a group of friends or family. After COVID19 kicked our teeth in, I knew I had to
+                    eventually take some time to sit and think about what the implications about this pandemic are for
+                    the long term. I knew this could transform my perspective and expectations a bit, but quite frankly
+                    I also dreaded a bit the philosophical turmoil this might bring on me for a while. My
+                    procrastination has proven futile, a conversation with a good friend yesterday set the thought
+                    process in motion, and as expected my outlook on this pandemic is quickly shifting for the better.
+                    This delayed exercise, has made an aspect about our human evolution come into the light for me, and
+                    it is clear now, just as if I were looking at it through a mirror. Once it is there, one cannot
+                    ignore it. It is only day 1 since I started trying to look at COVID19 through these lens, and the
+                    mental fruits I am collecting from it are rewarding enough, that I wanted to share and encourage
+                    this exercise with others. I'll encourage this by going through a few of the brain farts floating
+                    around right now. I cannot help but wonder, with optimism, what revelations or ideas you might come
+                    up with as well.
+                </p>
+                <p>
+                    <a
+                        href="https://1.bp.blogspot.com/-dm77PJ1rhtE/XqZCz_4RGDI/AAAAAAAExa8/10piA1b04JoTyx9fFnzkz02_jikj_L5UwCLcBGAsYHQ/s1600/future-like.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="320"
+                            src="https://1.bp.blogspot.com/-dm77PJ1rhtE/XqZCz_4RGDI/AAAAAAAExa8/10piA1b04JoTyx9fFnzkz02_jikj_L5UwCLcBGAsYHQ/s320/future-like.jpg"
+                            width="230"
+                        />
+                    </a>
+
+                    <br />
+                    First, was COVID19 expected? It really depends who you ask. It certainly caught many off guard, but
+                    I'm starting to accept it as nothing but a small episode which is part of our chaotic human
+                    evolution. There are some human concepts which exist which try to create awareness of highly
+                    unexpected events with huge impact.
+                    <a href="https://en.wikipedia.org/wiki/The_Black_Swan:_The_Impact_of_the_Highly_Improbable">
+                        Black Swan
+                    </a>
+                    is one, however even the author of the concept, Nassim Nicholas Talib, states this is not a black
+                    swan,
+                    <a href="https://www.youtube.com/watch?v=Tb2pXXUSzmI">
+                        Talib believes that this is a White Swan. He goes on to state that there is no excuse for
+                        companies or governments to be unprepared for this
+                    </a>
+                    , and because of this he
+                    <a href="https://www.youtube.com/watch?v=kixi_Ob4hCM">
+                        strongly disagrees with the bail outs for companies
+                    </a>
+                     so far as to call them immoral, specially if CEOs keep rewarding themselves handsomely with
+                    bonuses. In terms of the long term, Talib's logic here for immorality is that those companies not
+                    prepared should simply suffer their due economic course, and that a bail out is taking tax payer
+                    money away from those in need -- there is no relationship between tax payer money and lack of
+                    preparation by companies. While I can see arguments be made against the immorality claim here,
+                    <i><b>if</b></i>
+                    one claims complete ignorance of the possibility of such an event, it is still not a strong argument
+                    if one takes a position that CEOs should be well educated and prepared. We could at least probably
+                    agree that businesses being bailed out completely failed to prepare for any serious pandemic. In
+                    terms of the predictability of this event though, Talib is right, not only did we have movies
+                    predicting some of what could happen, we even had governmental operations to simulate this with
+                    extreme mind boggling similarity, such as
+                    <a href="https://en.wikipedia.org/wiki/Crimson_Contagion">Crimson Contagion</a>
+                    in United States. Yet many countries were still shocked by what happened. Countries that had enough
+                    intelligence to even let you create a full swing government funded simulation have absolutely no
+                    justification to say that they could not have seen this coming. Let me be very clear, United States
+                    fucked up, and it fucked up big time. I'm only willing to give countries without intelligence
+                    communities predicting such events the benefit of the doubt. And perhaps you might still disagree
+                    that this could not have been expected, however, I'd be surprised if you would believe that this can
+                    catch us off guard again.
+                    <b>Fool me once, shame on you, fool me twice, shame on me</b>
+                    . In the long term, this is simply no fucking excuse to be unprepared.
+                </p>
+                <p>
+                    <a
+                        href="https://1.bp.blogspot.com/-SvE5SMvkox8/XqY_uALvXOI/AAAAAAAExZ8/xYAt7-zL_TEjoiTBQlGCFdAFO6W2DTsgACLcBGAsYHQ/s1600/star-wars-nosara.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="179"
+                            src="https://1.bp.blogspot.com/-SvE5SMvkox8/XqY_uALvXOI/AAAAAAAExZ8/xYAt7-zL_TEjoiTBQlGCFdAFO6W2DTsgACLcBGAsYHQ/s320/star-wars-nosara.jpg"
+                            width="320"
+                        />
+                    </a>
+                    <br />
+                    The first concept about implications about the long term that came to mind was that despite how
+                    amazing modern technology is, it still hasn't been witness to the scale of such a pandemic. This is
+                    evident by the knee-jerk reaction technology companies are having by trying to help with
+                    applications to do contact tracing, just as well as the concerns which are bubbling up about privacy
+                    over this. To me, modern technology was born with the birth of the transistor in 1947. Since then we
+                    have seen pandemics such as HIV, Ebola, Swine Flue, but none of these have had such a global drastic
+                    impact on health, economics and social life as COVID19 has. Pandemic or not, no event since the
+                    birth of the transistor has pushed the entire planet to huddle indoors for months, all at the same
+                    time. We are now even having
+                    <a href="https://www.nytimes.com/2020/04/24/podcasts/the-daily/coronavirus-deaths-grief.html">
+                        successful full video conference funerals
+                    </a>
+                    . If modern technology could talk, it could easily bark,
+                    <i>What The Fuck</i>
+                    . Although a lot of what has happened is negative, in light of how new all this is to technology,
+                    there are many opportunities to improve things, and there are also many opportunities for paradigms
+                    to succeed and flourish. Trends, such as working from home, which many Silicon Valley companies are
+                    famous to historically loathe, will have no option but to evolve to accept as norm. Working from
+                    home trends can also easily be supported by the observed
+                    <a href="https://www.washingtonpost.com/weather/2020/04/09/air-quality-improving-coronavirus/">
+                        quantitative gains in improvement of air quality across cities world wide
+                    </a>
+                    . Companies engaged with open source and decentralized distributed software / hardware development
+                    models should thrive without as much disruption other than economic collateral by partners, in
+                    comparison to those requiring in-person meetings and a centralized development models. I invite you
+                    to consider what things we could do better in technology.
+                </p>
+                <p>
+                    <a
+                        href="https://1.bp.blogspot.com/-1OsP4xHUurk/XqZARC8k4xI/AAAAAAAExaI/PVrH0ncmzngixbUNivuVXP1_wFmZ-e0TACLcBGAsYHQ/s1600/cartago-star-wars.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="215"
+                            src="https://1.bp.blogspot.com/-1OsP4xHUurk/XqZARC8k4xI/AAAAAAAExaI/PVrH0ncmzngixbUNivuVXP1_wFmZ-e0TACLcBGAsYHQ/s320/cartago-star-wars.jpg"
+                            width="320"
+                        />
+                    </a>
+                    <br />
+                    I've had conversations with friends who argue that only communism could have prepared countries with
+                    such strict measures to successfully quickly flatten the COVID19 curve. I disagreed back then, and
+                    now I have stronger evidence.  Although United States completely fucked up, there are modern
+                    capitalist democracies which will remain in history as shining beacon examples of what countries
+                    <i>should have done</i>
+                    . Costa Rica is one of them. Although Costa Rica depends heavily on tourism for its economics, it
+                    shut down its borders, and all of its national parks, beaches, and heavily restricted vehicle
+                    traffic with heavy fines. I am very well aware how much it sucks to not be able to surf during this
+                    pandemic, and yet, the majority of Costa Rica surfers, and even surf shop owners lead by example and
+                    promoted stay at home best practices. I'm sure that with time some folks will try to study and
+                    dissect how Costa Rica was so successful at this. Although I can't claim to be able explain all the
+                    factors that played into this, I am confident that at least one large factor should be the amount of
+                    money that Costa Rica has been able to re-purpose from not having a military into education and
+                    health. The investment in not having a military, and re-purposing it has paid off handsomely today.
+                    I'm also sure that the solidarity that Costa Rica's politicians and ministry of health has brought
+                    upon its citizens has helped tremendously. The ability for a government to create solidarity
+                    throughout its entire country has never been more important than now.
+                </p>
+                <p>
+                    <a
+                        href="https://1.bp.blogspot.com/--bzSug-Bk18/XqZAYWFxIvI/AAAAAAAExaM/ArDLCGYFIfQNNAcokTUVkaVFGkaG5r1vACLcBGAsYHQ/s1600/cr-2020-04-26.jpeg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="320"
+                            src="https://1.bp.blogspot.com/--bzSug-Bk18/XqZAYWFxIvI/AAAAAAAExaM/ArDLCGYFIfQNNAcokTUVkaVFGkaG5r1vACLcBGAsYHQ/s320/cr-2020-04-26.jpeg"
+                            width="180"
+                        />
+                    </a>
+                    <br />
+                    Yet strong capitalist countries have suffered deeply. As with technology, has capitalism not
+                    suffered a similar tragic event to not learn? Quite the contrary. The Spanish Flu was much worse, it
+                    killed more humans than those who died from the First and Second World War,
+                    <b>combined</b>
+                    . And during the Spanish Flu pandemic the First World War was in full swing, that pushed many
+                    governments involved in the war to down play its effects. So why hasn't it evolved? I really don't
+                    know. What I do know is as with technology, there is room for a lot of improvement. I've argued
+                    before how
+                    <a href="https://www.do-not-panic.com/2013/08/evolving-capitalism-with-ethical.html">
+                        Capitalism is broken, and how a quantitative ethical capitalism can help
+                    </a>
+                    . I stand by that statement, and I think that there is more evidence for that now than ever before.
+                    The flaws of modern capitalism should reveal metrics and assessments which today we simply do not
+                    measure or quantify. There are a lot of opportunities here. The tangible economic impact that
+                    drastic stay-at-home measures has had on industrialized agriculture and farming are breeding grounds
+                    for quantitative economic evolution and business development. The loss of not having been able to be
+                    prepared for such situations, or for 
+                    <a href="https://www.youtube.com/watch?v=-OoT2OZWCOI&feature=youtu.be">
+                        having pushed agrarian and farming industry to the brink, to which COVID19 could be nothing but
+                        possible collateral
+                    </a>
+                    , are areas of huge opportunity for evolution of a new age of capitalism, or 
+                    <a href="https://orb.binghamton.edu/cgi/viewcontent.cgi?article=1002&context=sociology_fac">
+                        Capitalocene
+                    </a>
+                    . If we had quantitative assessment of risks brought on by certain practices, markets should react
+                    negatively to brain dead dangerous practices, which would otherwise sink the global economy. If the
+                    concept of Anthropocene is new to you, I highly recommend
+                    <a href="https://astrobiology.nasa.gov/news/earth-in-human-hands/">
+                        David Grinspoon's Earth in Human Hands
+                    </a>
+                    book, it introduces the concept from an astrobiology perspective but focusing on Earth instead of
+                    what life might be like in far away planets, as astrobiology typically focuses on. Call it what you
+                    will, if you want to see this in a positive light, as the awareness of the concept of the age of the
+                    Anthropocene spreads, capitalism must evolve to take into consideration
+                    <i><b>Anthropocene responsible investing</b></i>
+                    . If you want to look at it in a negative light, those companies and markets which do not get their
+                    shit together are doom to failure.
+                </p>
+                <p>
+                    <a
+                        href="https://1.bp.blogspot.com/-1xYS4O8_YNc/XqZBlQULQ-I/AAAAAAAExag/7EhrENxkm0oMGD1o9J6rG7AzRV3p8BcjgCLcBGAsYHQ/s1600/tech-drawing.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="320"
+                            src="https://1.bp.blogspot.com/-1xYS4O8_YNc/XqZBlQULQ-I/AAAAAAAExag/7EhrENxkm0oMGD1o9J6rG7AzRV3p8BcjgCLcBGAsYHQ/s320/tech-drawing.jpg"
+                            width="190"
+                        />
+                    </a>
+                    <br />
+                    This long term exercise on capitalism and government is also revealing to me that countries without
+                    their own intelligence community are at ends when it comes to pandemic predictions. This has a few
+                    implications. One, is that those which
+                    <b>do</b>
+                    have the capability for intelligence organizations that can even put together pandemic simulations
+                    such as 
+                    <a href="https://en.wikipedia.org/wiki/Crimson_Contagion">Crimson Contagion</a>
+                    , have a
+                    <i>global moral responsibility</i>
+                    to share awareness about tangible risks to
+                    <b>both</b>
+                    sovereign nations and markets. Evidence shows that knowledge of risks of such a pandemic paid
+                    handsomely to bets made in the stock market to those with access to this information, and which
+                    illegally abused this information for personal gain. Second, in lieu of such intelligence
+                    organizations existing in many countries, and if governments with them are will not share
+                    intelligence on pandemics globally, perhaps countries without enough resources should band together
+                    to prepare, as a
+                    <i>collaborative effort</i>
+                    .
+                </p>
+                <p>
+                    <a
+                        href="https://1.bp.blogspot.com/-l2UzAZkMjHY/XqZC7IATAtI/AAAAAAAExbA/HY4m7u_lAfY_44245mFiHu784VCY10QxwCLcBGAsYHQ/s1600/heart.jpg"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="261"
+                            src="https://1.bp.blogspot.com/-l2UzAZkMjHY/XqZC7IATAtI/AAAAAAAExbA/HY4m7u_lAfY_44245mFiHu784VCY10QxwCLcBGAsYHQ/s320/heart.jpg"
+                            width="320"
+                        />
+                    </a>
+                    <br />
+                    Despite the philosophical turmoil that thinking about the long term in light of COVID19 has brought,
+                    I'm starting to accept that thinking about the long term, instead of just tomorrow, in light of
+                    COVID19 is not a luxury, it is our responsibility.
+                </p>
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </footer>
+    </body>
+</html>

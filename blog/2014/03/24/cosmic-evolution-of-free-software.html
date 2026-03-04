@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Cosmic evolution of free software — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">← back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2014-03-24">Mar 24, 2014</time>
+                    <span class="category-badge badge-opensource">Open Source</span>
+                </div>
+                <h1>Cosmic evolution of free software</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2014/03/cosmic-evolution-of-free-software.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <div style="text-align: left">
+                    This is part of a 3 piece entry, the cover of which is:
+                    <a href="http://www.do-not-panic.com/2014/03/free-software-patents-surveillance-and.html">
+                        free software patents and cosmos.
+                    </a>
+                    <br />
+                </div>
+                <div style="text-align: center"></div>
+                <div style="text-align: center">
+                    <iframe
+                        allowfullscreen=""
+                        frameborder="0"
+                        height="271"
+                        mozallowfullscreen=""
+                        msallowfullscreen=""
+                        oallowfullscreen=""
+                        src="https://www.flickr.com/photos/lgnome/5394618070/player/f502468a54"
+                        webkitallowfullscreen=""
+                        width="500"
+                    ></iframe>
+                </div>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                There is a relationship between cosmology, singularity and
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                and even
+                <a href="http://en.wikipedia.org/wiki/NSA_warrantless_surveillance_%282001%E2%80%9307%29">
+                    surveillance
+                </a>
+                which this post dares to consider which I will use to try to remove any
+                <a href="http://en.wikipedia.org/wiki/Fear,_uncertainty_and_doubt">fear, uncertainty and doubt</a>
+                over the
+                <b>evolution</b>
+                of
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                and
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source software</b></a>
+                but also to provide clarification of why business models
+                <b>must become dynamic and adaptable</b>
+                .
+                <br />
+                <br />
+                <div style="text-align: center">
+                    <br />
+                </div>
+                I remember watching Carl Sagan's 1980
+                <a href="http://en.wikipedia.org/wiki/Cosmos:_A_Personal_Voyage">Cosmos: A Personal Voyage</a>
+                for the first time when I was a kid but I only remember things vaguely. I later watched it circa 2011 on
+                Netflix, I actually only got to the second episode and it already had made a huge impact on my life.
+                Back then I was at one of my high points in my evolving career as a software engineer and I remember
+                very clearly I seriously considered all of a sudden going back to school and following the foot steps of
+                Carl Sagan to become another
+                <a href="http://en.wikipedia.org/wiki/Astrobiology">astrobiologist</a>
+                . I seriously looked into it. An alternative was to look at ways in which
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                might help the advancement of
+                <a href="http://en.wikipedia.org/wiki/Astrobiology">astrobiology</a>
+                . Although not terribly active in this field yet I do look forward to the
+                <a href="https://2014.spaceappschallenge.org/about/">International Space Apps Challenge</a>
+                to participate in any way I can given that it specifically addresses "c
+                <i>
+                    ollaborative problem solving and
+                    <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source</b></a>
+                    solutions to address global needs applicable to both life on Earth and life in space"
+                </i>
+                . How fucking cool is that? This year we are also lucky to have the 2014
+                <a href="http://en.wikipedia.org/wiki/Cosmos:_A_Spacetime_Odyssey">Cosmos: A Spacetime Oddysey</a>
+                , a few of us in San Francisco even created a
+                <a href="http://www.meetup.com/Cosmos-viewing-2014/">Cosmos meetup group</a>
+                to get together every Monday to have a group viewing of each new episode. Lately there are also exciting
+                new cosmological findings, for example consider the latest
+                <a href="http://en.wikipedia.org/wiki/Higgs_boson#Current_status">
+                    status updates on confirmations on the Higgs Boson
+                </a>
+                . Another more recent finding is evidence over
+                <a
+                    href="http://www.nytimes.com/2014/03/18/science/space/detection-of-waves-in-space-buttresses-landmark-theory-of-big-bang.html"
+                >
+                    inflation after the big bang
+                </a>
+                . It must be an exciting time to be a cosmologist today.
+                <br />
+                <br />
+                <div style="text-align: center">
+                    <iframe
+                        allowfullscreen=""
+                        frameborder="0"
+                        height="500"
+                        mozallowfullscreen=""
+                        msallowfullscreen=""
+                        oallowfullscreen=""
+                        src="https://www.flickr.com/photos/h-l-n/6759599217/player/c17de4432f"
+                        webkitallowfullscreen=""
+                        width="500"
+                    ></iframe>
+                </div>
+                <br />
+                Cosmology isn't the only modern hot topic. Singularity is a buzz word going around these days and people
+                are not only getting really excited about the prospects some folks provide estimates for but they are
+                also
+                <b>investing a lot of money into this</b>
+                . If none of this sounds familiar to you go check out
+                <a href="http://www.youtube.com/watch?v=zihTWh5i2C4">
+                    Ray Karzweil's talk at Google about the Singularity
+                </a>
+                , now hired at Google as Director of Engineering to help bring natural language understanding to Google.
+                I'd recommend following this up with the
+                <a href="http://en.wikipedia.org/wiki/Transcendent_Man">Transcendent Man</a>
+                at least twice. Then watch the
+                <a href="http://www.youtube.com/watch?v=rB7VkrUYCAg">IBM's revelations</a>
+                of their new
+                <a href="http://en.wikipedia.org/wiki/Watson_%28computer%29#IBM_Watson_Group">
+                    $1 billion investment into expanding their Watson Group
+                </a>
+                , . Good 'ol Watson beat humans in Jeopardy in 2011, it ended up using used
+                <a href="http://en.wikipedia.org/wiki/Main_Page">Wikipedia</a>
+                to learn tons of human information. Finally watch
+                <a href="http://en.wikipedia.org/wiki/Ben_Goertzel">Benjamin Goertzel</a>
+                's
+                <a href="https://www.youtube.com/watch?v=i6ctsWLi_G4">interview regarding the Singularity</a>
+                . In short the concept of singularity is that at one point in time computers will surpass the
+                intelligence of humans. Ray has popularized the term even more by integrating a firm prediction of when
+                that will happen. He believes that a machine will pass the Turing test by
+                <b>2029</b>
+                , and that around
+                <b>2045</b>
+                , "the pace of change will be so astonishingly quick that we won't be able to keep up, unless we enhance
+                our own intelligence by merging with the intelligent machines we are creating". The foundation of Ray's
+                predictions is the concept that technology keeps evolving exponentially. If this sounds fuzzy consider
+                <a href="http://en.wikipedia.org/wiki/Moore%27s_law">Moore's law</a>
+                and extend that before and beyond. He mentions in the the
+                <a href="http://en.wikipedia.org/wiki/Transcendent_Man">Transcendent Man</a>
+                &nbsp; he has
+                <b>10</b>
+                folks who work for him specifically only for gathering data and building projections on technological
+                growth. He uses this to help build more accurate
+                <b>business models</b>
+                . Ray clarifies:
+                <br />
+                <blockquote class="tr_bq">
+                    "
+                    <i>
+                        Business plans set out to only have an outlook for the next 3-4 years are pretty short sighted.
+                        You only need to look at the last 3 or 4 years to see that that's not correct.
+                    </i>
+                    "
+                </blockquote>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                <div style="text-align: center">
+                    <iframe
+                        allowfullscreen=""
+                        frameborder="0"
+                        height="334"
+                        mozallowfullscreen=""
+                        msallowfullscreen=""
+                        oallowfullscreen=""
+                        src="https://www.flickr.com/photos/jonathanmcintosh/3744953433/player/e3b523e24d"
+                        webkitallowfullscreen=""
+                        width="500"
+                    ></iframe>
+                </div>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                We're at a point in time in history where some folks are gathering together random materials of their
+                long past relatives with realistic expectations that if we we can't bring their long lost relative back
+                some new
+                <a href="http://en.wikipedia.org/wiki/Artificial_intelligence">Artificial Intelligence</a>
+                (AI) systems in the future will be able to bring back the long lost relative somehow under the
+                expectation that these AIs will be far more advanced in intelligence than humans. There's a lot of
+                concerns over
+                <a href="http://en.wikipedia.org/wiki/NSA_warrantless_surveillance_%282001%E2%80%9307%29">
+                    surveillance
+                </a>
+                lately, how will that look like in the future? In
+                <a href="http://en.wikipedia.org/wiki/Ben_Goertzel">Benjamin Goertzel</a>
+                's
+                <a href="https://www.youtube.com/watch?v=i6ctsWLi_G4">interview regarding the Singularity</a>
+                he postulates a possible
+                <b>"suveillance"</b>
+                situation under which its accepted a certain amount of if not most of our private information is
+                surveiled by advanced AIs, the concept and question of a
+                <i>Nanny AI</i>
+                comes up, if we had an advanced AI could we trust it to surveil us fairly? More importantly -- how would
+                a Nanny AI be able to
+                <b>ethically surveil us</b>
+                ?
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://upload.wikimedia.org/wikipedia/commons/9/99/Cosmic_Calendar.png"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://upload.wikimedia.org/wikipedia/commons/9/99/Cosmic_Calendar.png"
+                            height="300"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                The last point I will need to make to wrap up is to clarify that Ray's own appreciation of the
+                exponential doesn't do enough justice to give us a good picture of what we should dream of, consider,
+                and appreciate in the grand scheme of things.
+                <a href="http://en.wikipedia.org/wiki/Cosmic_Calendar">Carl Sagan's cosmic calendar</a>
+                is perhaps the best most dramatic crystal clear proof of exponential growth. Its not attached to
+                technology, or biology, it goes way beyond that to incorporate the entire cosmos.
+                <br />
+                <br />
+                <br />
+                When you take into consideration
+                <a href="http://en.wikipedia.org/wiki/Ray_Kurzweil">Ray Kurzwei</a>
+                l's exponential growth some folks are starting to believe that Singularity is near. When you take into
+                consideration
+                <a href="http://en.wikipedia.org/wiki/Cosmic_Calendar">Carl Sagan's cosmic calendar</a>
+                singularity should seem something more easy to swallow. Abuses of big data might be unavoidable but in
+                order to help mitigate abuses we should consider introducing ethics into
+                <a href="http://en.wikipedia.org/wiki/Artificial_intelligence">Artificial Intelligence</a>
+                (AI) systems.
+                <a href="http://www.do-not-panic.com/2013/08/evolving-capitalism-with-ethical.html">
+                    Ethhical attributes
+                </a>
+                <b>should help not only</b>
+                shape appreciation on new evolutions of
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                in light of evolution of new freedoms, but it can obviously be used to help appreciate new
+                <b>business models</b>
+                and perhaps even one day teach AIs to be ethical as we explore the cosmos.
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">← back to timeline</a>
+        </footer>
+    </body>
+</html>

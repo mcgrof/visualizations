@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Embracing the Developer Certificate of Origin — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">← back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2014-02-20">Feb 20, 2014</time>
+                    <span class="category-badge badge-opensource">Open Source</span>
+                </div>
+                <h1>Embracing the Developer Certificate of Origin</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2014/02/developer-certificate-of-origin.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <div style="text-align: center">
+                    <a
+                        href="http://www.flickr.com/photos/vblibrary/8699690415/"
+                        title="APPROVED Rubber Stamp by Enokson, on Flickr"
+                    >
+                        <img
+                            alt="APPROVED Rubber Stamp"
+                            height="89"
+                            src="https://web.archive.org/web/20151025212448im_/https://farm9.staticflickr.com/8130/8699690415_f275e6fd0c.jpg"
+                            width="500"
+                        />
+                    </a>
+                    &nbsp;
+                </div>
+                <br />
+                &nbsp;Streamlining and embracing the
+                <a href="http://developercertificate.org/">Developer Certificate of Origin (DCO)</a>
+                in the
+                <a href="https://en.wikipedia.org/wiki/Free_and_open-source_software">Free and Open Source (FOSS)</a>
+                community has huge value and in order to help foster embracing the DCO more easily by any
+                <a href="https://en.wikipedia.org/wiki/Free_and_open-source_software">FOSS</a>
+                project, regardless of its license, the
+                <a href="http://www.linuxfoundation.org/">Linux Foundation</a>
+                has placed the
+                <a href="http://developercertificate.org/">DCO</a>
+                on a
+                <a href="http://developercertificate.org/">standalone project page</a>
+                which you can use as reference or take it to embrace it on your own project. If you are a maintainer of
+                a
+                <a href="https://en.wikipedia.org/wiki/Free_and_open-source_software">FOSS</a>
+                project I highly encourage your to consider evaluating the use of the
+                <a href="http://developercertificate.org/">DCO</a>
+                in your own project. Embracing it should consist on simply referring to it through your documentation on
+                how people should contribute, or simply copy and pasting it into your own project and using. I provide a
+                simple example through the
+                <a href="https://git.kernel.org/cgit/linux/kernel/git/mcgrof/crda.git/tree/CONTRIBUTING">
+                    CRDA project
+                </a>
+                . Through the rest of this post I will review why this document is important and how we ended up making
+                the
+                <a href="http://developercertificate.org/">DCO</a>
+                a standalone project that the rest of the community can benefit from.
+                <br />
+                <br />
+                Good FOSS software projects receive tons of contributions from developers all over the world. As FOSS
+                evolves at times we face to stand tricky questions, speculation and at times silly claims over how we
+                evolve software. For very large projects this can get even more complex. The
+                <a href="https://www.fsf.org/">Free Software Foundation (FSF)</a>
+                &nbsp;thought of this long ago and their preferred practice was to request developers provide
+                <a href="https://www.gnu.org/licenses/why-assign.html">copyright assignment to the FSF</a>
+                . Linux ended up creating a document and light weight process which has also proven to be highly
+                appreciated by the industry for use when evaluating inbound contributions to a
+                <a href="https://en.wikipedia.org/wiki/Free_and_open-source_software">FOSS</a>
+                project. The document is called the
+                <a href="http://developercertificate.org/">Developer Certificate of Origin (DCO)</a>
+                , it was written and evolved to enable to give developers and maintainers explicit guidelines of the
+                requirements to contribute and consumers of Linux some form of legal assurance of the provenance and
+                integrity of contributions. The
+                <a href="http://developercertificate.org/">DCO</a>
+                is now a document
+                <span style="color: #274e13">cherished and appreciated</span>
+                by many attorneys, and it has slowly been being embraced by more large
+                <a href="https://en.wikipedia.org/wiki/Free_and_open-source_software">FOSS</a>
+                projects. If a project has seen issues with getting their developers to jump on board with a&nbsp;
+                <a href="https://en.wikipedia.org/wiki/Contributor_License_Agreement">
+                    Contribution License Agreements (CLA)
+                </a>
+                it should consider this more lightweight process.
+                <br />
+                <br />
+                Lets review some of the tough questions a
+                <a href="https://en.wikipedia.org/wiki/Free_and_open-source_software">FOSS</a>
+                project may face. How do we get some form of assurance that folks contributing were the ones doing the
+                development ? Are we getting any written consent that folks contributing are legally entitled to do ? In
+                a distributed development environment what is a subsystem maintainer assuring me when they send me all
+                the contributions they've collected ?
+                <a href="https://en.wikipedia.org/wiki/Free_and_open-source_software">FOSS</a>
+                contributions create public records with names attached, as laws over privacy evolve are we sure
+                contributors are aware that they are waiving any privacy concerns over such contributions and that a
+                public record will be made ? We may not necessarily have to prove all the above but if we could embrace
+                a light weight procedure in order to provide some assurances would we be willing to embrace it ? How
+                valuable would it be, what would it look like ?
+                <br />
+                <br />
+                Linux has had to face some of these questions, mainly because the claims
+                <a href="https://en.wikipedia.org/wiki/SCO_Group">SCO</a>
+                was making in 2003 now known as the
+                <a href="https://en.wikipedia.org/wiki/SCO-Linux_controversies">SCO-Linux controversies</a>
+                and on May 23, 2004 Linus Torvalds decided to send out to the Linux community a
+                <a href="http://marc.info/?l=linux-kernel&amp;m=108529494402563">
+                    Request For Discussion for considering embracing a Developer Certificate or Origin
+                </a>
+                . The gist of it can be summarized in the following two paragraphs:
+
+                <br />
+                <blockquote>
+                    Some of you may have heard of this crazy company called SCO (aka "Smoking Crack Organization") who
+                    seem to have a hard time believing that open source works better than their five engineers do.
+                    They've apparently made a couple of outlandish claims about where our source code comes from,
+                    including claiming to own code that was clearly written by me over a decade ago."
+                </blockquote>
+                <blockquote>
+                    So, to avoid these kinds of issues
+                    <span style="color: #274e13">ten years from now</span>
+                    , I'm suggesting that we put in more of a process to explicitly document not only where a patch
+                    comes from (which we do actually already document pretty well in the changelogs), but the path it
+                    came through.
+                </blockquote>
+                <br />
+                The
+                <a href="http://developercertificate.org/">DCO</a>
+                started to be embraced by large projects, examples of that are any project embracing Gerrit, Android,
+                OpenStack, LibreOffice, QT, but they all typically just referred to the Documentation in Linux. The
+                reason the
+                <a href="http://developercertificate.org/">DCO</a>
+                became a standalone project was that referring to the Documentation in Linux is not exactly ideal, and
+                some non GPLv2 projects wanted to embrace it and they expressed copyright concerns over it. On November
+                2012 I sent a request out to lkml to review if we could
+                <a href="https://lkml.org/lkml/2012/11/20/636">make the DCO a standalone document</a>
+                . That discussion lead to
+                <a href="http://blog.tremily.us/">W. Trevor King</a>
+                to create a github tree with the original contributions to it alone through a
+                <a href="https://github.com/wking/signed-off-by">signed-off-by git tree</a>
+                and a
+                <a href="http://collaborationsummit2013.sched.org/event/e1676be130b4ca8ecb32aa07ef04071e">
+                    talk about the DCO at the April 2013 Linux Collaboration Summit
+                </a>
+                in San Francisco&nbsp;(
+                <a href="https://docs.google.com/presentation/d/1J4VTSTuiJ88xcvOrYg7HRvwUoxOW9qvnBqOfoPPuc64/edit">
+                    slides here
+                </a>
+                ), thanks to
+                <a href="http://www.ebb.org/bkuhn/blog/">Bradley M. Kuhn</a>
+                for help with coordination. After followup advice from volunteered attorneys, in particular
+                <a href="https://twitter.com/richardfontana">Richard Fontana</a>
+                , and a few folks from the
+                <a href="http://www.linuxfoundation.org/programs/advisory-councils/tab">
+                    Linux Foundation Technology Advisory Board (TAB)
+                </a>
+                &nbsp;at the
+                <a href="http://www.linuxplumbersconf.org/2013/">2013 Linux Plumbers conference</a>
+                , it was decided that the community would surely stand to gain from this and we'd follow up with a
+                release. The new standalone
+                <a href="http://developercertificate.org/">DCO</a>
+                project page closes these discussions and serves as a single point of reference that any
+                <a href="https://en.wikipedia.org/wiki/Free_and_open-source_software">FOSS</a>
+                project can use now. Thanks to the
+                <a href="http://www.linuxfoundation.org/">Linux Foundation</a>
+                for listening, and&nbsp;
+                <a href="http://www.kroah.com/">Greg KH</a>
+                for the last push.
+                <br />
+                <br />
+                If you've embraced the&nbsp;
+                <a href="http://developercertificate.org/">DCO</a>
+                &nbsp;or know of projects that have embraced it please send me a note at mcgrof@do-not-panic.com, I'll
+                extend the list below for now. If you can send me a link to a reference to the project's documentation
+                that refers to it that'd be great too.
+                <br />
+                <br />
+                Projects which embrace the&nbsp;
+                <a href="http://developercertificate.org/">DCO</a>
+                :
+                <br />
+                <ul>
+                    <li>Linux</li>
+                    <li><a href="http://subsurface.hohndel.org/documentation/contributing/">Subsurface</a></li>
+                    <li>Android</li>
+                    <li>OpenStack</li>
+                    <li>LibreOffice</li>
+                    <li><a href="https://github.com/autotest/autotest/blob/master/DCO">Autotest</a></li>
+                    <li>QT</li>
+                    <li><a href="https://dev.openwrt.org/wiki/SubmittingPatches">OpenWrt</a></li>
+                    <li><a href="http://elinux.org/Developer_Certificate_Of_Origin">elinux</a></li>
+                    <li>
+                        <a href="https://git.kernel.org/cgit/linux/kernel/git/mcgrof/crda.git/tree/CONTRIBUTING">
+                            CRDA
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://hostap.epitest.fi/cgit/hostap/tree/CONTRIBUTIONS#n68">
+                            hostapd / wpa_supplicant
+                        </a>
+                    </li>
+                    <li><a href="http://criu.org/How_to_submit_patches#Signing_your_work">CRIU</a></li>
+                </ul>
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">← back to timeline</a>
+        </footer>
+    </body>
+</html>

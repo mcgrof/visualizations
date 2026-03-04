@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Bubble's Law and the Bubble Bang — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2013-06-29">Jun 29, 2013</time>
+                    <span class="category-badge badge-philosophy">Philosophy</span>
+                </div>
+                <h1>Bubble's Law and the Bubble Bang</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2013/06/bubbles-law-and-bubble-bang.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <div>
+                    <a
+                        href="http://www.flickr.com/photos/prodiffusion/5683732443/"
+                        title="Crazy Scientist Lab by Med PhotoBlog, on Flickr"
+                    >
+                        <img
+                            alt="Crazy Scientist Lab"
+                            src="https://farm6.staticflickr.com/5148/5683732443_8664b2b374.jpg"
+                        />
+                    </a>
+                </div>
+                <blockquote class="tr_bq">
+                    "
+                    <i>
+                        The method of science, as stodgy and grumpy as it may seem, is far more important than the
+                        findings of science
+                    </i>
+                    " - Carl Sagan
+                </blockquote>
+                This quote is from Sagan's book "
+                <a href="https://en.wikipedia.org/wiki/The_Demon-Haunted_World">The Demon-Haunted World</a>
+                " in which Sagan tries to explain the scientific method to lay people but also where he spells out his
+                love affair with science. Its easy to say you believe in the scientific method, its harder to appreciate
+                without a great example. I think I have a decent example and fortunately a few video recommendations to
+                help. The
+                <a href="https://en.wikipedia.org/wiki/The_Big_Bang_Theory">big bang theory</a>
+                 has an interesting scientific method evolution that I hope to use to use to set the bar for what might
+                be considered "big theories"
+                <b>and</b>
+                also to set the stage for my next blog entry to review an aspect of science Sagan didn't publicly
+                discuss but that I do consider important.
+                <p></p>
+                <div>
+                    <a
+                        href="http://www.flickr.com/photos/flights_of_fancy/8445785086/"
+                        title="spacetime (close up) by Absolute Chaos, on Flickr"
+                    >
+                        <img
+                            alt="spacetime (close up)"
+                            src="https://farm9.staticflickr.com/8211/8445785086_ae1c5e311e.jpg"
+                        />
+                    </a>
+                </div>
+                <br />
+                If you're too lazy to read this entry go on and watch the video, 
+                <a href="http://www.amazon.com/dp/B00A7IWCSI">The Universe Season 1, Ep. 14 "Beyond the Big Bang"</a>
+                . I personally have a disdain towards the
+                <a href="https://en.wikipedia.org/wiki/History_(U.S._TV_channel)">History Channel</a>
+                's approach to educate over the cosmos as I consider it portraying on the
+                <b>sensationalist</b>
+                aspects of it,  however the alternative that I'd typically recommend to watch, episode 10 from Carl
+                Sagan's
+                <a href="https://en.wikipedia.org/wiki/Cosmos:_A_Personal_Voyage">Cosmos</a>
+                , the 'Edge of Forever' doesn't go into the level of detail on historical aspects of the evolution of
+                the discovery of the big bang. I'd recommend watching both. I appreciate much more Sagan's 
+                <a href="https://en.wikipedia.org/wiki/Cosmos:_A_Personal_Voyage">Cosmos</a>
+                 series as I believe it conveys more an appreciation and love for science. Even if it was originally
+                broadcast in 1980 it is still very relevant. Fortunately a 2014 remake titled
+                <a href="https://en.wikipedia.org/wiki/Cosmos:_A_Space-Time_Odyssey">Cosmos: a space-time odyssey</a>
+                 is in the works! I'd hope in this remake they'd take into consideration building a huge appreciation
+                for the scientific method somehow.
+                <p></p>
+                <p>
+                    <a
+                        href="https://web.archive.org/web/20160909072040im_/http://www.mysearch.org.uk/website1/images/pictures/317.1.jpg"
+                    >
+                        <img
+                            src="https://web.archive.org/web/20160909072040im_/http://www.mysearch.org.uk/website1/images/pictures/317.1.jpg"
+                        />
+                    </a>
+                </p>
+                <p>
+                    The big bang theory started with inspection of Einstein's 10 
+                    <a href="https://en.wikipedia.org/wiki/Einstein_field_equations">field equations on gravitation</a>
+                    , the heart of his
+                    <a href="https://en.wikipedia.org/wiki/General_relativity">General theory of relativity</a>
+                     published in
+                    <b><u>1916</u></b>
+                    , that "
+                    <i>
+                        describe the fundamental interaction of gravitation as a result of spacetime being curved by
+                        matter and energy
+                    </i>
+                    ". 
+                    <a href="http://en.wikipedia.org/wiki/Alexander_Friedmann">Alexander Friedmann</a>
+                     was the first scientist to poke at them and by making some assumptions derived what we call
+                    <a href="https://en.wikipedia.org/wiki/Friedmann_equations">Friedmann Equations</a>
+                     in
+                    <b>1924</b>
+                    . The 
+                    <a href="https://en.wikipedia.org/wiki/Friedmann_equations">Friedmann Equations</a>
+                     were implying that the universe is expanding. Later 
+                    <a href="https://en.wikipedia.org/wiki/Georges_Lema%C3%AEtre">Georges Lemaître</a>
+                     proposed the same thing in
+                    <b>1927</b>
+                    . Despite all this work no one took the idea too seriously, in fact even Einstein was opposed to the
+                    idea, its reported he expressed to 
+                    <a href="https://en.wikipedia.org/wiki/Georges_Lema%C3%AEtre">Lemaître</a>
+                    : "Your calculations are correct, but your physics is atrocious". It wasn't until
+                    <a href="https://en.wikipedia.org/wiki/Edwin_Hubble">Edwin Hubble</a>
+                     made a similar proposal through the discovery of what we call today
+                    <a href="https://en.wikipedia.org/wiki/Hubble%27s_law">Hubble's Law</a>
+                     in
+                    <b>1929</b>
+                    that people started to take the idea more seriously. Its
+                    <u>critical</u>
+                    to point out though that prior to 
+                    <b>1924</b>
+                     it was widely accepted that our Galaxy, the
+                    <a href="https://en.wikipedia.org/wiki/Milky_Way">Milky Way</a>
+                    , was the only galaxy in the Universe! Hubble threw this idea out the window in 
+                    <b>1924</b>
+                     when by using the 
+                    <a
+                        href="https://en.wikipedia.org/wiki/Mount_Wilson_Observatory#100_inch_.282.5_m.29_Hooker_Telescope"
+                    >
+                        Hooker Telescope
+                    </a>
+                     (kid you not, that's what it's called) he discovered that a nebula he was observing could not
+                    possibly be part of our
+                    <a href="https://en.wikipedia.org/wiki/Milky_Way">Milky Way</a>
+                    , this nebula is
+                    <u>now</u>
+                    known as the 
+                    <a href="https://en.wikipedia.org/wiki/Andromeda_Galaxy">Andromeda Galaxy</a>
+                    , and suddenly the universe grew quite a bit. This awesome discovery likely inspired Hubble for his
+                    efforts on what we know as 
+                    <a href="https://en.wikipedia.org/wiki/Hubble%27s_law">Hubble's Law</a>
+                     but note that many folks opposed all these ideas initially, specially prior to the publishing of 
+                    <a href="https://en.wikipedia.org/wiki/Hubble%27s_law">Hubble's Law</a>
+                    . The discovery of the 
+                    <a href="https://en.wikipedia.org/wiki/Andromeda_Galaxy">Andromeda Galaxy</a>
+                     in
+                    <i>no way</i>
+                    was
+                    <u><b>sufficient</b></u>
+                    to accept the idea that the universe was expanding. Hubble was not alone though... 
+                    <a href="https://en.wikipedia.org/wiki/Milton_L._Humason">Milton L. Humason</a>
+                    ,originally a former mule team driver with no education past the age of 14, and
+                    <a href="https://en.wikipedia.org/wiki/Vesto_Slipher">Vesto Melvin Slipher</a>
+                     actually assisted Hubble in formulating 
+                    <a href="https://en.wikipedia.org/wiki/Hubble%27s_law">Hubble's Law</a>
+                    , these two actually contributed hugely to what is incorrectly credited to Hubble alone with
+                    discovering the redshift of galaxies.
+                    <a href="https://en.wikipedia.org/wiki/Georges_Lema%C3%AEtre">Lemaître</a>
+                     was actually the first to derive and made the first estimation of what is now called the
+                    <a href="https://en.wikipedia.org/wiki/Hubble_constant">Hubble constant</a>
+                    , which he published in
+                    <b>1927</b>
+                    , two years before Hubble's article! Hubble's original measurements were off though and his math was
+                    implicating that the Universe was younger than what we had already accepted as the age of our very
+                    own Planet Earth. Hubble's issues were caused by instrumentation errors and they'd later be
+                    corrected. Due to all this though and to emphasize an appreciation of the
+                    <i>stodgy and grumpy issues with science</i>
+                     I'll simply refer to 
+                    <a href="https://en.wikipedia.org/wiki/Hubble%27s_law">Hubble's Law</a>
+                     as 
+                    <b>Bubble's Law.</b>
+                </p>
+                <p>
+                    <a href="http://www.uclouvain.be/en-316446.html">
+                        <img
+                            src="https://web.archive.org/web/20120316095348im_/http://www.joh.cam.ac.uk/sites/default/files/images/article_images/hoyle-script.jpg"
+                        />
+                    </a>
+                    <br />
+                    Even though Hubble's work was good there were folks who still opposed the idea of a big bang,
+                    <a href="https://en.wikipedia.org/wiki/Fred_Hoyle">Fred Hoyle</a>
+                    being the biggest opponent. 
+                    <a href="https://en.wikipedia.org/wiki/Fred_Hoyle">Hoyle</a>
+                     proposed a
+                    <a href="https://en.wikipedia.org/wiki/Steady_State_theory">Steady State Theory</a>
+                     which challenged the big bang theory. It promoted the idea the universe always existed and it just
+                    evolved, it claimed the universe evolved through the idea that atoms on our in our periodic table
+                    evolve over time. 
+                    <a href="https://en.wikipedia.org/wiki/Fred_Hoyle">Hoyle</a>
+                     side stepped the issue of how Hydrogen came about originally, he side stepped this issue and simply
+                    claimed that
+                    <b>both</b>
+                    Hydrogen and Helium always originally existed. 
+                    <a href="https://en.wikipedia.org/wiki/Fred_Hoyle">Hoyle</a>
+                     was so opposed to the idea of a big bang he even went on the BBC on the radio to explain why he was
+                    opposed to it, in fact it was on this
+                    <a href="http://www.joh.cam.ac.uk/library/special_collections/hoyle/exhibition/radio/">
+                        BBC airing where he
+                        <u><b>coined</b></u>
+                        the term '
+                        <b>big bang</b>
+                        '
+                    </a>
+                    as a way to promote his idea that matter is created continuously! Around the same time though a dude
+                    called
+                    <a href="https://en.wikipedia.org/wiki/George_Gamow">George Gamow</a>
+                     proposed something similar but stated that elements in our periodic table came through because of
+                    the big bang. Gamow
+                    <i><b>relatively sucked</b></i>
+                    at math though but one of his undergraduate students, 
+                    <a href="https://en.wikipedia.org/wiki/Ralph_Asher_Alpher">Ralph Asher Alpher</a>
+                    , was pretty good at math. 
+                    <a href="https://en.wikipedia.org/wiki/Ralph_Asher_Alpher">Alpher</a>
+                     and some other dudes proposed that if the big bang existed we'd have to have some sort of radiation
+                    looming around the universe to this day. They were right and later in
+                    <b><u>1964</u></b>
+                    what 
+                    <a href="https://en.wikipedia.org/wiki/George_Gamow">Gamow</a>
+                    , 
+                    <a href="https://en.wikipedia.org/wiki/Ralph_Asher_Alpher">Alpher</a>
+                     and friends proposed was confirmed in what today we know as the 
+                    <a href="https://en.wikipedia.org/wiki/Cosmic_microwave_background_radiation">
+                        Cosmic Microwave Background radiation
+                    </a>
+                    .
+                </p>
+                <p>
+                    <a
+                        href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Ilc_9yr_moll4096.png/320px-Ilc_9yr_moll4096.png"
+                    >
+                        <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Ilc_9yr_moll4096.png/320px-Ilc_9yr_moll4096.png"
+                        />
+                    </a>
+                </p>
+                <p>
+                    The 
+                    <a href="https://en.wikipedia.org/wiki/Cosmic_microwave_background_radiation">
+                        Cosmic Microwave Background radiation
+                    </a>
+                     was the smoking gun but its really only once 
+                    <u>
+                        <i><b>all these are put together</b></i>
+                    </u>
+                     that we get enough evidence to allow the 
+                    <a href="https://en.wikipedia.org/wiki/The_Big_Bang_Theory">Big Bang Theory</a>
+                     to become the 
+                    <u><b>prevailing</b></u>
+                    cosmological model that describes the early development of the Universe! In short there were easily
+                    over 8 scientists, random laymen, and curious folks in between Einstein to the 
+                    <a href="https://en.wikipedia.org/wiki/Cosmic_microwave_background_radiation">
+                        Cosmic Microwave Background radiation
+                    </a>
+                    , from
+                    <b><u>1916</u></b>
+                    when Einstein originally published the 
+                    <a href="https://en.wikipedia.org/wiki/General_relativity">General theory of relativity</a>
+                     down to
+                    <b><u>1964</u></b>
+                    when the cosmic microwave background was discovered,
+                    <u><b>48 fucking years apart</b></u>
+                    ! In between Lemaître's "primeval atom", the original state of the universe, to the 
+                    <a href="https://en.wikipedia.org/wiki/Cosmic_microwave_background_radiation">
+                        Cosmic Microwave Background radiation
+                    </a>
+                     we have 33 years. A
+                    <b>theory</b>
+                    is just a
+                    <b>theory</b>
+                    and the scientific method requires
+                    <b>awesome</b>
+                    and
+                    <b>exceptional</b>
+                    evidence. Go back and read again the quote I started this post with by Carl Sagan, I hope you can
+                    <b>seriously</b>
+                    appreciate it more now. In appreciation for creating more awareness of the what is required of the
+                    scientific method perhaps we should just refer to the
+                    <a href="https://en.wikipedia.org/wiki/Big_Bang">Big Bang</a>
+                    as the
+                    <a href="https://www.google.com/search?q=bubble+bang">Bubble Bang</a>
+                    . Now for something completely random to end with, go read about
+                    <a href="https://en.wikipedia.org/wiki/Multiverse">Bubble Theory and Bubble Universes</a>
+                    . And a random
+                    <i>bubble fun fact</i>
+                    as a prelude to my next related post: Did you know its
+                    <a href="http://www.uclouvain.be/en-316446.html">claimed</a>
+                    that 
+                    <a href="https://en.wikipedia.org/wiki/Georges_Lema%C3%AEtre">Lemaître</a>
+                     is one of the authors of the
+                    <a href="https://en.wikipedia.org/wiki/Fast_Fourier_transform">Fast Fourier Transform</a>
+                    ?
+                </p>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

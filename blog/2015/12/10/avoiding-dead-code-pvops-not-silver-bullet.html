@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Avoiding dead code: pv_ops is not the silver bullet — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2015-12-10">Dec 10, 2015</time>
+                    <span class="category-badge badge-linux">Linux / Kernel</span>
+                </div>
+                <h1>Avoiding dead code: pv_ops is not the silver bullet</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2015/12/avoiding-dead-code-pvops-not-silver-bullet.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source &#8599;
+                </a>
+            </header>
+            <div class="post-content">
+                <br />
+                This is part I - for part II - see "
+                <a href="http://www.do-not-panic.com/2015/12/xen-and-x86-linux-zero-page.html">
+                    Xen and the Linux x86 zero page
+                </a>
+                "
+                <br />
+                <br />
+                <div style="text-align: center">
+                    <b>
+                        <span style="font-size: large">
+                            "
+                            <i>Code that should not run should never run"</i>
+                        </span>
+                    </b>
+                </div>
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://1.bp.blogspot.com/-7qk8MmAdVz0/VmnW9DDKEmI/AAAAAAACe_Q/XMy_uQFtdbs/s1600/20151102_210833.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="400"
+                            src="http://1.bp.blogspot.com/-7qk8MmAdVz0/VmnW9DDKEmI/AAAAAAACe_Q/XMy_uQFtdbs/s400/20151102_210833.jpg"
+                            width="370"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                The fact that code that should not run should never run seems like something
+                <b>stupid and obvious</b>
+                but it turns out that its actually easier said than done on very large software projects, particularly
+                on the Linux kernel. One term for this is "
+                <b><i>dead code</i></b>
+                ". The amount of
+                <i>dead code</i>
+                &nbsp;on Linux has increased over the years due to the desire by Linux distributions to want
+                <b>a single Linux kernel binary</b>
+                to work on
+                <b>different run time environments</b>
+                . The size and complexity of certain features increases the difficulty of proving that
+                <i>dead code</i>
+                never runs. Using a single kernel binary is desirable given that the alternative is we'd have different
+                Linux kernel binary packages for each major custom run time environment we wish to use and among other
+                things this means testing and validating multiple kernels. A really complex modern example, which this
+                post will focus on, is
+                <i>
+                    dead code which is possible as a consequence of how we handle support for different&nbsp;
+                    <a href="https://en.wikipedia.org/wiki/Hypervisor">hypervisors</a>
+                    &nbsp;on the Linux kernel
+                </i>
+                . The purpose of this post is to
+                <b>create awareness about the problem</b>
+                , clean resolutions to these problems have been already integrated upstream for a few features, and you
+                should be seeing a few more soon.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-57uTGQnXm58/VmnVFVgWVOI/AAAAAAACe-0/KqTqFFIlC5g/s1600/20151029_130135.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="250"
+                            src="http://2.bp.blogspot.com/-57uTGQnXm58/VmnVFVgWVOI/AAAAAAACe-0/KqTqFFIlC5g/s400/20151029_130135.jpg"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                Back in the day you needed a custom kernel binary if you wanted to use the kernel with specific
+                hypervisor support. To solve this the Linux kernel&nbsp;paravirtualization operations, aka paravirt_ops,
+                or even shorter just&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                , was chosen as the
+                <b>mechanism to enable different hypervisor solutions to co-exist with a single kernel binary</b>
+                . Although&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                &nbsp;was welcomed with open arms back in the days as a reasonable compromise, these days just the
+                mention of "
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                " to any kernel developer will cause a cringe. There are a few reasons to hate&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                &nbsp;these days, given the praise over it back in the day its perhaps confusing why people hate them so
+                much now, this deserves some attention. Below are a few key reasons
+                <i>
+                    why developers
+                    <b>hate</b>
+                    &nbsp;
+                    <a
+                        href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                    >
+                        pv_ops
+                    </a>
+                    &nbsp;today
+                </i>
+                .
+                <br />
+                <br />
+                <ul>
+                    <li>
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                        >
+                            pv_ops
+                        </a>
+                        &nbsp;was designed at a time when&nbsp;
+                        <b>
+                            <a href="https://en.wikipedia.org/wiki/Hardware-assisted_virtualization">
+                                hardware assisted virtualization
+                            </a>
+                            solutions were relatively new
+                        </b>
+                        , and it remained unclear how fully paravirtualized solutions would compare. KVM is a hypervisor
+                        solution that requires
+                        <a href="https://en.wikipedia.org/wiki/Hardware-assisted_virtualization">
+                            hardware assisted virtualization
+                        </a>
+                        . These days, even originally&nbsp;
+                        <b>fully paravirtualized</b>
+                        hypervisors solutions such as the Xen hypervisor have integrated support the hardware
+                        virtualization extensions put out by several hardware vendors. This makes it difficult to term
+                        hypervisors that no longer are "
+                        <b><i>fully paravirtualized</i></b>
+                        ", the different possibilities of what could be paravirtualized and be dealt with by hardware
+                        has given the rise to a slew of
+                        <b>different types of paravirtualized guests</b>
+                        . For instance, Xen now has PV, HVM, PVH, check out the
+                        <a href="http://wiki.xen.org/wiki/Virtualization_Spectrum">virtualization spectrum page</a>
+                        for a clarification of how each of these vary. What remains clear though is&nbsp;
+                        <a href="https://en.wikipedia.org/wiki/Hardware-assisted_virtualization">
+                            hardware assisted virtualization
+                        </a>
+                        &nbsp;features&nbsp;have been welcomed and in the future you should count on all&nbsp;
+                        <b>
+                            <u>new</u>
+                            systems
+                        </b>
+                        running virtualization to take advantage of them. In the end&nbsp;
+                        <b>
+                            Xen PHV will provide that sweet spot for the best mixture of "paravirtualization" and
+                            hardware virtualization
+                        </b>
+                        .&nbsp;Architectures which needed hypervisor virtualization support&nbsp;developed after&nbsp;
+                        <a href="https://en.wikipedia.org/wiki/Hardware-assisted_virtualization">
+                            hardware assisted virtualization
+                        </a>
+                        &nbsp;solutions&nbsp;were in place can support different hypervisors without&nbsp;
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                        >
+                            pv_ops
+                        </a>
+                        . Such is the case for ARM which supports both
+                        <a href="http://systems.cs.columbia.edu/projects/kvm-arm/">KVM</a>
+                        &nbsp;and
+                        <a href="http://wiki.xen.org/wiki/Xen_ARM_with_Virtualization_Extensions">Xen on ARM</a>
+                        . In this light, in a way&nbsp;
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                        >
+                            pv_ops
+                        </a>
+                        &nbsp;is a thing of the past. If Xen slowly deprecates and finally removes
+                        <i>fully paravirtualized</i>
+                        PV support from the Linux kernel&nbsp;Konrad has noted that at the very least we could
+                        <a href="https://lkml.org/lkml/2013/7/31/294">deprecate&nbsp;pv_ops&nbsp;MMU components</a>
+                        .
+                    </li>
+                    <li>
+                        Although&nbsp;
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                        >
+                            pv_ops
+                        </a>
+                        &nbsp;was conceived as an
+                        <b>architecture agnostic solution</b>
+                        in order to support different hypervisors, since hardware assisted virtualization solutions are
+                        common, and since evidence shows you can support different hypervisors cleanly without&nbsp;
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                        >
+                            pv_ops
+                        </a>
+                        &nbsp;and Xen support on ia64 was removed and deprecated, and so
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=e55645ec5725a33eac9d6133f3bce381af1e993d"
+                        >
+                            pv_ops was also removed from ia64
+                        </a>
+                        ,&nbsp;
+                        <b>
+                            x86 is now the
+                            <u>only</u>
+                            remaining architecture using&nbsp;
+                            <a
+                                href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                            >
+                                pv_ops
+                            </a>
+                        </b>
+                        .
+                    </li>
+                    <li>
+                        Collateral: changes to&nbsp;
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                        >
+                            pv_ops
+                        </a>
+                        &nbsp;can cause regressions and can impact code for all x86-64 kernel solutions, as such kernel
+                        developers are extremely cautious on making additions, extensions, and of even adding new users.
+                        To what extent do we not want extensions to&nbsp;
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                        >
+                            pv_ops
+                        </a>
+                        ? Well Rusty Russell wrote the&nbsp;
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/tools/lguest/lguest.txt"
+                        >
+                            lguest
+                        </a>
+                        &nbsp;hypervisor and launcher code, he did this to not only demo&nbsp;
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                        >
+                            pv_ops
+                        </a>
+                        &nbsp;but also set sanity on how folks should write hypervisors for Linux using&nbsp;
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                        >
+                            pv_ops
+                        </a>
+                        . Rusty wrote this with only 32-bit support though.
+                        <a href="https://lkml.org/lkml/2013/7/31/161">
+                            Although there has been interest in developing 64-bit support on lguest, its simply not
+                            welcomed
+                        </a>
+                        , for at least one of the reasons stated above -- as per hpa: "
+                        <i>
+                            extending&nbsp;
+                            <a
+                                href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                            >
+                                pv_ops
+                            </a>
+                            &nbsp;is a permanent tax on future development
+                        </i>
+                        ". With the other reasons listed above, this is even more so. If you want to write a demo
+                        hypervisor with 64-bit support on x86 the approach you could take is to try to write it with all
+                        the fancy new hardware virtualization support and you should try avoiding&nbsp;
+                        <b>
+                            <a
+                                href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                            >
+                                pv_ops
+                            </a>
+                            &nbsp;
+                        </b>
+                        as much as is humanely possible.
+                    </li>
+                </ul>
+                <br />
+                So&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                &nbsp;was originally the solution put in place to help support different hypervisors on Linux through an
+                architecture agnostic solution. These days, provided we can phase out full Xen PV support, we should
+                strive to only keep what we need to provid support for Xen PHV and the other hardware assisted
+                hypervisors.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://4.bp.blogspot.com/-Ace13TGVhDo/VmnU4Q1MJ4I/AAAAAAACe-c/Qqclny6owc4/s1600/20151029_131813.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="225"
+                            src="http://4.bp.blogspot.com/-Ace13TGVhDo/VmnU4Q1MJ4I/AAAAAAACe-c/Qqclny6owc4/s400/20151029_131813.jpg"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                The only paravirtualized hypervisors supported upstream on the Linux kernel are Xen for PV guest types
+                (PV, PVH) and the demo&nbsp;
+                <a href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/tools/lguest/lguest.txt">
+                    lguest
+                </a>
+                &nbsp;hypervisor.&nbsp;
+                <a href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/tools/lguest/lguest.txt">
+                    lguest
+                </a>
+                &nbsp;is just demo code though, I'd hope no one is using it in production code though... I'd be curious
+                to hear... Assuming no one sane is using lguest as a production hypervisor and we could phase it out,
+                that leaves us with Xen PV solutions as the remaining solution to study to see how we can simplify&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                . A highly distinguishing factor of Xen PV guest types (Xen PV, Xen PVH) are that they have a unique
+                separate entry point into Linux when Linux on x86 boots.
+                <b>Xen PV and&nbsp;Xen PVH guest types share this same entry path</b>
+                . That is, even if we wanted to try to remove as much as possible from&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                , we'd still currently have to take into account that Xen's modern ideal solution with a mixture of
+                "paravirtualization" and hardware virtualization uses this separate entry path. Trying to summarize this
+                without going into much detail, the different entry points and how x86-64 init works can be summarized
+                as follows.
+                <br />
+                <br />
+                <pre class="prettyprint">
+Bare metal, KVM, Xen HVM                      Xen PV / dom0
+    startup_64()                             startup_xen()
+           \                                     /
+   x86_64_start_kernel()                 xen_start_kernel()
+                        \               /
+                   x86_64_start_reservations()
+                                |
+                           start_kernel()
+                           [   ...        ]
+                           [ setup_arch() ]
+                           [   ...        ]
+                               init
+</pre
+                >
+                <br />
+                Although this is a small difference, it actually can have a huge impact on possible "
+                <i>dead code</i>
+                ". You see, prior to&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                &nbsp;different binaries were compiled, and features and solutions which you knew you would not need
+                could simply be
+                <b>negated via Kconfig</b>
+                , these negations were not&nbsp;done upstream -- they were only implemented and integrated on SUSE
+                kernels, as SUSE was perhaps the only enterprise Linux distribution fully supporting Xen. Doing these
+                negations ensures that code we determined should never run, never got compiled in. Although this Kconfig
+                solution was never embraced upstream it doesn't mean the issue didn't exist on upstream, quite the
+                contrary, it obviously did, there was just no clean proposed solution to the problem and frankly no one
+                cared too much about resolving it properly. However an implicit consequence of embracing&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                &nbsp;and supporting different hypervisors with one binary is that we're now forced to have large chunks
+                of code always enabled in the Linux kernel, some of which we know should not run once we know what path
+                we're taking on the above tree init path. Code cannot be compiled out, as our differences are now
+                handled at run time. Prior to&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                &nbsp;the&nbsp;Kconfig solution was used to negate feature that should not run when on Xen
+                so&nbsp;issues would come up at compile time and could be resolved this way. This Kconfig solution was
+                in no way a proactive solution, but its how Xen support on SUSE kernels was managed. Using&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                &nbsp;means we need this resolved through alternative upstream friendly means.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://3.bp.blogspot.com/-MOMxVERfzSA/VmnTuDaC7TI/AAAAAAACe-Q/amw6OaMs4q4/s1600/20151025_111128.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="292"
+                            src="http://3.bp.blogspot.com/-MOMxVERfzSA/VmnTuDaC7TI/AAAAAAACe-Q/amw6OaMs4q4/s400/20151025_111128.jpg"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <br />
+                Next are a just
+                <b>
+                    <u>a few</u>
+                    examples of dead code concerns
+                </b>
+                I have looked into but please note that there are more, I also explain a few of these. Towards the end I
+                explain what I'm working on to do about some of these dead code concerns. Since I hope to have convinced
+                you that people hate&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                ,
+                <b>
+                    <i><u>the challenge here</u></i>
+                </b>
+                is to come up with a really
+                <b>clean generic solution</b>
+                that 1) does not extend&nbsp;
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/virtual/paravirt_ops.txt"
+                >
+                    pv_ops
+                </a>
+                , and 2) could also likely be repurposed for other areas of the kernel.
+                <br />
+                <ul>
+                    <li><a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a></li>
+                    <li>
+                        IOMMU - initialization (resolved cleanly), IOMMU API calls, IOMMU multifuction device conflict.
+                        exposed IOMMU ACPI tables (Intel VT-d),&nbsp;
+                    </li>
+                    <li>Microcode updates - both early init and changes at run time</li>
+                </ul>
+                As I've studied some of the&nbsp;
+                <i>dead code</i>
+                concerns for some of the above features I've also identified an issue when the main x86 entry path is
+                modified for x86-64 but the Xen's init path is forgotten. When this happens in the worst case you end up
+                crashing Xen. I list two of these cases, one of which is still an issue for Xen. I call these
+                <b>init mismatch</b>
+                &nbsp;issues.
+                <br />
+                <ul>
+                    <li>cr4 shadow</li>
+                    <li>KASan</li>
+                </ul>
+                <div>
+                    So both
+                    <b>dead code</b>
+                    concerns, and
+                    <b>init mismatch</b>
+                    issues can break things, sometimes really really badly. Some of the solutions in place today and
+                    some that will be developed are what I like to refer to as
+                    <b><u>paravirtualization yielding solutions</u></b>
+                    . When reviewing some of these issues below, keep in mind that this is essentially what we're doing,
+                    it should help you understand why we're doing what we're doing, or why we need some more work in
+                    certain areas of the kernel.
+                </div>
+                <div>
+                    <br />
+                </div>
+                <br />
+                <h3>Death to MTRR:</h3>
+                <div>
+                    <br />
+                </div>
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                is an example type of code that we know should not run on when we boot Linux for Xen dom0 or as a guest
+                given that on Linux upstream we never implemented a solution to deal with
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                with the hypervisor.
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                calls however are a case that in most cases are not fatal if they fail, typically if&nbsp;
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                &nbsp;calls fail you'd suffer performance. Since&nbsp;
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                &nbsp;is really old, we had the option to either add
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                Linux hypervisor call support for Xen, or work on an alternative that avoided
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                somehow amicably. Fortunately a long time ago
+                <a href="https://twitter.com/amluto">Andy Lutomirski</a>
+                &nbsp;figured we could replace direct
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                calls with a no-op when on
+                <a href="https://en.wikipedia.org/wiki/Page_attribute_table">PAT</a>
+                &nbsp;capable systems, provided you also used a PAT friendly respective ioremap call. So he added
+                arch_phys_wc_add() to be used in combination with ioremap_wc().&nbsp;This solved it for
+                write-combining&nbsp;
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                &nbsp;calls.&nbsp;He did a bit of the driver conversions needed for this work, it however was never
+                fully completed. If you're following my development upstream you may have noticed that among other
+                things for
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                I completed where Andy left off, replacing all direct users of write combining
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                calls upstream on Linux with an architecture agnostic write-combining call, arch_phys_wc_add(), in
+                combination with ioremap_wc(). Instead of adding Linux
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                hypervisor calls we now have a wrapper which will call
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                only when we know that is needed, and instead&nbsp;
+                <a href="https://en.wikipedia.org/wiki/Page_attribute_table">PAT</a>
+                &nbsp;interfaces are used when available. Addressing write-combining&nbsp;
+                <a href="https://en.wikipedia.org/wiki/Memory_type_range_register">MTRR</a>
+                &nbsp;is just one small example though of what we needed to address, there are other types of MTRRs you
+                could use, and in the worst cases they were being used in incredibly hackish, but functional ways. For
+                instance in one case one driver was using two overlapping MTRRs, in the worst case PCI Bar was of 16
+                &nbsp;MiB but the MMIO region for the device was in the last 4 KiB of the same PCI BAR. You want to
+                avoid write-combining on MMIO regions, but if we use one MTRR for write-combining without affecting the
+                MMIO region we'd end up with 8 MiB of write-combining and loose out on the rest of graphics memory.
+                Using a 16 MiB write-combining MTRR meant we'd write-combine the MMIO region.. The implemented hacky
+                MTRR solution was to issue a 16 MiB write-combining MTRR followed by 4 KiB UC MTRR. There were also two
+                overlapping ioremap calls for this driver. The resolution, in a PAT friendly way included adding
+                ioremap_uc() upstream, which would set&nbsp;PCD=1, PWT=1 on non-PAT systems and use a PAT value of UC
+                for PAT systems. We used this for the MMIO region, doing this ensures that if you then issue on MTRR on
+                this region the MMIO region would remain unaffected. The framebuffer was also carved out cleanly, and
+                ioremap_wc() used on it. For details refer to:
+                <br />
+                <br />
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=8c7ea50c010b2f1e006ad37c43f98202a31de2cb"
+                >
+                    x86/mm, asm-generic: Add IOMMU ioremap_uc() variant default
+                </a>
+                <br />
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=eacd2d542610e55cad0be445966ac8ae79124c6e"
+                >
+                    drivers/video/fbdev/atyfb: Carve out framebuffer length fudging into a helper
+                </a>
+                <br />
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=f55de6ec375da89f89f1a76e1b998e5f14878c06"
+                >
+                    drivers/video/fbdev/atyfb: Clarify ioremap() base and length used
+                </a>
+                <br />
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=3cc2dac5be3f23414a4efdee0b26d79bed297cac"
+                >
+                    drivers/video/fbdev/atyfb: Replace MTRR UC hole with strong UC
+                </a>
+                <br />
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=7d89a3cb159aecb1b363ea50cb14c967ff83b5a6"
+                >
+                    drivers/video/fbdev/atyfb: Use arch_phys_wc_add() and ioremap_wc()
+                </a>
+                <br />
+                <br />
+                But that's not all... even if all drivers have been converted over to never issue MTRR calls directly
+                the BIOS might still issue MTRRs on bootup, and the kernel should have to know about that to avoid
+                issues with conflicts with PAT. More work on this front is therefore needed, but at least the crusade to
+                remove direct access to MTRR was completed on Linux as of v4.3.
+                <br />
+                <h3></h3>
+                <h3>IOMMU:</h3>
+                <div>
+                    <br />
+                </div>
+                A really clean solution to dead code, although it wasn't the only reason for why this went upstream,
+                came from how IOMMU initialization code was handled with&nbsp;IOMMU_INIT macros with struct
+                iommu_table_entry. The solution in place had to account for different dependencies between IOMMU code,
+                this dependency map is best explained by a diagram.
+                <br />
+                <br />
+                <pre class="prettyprint">
+            [xen-swiotlb]
+                 |
+         +----[swiotlb *]--+
+        /         |         \
+       /          |          \
+    [GART]     [Calgary]  [Intel VT-d]
+     /
+    /
+ [AMD-Vi]
+</pre
+                >
+                <br />
+                Dependencies are annotated, detection routines made available and there's a sort routine which makes
+                this execute in the right order. The full dependency map is handled at run time, to review some of the
+                implementation check out&nbsp;git log -p 0444ad93e..ee1f28, and just check out the code. When this code
+                was proposed
+                <a href="https://marc.info/?l=linux-kernel&amp;m=128285216913266&amp;w=2">
+                    hpa had actually suggested that this sort of problem is common enough that perhaps a generic
+                    solution could be implemented on Linux
+                </a>
+                , and that the solution developed by the gPXE folks might be a good one to look at. As neat as this was,
+                this still doesn't address all concerns though. Expect to see some possible suggested updates in this
+                area.
+                <br />
+                <br />
+                <h3>Microcode updates:</h3>
+                <div>
+                    <br />
+                </div>
+                A CPU often needs software updates, this is known as CPU microcode updates. If using a hypervisor though
+                your hypervisor should take care of these updates for you as a guest should not have to fix real
+                hardware. Additionally if you do enable a guest to do updates on behalf of a full system you may want to
+                be selective about what guests are allowed to do this. Then there are the run time update
+                considerations. Some CPU microcode updates might disable some CPU ops, if you do this on a hypervisor
+                with code already running some code might break as it assumes some CPU ops still are valid. This could
+                cause some unexpected situations for guests. Doing run time CPU microcode updates after a system has
+                booted then should be avoided and only done if you are 100% certain you can do it, and you have full
+                hardware and software vendor support for it. The CPU microcode update must be designed for a run time
+                update. As far as Linux is concerned we avoid enabling CPU microcode updates by bailing out on the CPU
+                microcode init code if pv_enabled() returns true. This works but it turns out this is not an ideal
+                solution, the reason is that pv_enabled() really should probably be renamed to something such as
+                pv_legacy() as this really only returns true if you have a legacy PV solution. Expect some updates on
+                this upstream soon. If folks desire run time CPU microcode updates on Xen work is required on the Xen
+                side to copy the buffer to Xen, scan the buffer for the correct patch, and finally rendezvous all online
+                cpus in an IPI to apply the patch, and keep the processors in until all have completed the patch.
+                <a href="http://www.gossamer-threads.com/lists/xen/devel/364704?page=last">
+                    I hacked up a version for the hypervisor which just does queiscing by pausing domains
+                </a>
+                , that obviously needs more work, someone interested should pick up on that. Refer to
+                <a href="http://wiki.xenproject.org/wiki/XenParavirtOps/microcode_update">Xen microcode updates</a>
+                for Xen specific documentation or to read the latest notes on developing this for the Xen hypervisor. At
+                this time, its not clear where KVM keeps this documentation.
+                <br />
+                <br />
+                <h3>Init mismatch issues:</h3>
+                <br />
+                We have a dual entry with x86, we have to live with that now, but at times this is overlooked and it can
+                happen to the best of us. For instance, when&nbsp;Andy Lutomirski added support to
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=1e02ce4cccdcb9688386e5b8d2c9fa4660b45389"
+                >
+                    shadow the CR4 per CPU on the x86-64 init path
+                </a>
+                he forgot to add a respective call for Xen. This caused a crash on all Xen PV guests and dom0.
+                <a
+                    href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=5054daa285beaf706f051fbd395dc36c9f0f907f"
+                >
+                    Boris Ostrovsky&nbsp;fixed this for 64-bit PV(H) guests
+                </a>
+                . I'm told code review is supposed to catch these issues but I'm not satisfied, the fix here was purely
+                reactive. We could and should do better. A perfect example of further complications is when Linux
+                got&nbsp;KASan support, the kernel address sanitizer. Enabling&nbsp;KASan on x86 will crash Xen today,
+                and this issue is not yet fixed. We need a proactive solution. If we could unify init paths, would that
+                help? Would that be welcomed? How could that be possible?
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://1.bp.blogspot.com/-HOc1v5GovpY/VmnVAP0Cj2I/AAAAAAACe-s/vtSfGRI5VPQ/s1600/20151029_132001-EFFECTS.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="225"
+                            src="http://1.bp.blogspot.com/-HOc1v5GovpY/VmnVAP0Cj2I/AAAAAAACe-s/vtSfGRI5VPQ/s400/20151029_132001-EFFECTS.jpg"
+                            width="400"
+                        />
+                    </a>
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    <h3>What to do</h3>
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    The purpose of this post is to
+                    <b>create awareness of what dead code is</b>
+                    , make you believe its real, its important, and that if we could come up with a
+                    <b>clean solution</b>
+                    that we could probably
+                    <b>re-use it for other purposes</b>
+                    -- it should welcomed. I'm putting a &nbsp;lot of emphasis on
+                    <b>dead code and init mismatch issues</b>
+                    as without this post I probably would not be able to talk to anyone about it and expect them to
+                    understand what I'm talking about, let alone have them understand the importance of the issue. The
+                    virtualization world is likely not the only place that could use a solution to some of the
+                    <b>dead code</b>
+                    concern problems. I'll soon be posting RFCs for a possible mechanism to help with this, if you want
+                    a taste of what this might look like, you can take a peak at the
+                    <a href="https://github.com/mcgrof/table-init.git">userspace table-init mockup solution</a>
+                    &nbsp;that I've implemented. In short, its a merge of what the gPXE folks implemented with what
+                    Konrad worked on for IOMMU initialization, giving us the best of both worlds.
+                </div>
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </footer>
+    </body>
+</html>

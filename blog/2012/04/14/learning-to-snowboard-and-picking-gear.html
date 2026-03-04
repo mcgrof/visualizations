@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Learning to snowboard and picking gear — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2012-04-14">Apr 14, 2012</time>
+                    <span class="category-badge badge-travel">Travel / Outdoors</span>
+                </div>
+                <h1>Learning to snowboard and picking gear</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2012/04/learning-to-snowboard-and-picking-gear.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <table style="width: auto">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a
+                                    href="https://picasaweb.google.com/lh/photo/JyiDLNH-JxI5OAwsc46OL66dtcXnzvnJ8XgUKEZTGw8?feat=embedwebsite"
+                                >
+                                    <img
+                                        height="400"
+                                        src="https://lh6.googleusercontent.com/-e49YbIOxSuQ/T4npcol2tWI/AAAAAAAAwn0/pmM4nkomCKM/s400/199868_10100352324984789_8850816_60446294_2138672_n.jpg"
+                                        width="300"
+                                    />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: arial, sans-serif; font-size: 11px; text-align: right">
+                                From
+                                <a
+                                    href="https://picasaweb.google.com/101487746899672598413/IAmMcgrofSSmirkingRevenge?authuser=0&amp;authkey=Gv1sRgCOWK_6LYrsfiygE&amp;feat=embedwebsite"
+                                >
+                                    I am mcgrof's smirking revenge
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                I started snowboarding around Pi (3/14) in 2011. My first venture was out to Kirkwood in Tahoe. I went
+                with my coustin
+                <a href="https://twitter.com/#!/pico218" target="_blank">Pico</a>
+                who was out visiting me in San Francisco. I had not expected to try snowboarding as I thought it would
+                be painful to learn and I already was starting to feel comfortable with skiing. I also didn't know squat
+                about snowboarding... and neither did my cousin... She really wanted to learn so being the crazies we
+                are, we just tried it, without taking any lessons, without input from anyone, we just winged it.
+                <br />
+                <br />
+                <table style="width: auto">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a
+                                    href="https://picasaweb.google.com/lh/photo/VG_uC_aVuQOKw6S00goVDq6dtcXnzvnJ8XgUKEZTGw8?feat=embedwebsite"
+                                >
+                                    <img
+                                        height="400"
+                                        src="https://lh3.googleusercontent.com/-78Puocj55uA/T4npdRJ8eLI/AAAAAAAAwn8/ZzhZkCCwDJQ/s400/200088_10100349349248189_8850816_60416229_67844_n.jpg"
+                                        width="300"
+                                    />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: arial, sans-serif; font-size: 11px; text-align: right">
+                                From
+                                <a
+                                    href="https://picasaweb.google.com/101487746899672598413/IAmMcgrofSSmirkingRevenge?authuser=0&amp;authkey=Gv1sRgCOWK_6LYrsfiygE&amp;feat=embedwebsite"
+                                >
+                                    I am mcgrof's smirking revenge
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                "Fuck guac, get an avocado and put a chip on it" (tm). That was our general attitude for the entire trip
+                we were making. We were traveling&nbsp;frugally, winging it, not caring much about anything. It's a good
+                thing because when we arrived to Kirkwood from Yosemite we got there circa 11pm and not knowing the area
+                we were a bit shocked to hear the prices for staying at any of the local Kirkwood hotels... and we also
+                had my dog Mookie (
+                <a
+                    href="https://picasaweb.google.com/101487746899672598413/MookieAmberAlert?authuser=0&amp;feat=directlink"
+                    target="_blank"
+                >
+                    which my cousin later kidnapped from me
+                </a>
+                ). We fortunately got a hint about some Hostel called "
+                <a href="http://www.facebook.com/pages/Rockstar-Lodge/126945060707531" target="_blank">Rockstar</a>
+                " within Kirkwood we should call (530-318-5046)&nbsp;and check out.
+                <br />
+                <br />
+                <table style="width: auto">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a
+                                    href="https://picasaweb.google.com/lh/photo/-TnZVY2QAukFtVd1kQp-T66dtcXnzvnJ8XgUKEZTGw8?feat=embedwebsite"
+                                >
+                                    <img
+                                        height="400"
+                                        src="https://lh4.googleusercontent.com/-YCaXPTOwLUU/T4npcWldPzI/AAAAAAAAwno/PZSJrpzOuE8/s400/199408_10100349321294209_8850816_60415735_1852035_n.jpg"
+                                        width="300"
+                                    />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: arial, sans-serif; font-size: 11px; text-align: right">
+                                From
+                                <a
+                                    href="https://picasaweb.google.com/101487746899672598413/IAmMcgrofSSmirkingRevenge?authuser=0&amp;authkey=Gv1sRgCOWK_6LYrsfiygE&amp;feat=embedwebsite"
+                                >
+                                    I am mcgrof's smirking revenge
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                We got very very lucky. The
+                <a href="http://www.facebook.com/pages/Rockstar-Lodge/126945060707531" target="_blank">
+                    Rockstar Lodge
+                </a>
+                at Kirkwood was dirt cheap, allowed dogs, and... had a ping pong table, a pool table... and had a groovy
+                young crowd crashing there. As you can see above too, the amount of snow that fell this season was
+                amazing. That's a window at the Hostel.
+
+                <br />
+                <br />
+                <iframe
+                    allowfullscreen=""
+                    frameborder="0"
+                    height="315"
+                    src="http://www.youtube.com/embed/L1KGfIkoqHA"
+                    width="420"
+                ></iframe>
+                <br />
+                <br />
+                Captain Morgan joined us. Here you can see Pico has the Captain in her...
+                <br />
+                <br />
+                <table style="width: auto">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a
+                                    href="https://picasaweb.google.com/lh/photo/xvW5T57-D9JD2QR7ZtqYqK6dtcXnzvnJ8XgUKEZTGw8?feat=embedwebsite"
+                                >
+                                    <img
+                                        height="400"
+                                        src="https://lh6.googleusercontent.com/-iuTh_tBc1Kg/T4npbxiJbFI/AAAAAAAAwnQ/g6i29C6gEx8/s400/190151_10100352317045699_8850816_60446205_514564_n.jpg"
+                                        width="300"
+                                    />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: arial, sans-serif; font-size: 11px; text-align: right">
+                                From
+                                <a
+                                    href="https://picasaweb.google.com/101487746899672598413/IAmMcgrofSSmirkingRevenge?authuser=0&amp;authkey=Gv1sRgCOWK_6LYrsfiygE&amp;feat=embedwebsite"
+                                >
+                                    I am mcgrof's smirking revenge
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                Having a little Captain in you helps if you are learning to snowboard. Its painful. You will suffer, you
+                will experience pain, you will complain, your ass is going to hurt for a while, but -- you will have
+                fun. I recommend to go prepared for 3-4 days of mental anguish,&nbsp;desperation&nbsp;and pain.
+
+                <br />
+                <br />
+                <table style="width: auto">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a
+                                    href="https://picasaweb.google.com/lh/photo/LkqmQsyVMktUaB4nJZQ7WK6dtcXnzvnJ8XgUKEZTGw8?feat=embedwebsite"
+                                >
+                                    <img
+                                        height="400"
+                                        src="https://lh4.googleusercontent.com/-k5DTXyaBrJY/T4npb3t_NgI/AAAAAAAAwnM/sQQtCd9GK_g/s400/185744_10100349765199619_8850816_60420895_3559372_n.jpg"
+                                        width="300"
+                                    />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: arial, sans-serif; font-size: 11px; text-align: right">
+                                From
+                                <a
+                                    href="https://picasaweb.google.com/101487746899672598413/IAmMcgrofSSmirkingRevenge?authuser=0&amp;authkey=Gv1sRgCOWK_6LYrsfiygE&amp;feat=embedwebsite"
+                                >
+                                    I am mcgrof's smirking revenge
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <div>
+                    We rented gear from
+                    <a href="http://www.sportsbasement.com/" target="_blank">Sports Basement</a>
+                    in San Francisco. They give you what I think are Burton Rockers with some cheesy bindings and boots.
+                    Given the price the cheap rental equipment is reasonable if you're not sure if you're going to get
+                    into it. As soon as you realize you like Snowboarding though ditch the crap rental stuff and quickly
+                    move on to demo equipment. The nice thing about snowboarding is that after being in hell for about
+                    3-4 days, the next few days after that will feel increasingly rewarding. If you move away from cheap
+                    rental equipment to demo equipment you'll even feel a greater difference.
+                    <br />
+                    <br />
+                </div>
+                <div>
+                    <table style="width: auto">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <a
+                                        href="https://picasaweb.google.com/lh/photo/pB-FJkQ2EpzQWcWM1O95N66dtcXnzvnJ8XgUKEZTGw8?feat=embedwebsite"
+                                    >
+                                        <img
+                                            height="300"
+                                            src="https://lh5.googleusercontent.com/-qQ8VWtSkHjM/T4npccFi2mI/AAAAAAAAwnk/ZN3id_HMxfo/s400/196423_10100407899048919_8850816_60840275_1565513_n.jpg"
+                                            width="400"
+                                        />
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-family: arial, sans-serif; font-size: 11px; text-align: right">
+                                    From
+                                    <a
+                                        href="https://picasaweb.google.com/101487746899672598413/IAmMcgrofSSmirkingRevenge?authuser=0&amp;authkey=Gv1sRgCOWK_6LYrsfiygE&amp;feat=embedwebsite"
+                                    >
+                                        I am mcgrof's smirking revenge
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br />
+                </div>
+                <div>
+                    That season though I didn't move away from the cheap rental shit... and I felt the pain. As you get
+                    better and move from Greens (Beginners) to Blues (Intermediate) trails the biggest issue will be the
+                    discomfort felt on the feet and the tiredness on the legs and feet. Unfortunately the only way to
+                    work on that is to keep doing it. It gets better, I promise. I was so hooked on snowboarding after
+                    that trip I kept going almost every weekend until the season ended. Fortunately that year we had a
+                    great season and we had snow even toward the end of April. Towards the end of the season I even had
+                    grown the cojones to go to the top of Heavenly at 10,000 feet to cross over to the Nevada section,
+                    and even dared it down my first set of black diamond runs. Heavenly has an awesome view up there, on
+                    one side you see Lake Tahoe, and on the other you see the Nevada desert.
+                    <br />
+                    <br />
+                </div>
+                <table style="width: auto">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a
+                                    href="https://picasaweb.google.com/lh/photo/RAFcyq3O5N1XYw7tmbj1QK6dtcXnzvnJ8XgUKEZTGw8?feat=embedwebsite"
+                                >
+                                    <img
+                                        height="103"
+                                        src="https://lh3.googleusercontent.com/-U5sunKH9Hbg/T4n14zTKMZI/AAAAAAAAwog/ebu9Oqx20hQ/s640/PANO_20120129_123600.jpg"
+                                        width="640"
+                                    />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: arial, sans-serif; font-size: 11px; text-align: right">
+                                From
+                                <a
+                                    href="https://picasaweb.google.com/101487746899672598413/IAmMcgrofSSmirkingRevenge?authuser=0&amp;authkey=Gv1sRgCOWK_6LYrsfiygE&amp;feat=embedwebsite"
+                                >
+                                    I am mcgrof's smirking revenge
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <div>
+                    I liked snowboarding enough I committed to renting a
+                    <a href="https://sites.google.com/site/southlaketahoeskilease/" target="_blank">cabin</a>
+                    &nbsp;in South Lake Tahoe for the 2012 season with a few good friends from SF. The price was not bad
+                    considering how often I was going last season and crashing at motels or hostels, it came out to $250
+                    / month for 3 months. It had a hot tub :D The leased turned out to have worked really well and met
+                    really great folks. I think I ended up going up almost every weekend. It worked really well given
+                    that a few of my friends also worked from home in SF so we typically went up Thursday night, worked
+                    from home Friday and hit the slopes all day Saturday-Sunday.
+                </div>
+                <div>
+                    <br />
+                    <div class="separator" style="clear: both; text-align: center">
+                        <a
+                            href="http://s7d2.scene7.com/is/image/Burton/2012Brtn_PDP_FS_BG?$2012Brtn_PDP_FS$&amp;layer=1&amp;src=Burton/252553018_1&amp;size=465,540"
+                            imageanchor="1"
+                            style="margin-left: 1em; margin-right: 1em"
+                        >
+                            <img
+                                border="0"
+                                height="320"
+                                src="http://s7d2.scene7.com/is/image/Burton/2012Brtn_PDP_FS_BG?$2012Brtn_PDP_FS$&amp;layer=1&amp;src=Burton/252553018_1&amp;size=465,540"
+                                width="275"
+                            />
+                        </a>
+                    </div>
+                    <br />
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    Since I knew I was going to go up more often I decided to buy my boots but demo snowboards. You
+                    cannot really demo snowboard boots so the best I could do was to try the snowboard boots out at a
+                    store. I got my boots from the good folks from
+                    <a href="http://www.mountainwestonline.com/" target="_blank">Mountain West in SF</a>
+                    . The service at
+                    <a href="http://www.mountainwestonline.com/" target="_blank">Mountain West</a>
+                    was great, I highly recommend the place. I tried on a lot of snowboard boots, from all price ranges.
+                    At a certain point I couldn't feel the difference anymore. I ended up picking the
+                    <a
+                        href="http://www.burton.com/mens-boots-imperial-snowboard-boot/252553,default,pd.html"
+                        target="_blank"
+                    >
+                        2012 Burton Imperial
+                    </a>
+                    . They're amazing.
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    I took complete advantage of the fact that you can demo snowboards. Sports Basement has a great deal
+                    for demoing, you demo snowboards with nice bindings for $50 for the weekend (same price for Thursday
+                    - Monday :D ) and towards the end of the season the amount of money you have spent on demos can be
+                    used towards the purchase of a snowboard. Pretty sweet huh? Oh yeah..
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    <table style="width: auto">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <a
+                                        href="https://picasaweb.google.com/lh/photo/eghEZYyg20L0KCI2SNFp6tMTjNZETYmyPJy0liipFm0?feat=embedwebsite"
+                                    >
+                                        <img
+                                            height="400"
+                                            src="https://lh6.googleusercontent.com/-_GQ5Uq4F-SU/Txtg1cB5E8I/AAAAAAAAtuc/tNjdhFdE_Vk/s400/IMG_20120121_154403.jpg"
+                                            width="300"
+                                        />
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-family: arial, sans-serif; font-size: 11px; text-align: right">
+                                    From&nbsp;
+                                    <a
+                                        href="https://picasaweb.google.com/101487746899672598413/SnowSeason2012?authuser=0&amp;feat=embedwebsite"
+                                    >
+                                        Snow season 2012
+                                    </a>
+                                    <br />
+                                    <div>
+                                        <br />
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    I started off with the lightest snowboard on the demo fleet, the
+                    <a href="http://www.romesnowboards.com/boards/anthem/" target="_blank">2012 Rome Anthem</a>
+                    . I was excited due to the background I got about the company
+                    <a href="http://snow.wikia.com/wiki/Rome_SDS" target="_blank">Rome</a>
+                    , founded by two folks from Burton who apparently had left for&nbsp;perusing&nbsp;their own vision
+                    on&nbsp;snowboard gears, etc. I hated the snowboard though.... Meh. I think it was just too damn
+                    light for me. Not sure. I just wasn't feeling it, at all... I moved on to the&nbsp;
+                    <a
+                        href="http://www.burton.com/mens-boards-custom-x-snowboard/252317,default,pd.html"
+                        target="_blank"
+                    >
+                        2012 Burton Custom X
+                    </a>
+                    . Woot! Wow. What a difference... I really just wanted to go with that one at that point.. but I
+                    felt I wouldn't really be taking advantage of the demo program so I tried others... I actually
+                    wanted to avoid Burton since some friends had ranted about Burton... so I listened and tried
+                    <a href="http://www.lib-tech.com/" target="_blank">Lip Tech</a>
+                    .&nbsp;There is a company called
+                    <a href="http://www.gnu.com/" target="_blank">GNU</a>
+                    &nbsp;that makes snowboards. Fellow geeks, it has nothing to do with the
+                    <a href="http://www.gnu.org/" target="_blank">GNU project</a>
+                    ...&nbsp;
+                    <a href="http://www.lib-tech.com/" target="_blank">Lip Tech</a>
+                    &nbsp;and&nbsp;
+                    <a href="http://www.gnu.com/" target="_blank">GNU</a>
+                    &nbsp;are part of one family of companies under
+                    <a href="http://www.mervin.com/" target="_blank">Mervin Manufacturing</a>
+                    . The only difference I can find is perhaps that&nbsp;
+                    <a href="http://www.lib-tech.com/" target="_blank">Lip Tech</a>
+                    &nbsp;innovates stuff while GNU focuses and pioneers on being
+                    <a href="http://www.gnu.com/2008/09/29/worlds-most-evironmental-snowboard-factory/" target="_blank">
+                        the world's most environmentally friendly snowboard shop
+                    </a>
+                    . Both companies sell the same
+                    <a href="http://en.wikipedia.org/wiki/Lib_Technologies#Banana_Technology" target="_blank">
+                        Lib Tech Banana Technology
+                    </a>
+                    &nbsp;which reverses the typical snowboard's camber. I'm not going to get into snowboard technology
+                    here. My advice: ignore all that stupid shit and just try the damn boards out. I tried learning as
+                    much as possible about the technology advancements on snowboarding but found most marketing over the
+                    technology sucks ass and instead is sugar coded for what seems to be teenager year old punks who
+                    marketing would like to believe prefer fun cool words over facts. The slew of low quality marketing
+                    videos on YouTube explaining snowboard technologies are just sad. There is much room for improvement
+                    on education on snowboard technology. Not only does the materials suck ass, but its also confusing
+                    given that every snowboard company bites each other's technology and simply slightly modifies it and
+                    gives it a different groovy name. Anyway, I tried the
+                    <a href="http://www.gnu.com/snowboards/mens/billy-goat/" target="_blank">2012 GNU Billy Goat</a>
+                    . That was really nice but unfortunately the bindings that Sports Basement had to offer for that
+                    snowboard were not as great as the ones offered through Burton Boards. On Burton boards Sports
+                    Basement's highest quality binding is the
+                    <a
+                        href="http://www.burton.com/mens-bindings-malavita-binding/252189,default,pd.html"
+                        target="_blank"
+                    >
+                        Burton Malavida
+                    </a>
+                    &nbsp;and at least I do feel a difference with them. The&nbsp;
+                    <a href="http://www.gnu.com/snowboards/mens/billy-goat/" target="_blank">2012 GNU Billy Goat</a>
+                    &nbsp;felt very comparable to the&nbsp;
+                    <a
+                        href="http://www.burton.com/mens-boards-custom-x-snowboard/252317,default,pd.html"
+                        target="_blank"
+                    >
+                        2012 Burton Custom X
+                    </a>
+                    , unfortunately the snow conditions varied when I went up so I couldn't manage to get equal fair
+                    comparisons between them, but they were both pretty nice. Something about the&nbsp;
+                    <a
+                        href="http://www.burton.com/mens-boards-custom-x-snowboard/252317,default,pd.html"
+                        target="_blank"
+                    >
+                        Custom X
+                    </a>
+                    &nbsp;though.. I couldn't place it yet, was just feeling better though. I then moved on to the
+                    <a href="http://k2snowboarding.com/product/slayblade?category=2011-12" target="_blank">
+                        2012 K2 Slayblade
+                    </a>
+                    . This shit was heavy, really really heavy... It wasn't so great on Blue trails but it proved to me
+                    to be a great board on steep Black Diamond runs. It turned great and it was
+                    <b>fast</b>
+                    . For traversals it sucked. Due to the weight it also tired my feet out quite a bit... Moving on...
+                    I tried the&nbsp;
+                    <a
+                        href="http://www.burton.com/mens-boards-joystick-snowboard/252408,default,pd.html"
+                        target="_blank"
+                    >
+                        2012 Burton Joystick
+                    </a>
+                    . This was a lot of fun, it felt very close to the&nbsp;
+                    <a
+                        href="http://www.burton.com/mens-boards-custom-x-snowboard/252317,default,pd.html"
+                        target="_blank"
+                    >
+                        Custom X
+                    </a>
+                    &nbsp;and&nbsp;
+                    <a href="http://www.gnu.com/snowboards/mens/billy-goat/" target="_blank">Billy Goat</a>
+                    &nbsp;but I thought that the&nbsp;
+                    <a
+                        href="http://www.burton.com/mens-boards-custom-x-snowboard/252317,default,pd.html"
+                        target="_blank"
+                    >
+                        Custom X
+                    </a>
+                    &nbsp;let me go faster through traversals, I wasn't sure. Time was running out so I went back to
+                    trying the&nbsp;
+                    <a
+                        href="http://www.burton.com/mens-boards-custom-x-snowboard/252317,default,pd.html"
+                        target="_blank"
+                    >
+                        Custom X
+                    </a>
+                    .
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    <a
+                        href="https://web.archive.org/web/20160412195359im_/http://cdn.epicski.com/d/d0/d096498d_vbattach936.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="240"
+                            src="https://web.archive.org/web/20160412195359im_/http://cdn.epicski.com/d/d0/d096498d_vbattach936.jpg"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    At that point I had advanced quite a bit in technique though. I was doing Moguls on Black Diamonds
+                    and loving it, I even tried my first set of Double Black Diamonds. My first double black diamond was
+                    down Heavenly's Mott Canyon's Gate 1, which leads you to a route called "Widow Maker" (picture
+                    above). I'm surely not ready to sail through this yet, and it gave me good perspective as to what I
+                    need to work on. I do feel comfortable down Double Black Diamonds that have moguls though and in
+                    fact I love them.
+                </div>
+                <div>
+                    <br />
+                </div>
+                <table style="width: auto">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a
+                                    href="https://picasaweb.google.com/lh/photo/-Uk2GTsA8_84ZUSXgYR6pa6dtcXnzvnJ8XgUKEZTGw8?feat=embedwebsite"
+                                >
+                                    <img
+                                        height="300"
+                                        src="https://lh4.googleusercontent.com/-S57dLHZPm_A/T4oFzqq7MbI/AAAAAAAAwo4/HcA4w_E9Y34/s400/IMG_20120401_091212.jpg"
+                                        width="400"
+                                    />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: arial, sans-serif; font-size: 11px; text-align: right">
+                                From
+                                <a
+                                    href="https://picasaweb.google.com/101487746899672598413/IAmMcgrofSSmirkingRevenge?authuser=0&amp;authkey=Gv1sRgCOWK_6LYrsfiygE&amp;feat=embedwebsite"
+                                >
+                                    I am mcgrof's smirking revenge
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    Well, the only Double Black Diamond with moguls I've tried is the Gun Barrel run at Heavenly. The
+                    only sad thing about moguls and snowboarding is that not many snowboarders like moguls and in fact
+                    you cannot find any good videos on YouTube to help you learn to snowboard on moguls... The way I
+                    learned was by watching one person go down the moguls on a snowboard
+                    <b>really</b>
+                    well. It was a rare site.. and if you want to learn to go down moguls on snowboards I recommend for
+                    you to also wait for your unicorn sighting and learn from it. If anyone is aware of good videos of
+                    snowboarders doing moguls please send them my way! Just a warning -- moguls are a hell of a work out
+                    :D The challenge is so much fun though. Be sure to work on cardio if you really want to work on
+                    moguls often. I even started getting comfortable at terrain parks, nothing fancy, but at least
+                    landing jumps and hit my first rail. I've gotten a bit fearless too and that can be a problem.. At
+                    one point I took a steep ramp, my friend tells me I didn't go up that high but moved forward in the
+                    air about 8 feet -- I landed straight on my ass. Its been about 2 months since that happened. My ass
+                    still hurts. After a while falling is part of the fun. You get used to it, and at least for me if I
+                    tumble over, even if I do full rollover flips down moguls, or steep hills, I just try to gain
+                    balance and continue to move on as soon as I can. Its fun!
+                    <br />
+                    <br />
+                    <div class="separator" style="clear: both; text-align: left">
+                        <br />
+                    </div>
+                    <div class="separator" style="clear: both; text-align: left">
+                        And the winner is... The&nbsp;
+                        <a
+                            href="http://www.burton.com/mens-boards-custom-x-snowboard/252317,default,pd.html"
+                            target="_blank"
+                        >
+                            2012 Burton Custom X
+                        </a>
+                        ! I got a size 160. Due to the&nbsp;
+                        <a href="http://www.sportsbasement.com/" target="_blank">Sports Basement</a>
+                        &nbsp;demo program (I demo'd 8 times), a 15%
+                        <a href="http://www.aidslifecycle.org/" target="_blank">Aids Life Cycle</a>
+                        &nbsp;discount, I only paid about $80 for the board! Not bad for a board that is listed as close
+                        to $700... Now to rave about this board. You literally fly on the snow with this board. If you
+                        get fresh powder, oh boy, you feel you have jetpack on. It handles turns really well, I love it
+                        on the moguls. On long traversals, which unfortunately are very common at Heavenly, this board
+                        maintains a high cruising speed. I always fly through everyone on long traversals with this
+                        board. Curiously the reviews of this board online are great but the reviews tend to warn
+                        beginners to try something different... I found this odd as I felt like a beginner. Perhaps I'm
+                        no longer a beginner snowboarder. As for bindings.. you can't demo those and for now I'll just
+                        rent until I do more research on them. I have a feeling given my investment on experience and
+                        love for the sport I'll just end up getting whatever Burton recommends. I know, punk-sad but..
+                        in the end, in Burton I gained to trust. A little bit of background on the 2012 Custom X --
+                        Burton gave
+                        <a href="http://www.grilo.si/" target="_blank">Marko Grilc</a>
+                        &nbsp;a chance to help with input on the design for it.&nbsp;According to
+                        <a href="http://www.youtube.com/watch?v=Yqkc43enVFE" target="_blank">
+                            an interview with Marko Grilc on the 2012 Custom X
+                        </a>
+                        &nbsp;he first wanted a board well for jumping but also well rounded board. In the end
+                        <i>supposedly</i>
+                        he uses it exclusively, and recommends it for boarders who want to move on to the next level. I
+                        frankly don't give a shit about the marketing hype over it but it was interesting to me that in
+                        the end (I only read reviews after I decided) I ended up going with a good board that did seem
+                        to meet the same marketing lingo for it -- doing bigger crazier things.
+                    </div>
+                    <div class="separator" style="clear: both; text-align: left">
+                        <br />
+                    </div>
+                </div>
+                <table style="width: auto">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a
+                                    href="https://picasaweb.google.com/lh/photo/ICx6ARe2KwIgpIB6GjXAA66dtcXnzvnJ8XgUKEZTGw8?feat=embedwebsite"
+                                >
+                                    <img
+                                        height="400"
+                                        src="https://lh3.googleusercontent.com/-zpRZetXeALY/T1UPB1uepsI/AAAAAAAAu7Q/VmeIK6E-3F4/s400/Screenshot-4.png"
+                                        width="289"
+                                    />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: arial, sans-serif; font-size: 11px; text-align: right">
+                                From
+                                <a
+                                    href="https://picasaweb.google.com/101487746899672598413/IAmMcgrofSSmirkingRevenge?authuser=0&amp;authkey=Gv1sRgCOWK_6LYrsfiygE&amp;feat=embedwebsite"
+                                >
+                                    I am mcgrof's smirking revenge
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <div>
+                    I just hope that for 2013 we will actually see some snow... There are reported
+                    <a href="http://motherjones.com/blue-marble/2012/03/crazy-heat-wave-about-get" target="_blank">
+                        record heat waves&nbsp;across&nbsp;the globe
+                    </a>
+                    and this has me concerned. I know many of you will be lazy to read the link I just provided so
+                    &nbsp;at the very least please see this video.
+                </div>
+                <div>
+                    <br />
+                </div>
+                <iframe
+                    allowfullscreen=""
+                    frameborder="0"
+                    height="315"
+                    src="http://www.youtube.com/embed/WuY7GnmabfA"
+                    width="420"
+                ></iframe>
+                <br />
+                <br />
+                I avoid conclusions about this on purpose here.
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

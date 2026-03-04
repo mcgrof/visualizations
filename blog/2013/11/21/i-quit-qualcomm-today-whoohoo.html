@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>I quit Qualcomm today! Whoohoo! Joining SUSE — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2013-11-21">Nov 21, 2013</time>
+                    <span class="category-badge badge-philosophy">Philosophy</span>
+                </div>
+                <h1>I quit Qualcomm today! Whoohoo! Joining SUSE</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2013/11/i-quit-qualcomm-today-whoohoo.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <a
+                    href="http://4.bp.blogspot.com/-q2tN1bPa3co/UokKptsyaXI/AAAAAAABgXI/3aMaS3GaZlU/s1600/tux-can-fly-believes.png"
+                >
+                    <img
+                        src="http://4.bp.blogspot.com/-q2tN1bPa3co/UokKptsyaXI/AAAAAAABgXI/3aMaS3GaZlU/s320/tux-can-fly-believes.png"
+                    />
+                </a>
+                <p></p>
+                <p>
+                    After a good 5 years and 8 months I have decided to resign at
+                    <a href="https://en.wikipedia.org/wiki/Qualcomm_Atheros">Qualcomm Atheros</a>
+                    . It was a
+                    <b>terribly fucking</b>
+                    hard decision given how much
+                    <a href="http://www.do-not-panic.com/2012/03/what-have-you-done-for-me-lately.html">hard work</a>
+                     our Linux upstream
+                    <b>team</b>
+                     has put into helping
+                    <b>Atheros</b>
+                    evolve as a friendly
+                    <a href="https://en.wikipedia.org/wiki/Free_and_open-source_software">FOSS</a>
+                    company (
+                    <a href="https://www.fsf.org/news/ryf-certification-thinkpenguin-usb-with-atheros-chip">
+                        even open firmware for 802.11n USB devices
+                    </a>
+                    !), unfortunately though my passion to work freely within the
+                    <a href="https://en.wikipedia.org/wiki/Free_and_open-source_software">FOSS</a>
+                    community is in
+                    <i>direct conflict</i>
+                    with working at Qualcomm and I need to move on. Qualcomm is heavy on a legal team... so I don't feel
+                    comfortable in saying anything more.
+                </p>
+                <div>
+                    <a
+                        href="http://www.flickr.com/photos/cdevers/4602805654/"
+                        title="Banksy in Boston: F̶O̶L̶L̶O̶W̶ ̶Y̶O̶U̶R̶ ̶D̶R̶E̶A̶M̶S̶ CANCELLED, Essex St, Chinatown, Boston by Chris Devers, on Flickr"
+                    >
+                        <img
+                            alt="Banksy in Boston: F̶O̶L̶L̶O̶W̶ ̶Y̶O̶U̶R̶ ̶D̶R̶E̶A̶M̶S̶ CANCELLED, Essex St, Chinatown, Boston"
+                            src="https://farm2.staticflickr.com/1376/4602805654_db8b6569fb.jpg"
+                        />
+                    </a>
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    Its been a good long journey both at Atheros and with the
+                    <a href="http://wireless.kernel.org/">Linux wireless</a>
+                    community. I'm not completely leaving the 802.11 space, but my role in it will only be community
+                    driven as it used to
+                    <b>before</b>
+                    , and I'll still upkeep the projects I maintain in that space.
+                    <a href="http://wireless.kernel.org/">Linux wireless</a>
+                    has grown up, by now
+                    <i>all 802.11 Silicon vendors are chugging upstream</i>
+                    , but I need to go look at other challenging areas I can help with as well and in particular I do
+                    hope to start dedicating more serious attention to the
+                    <a href="https://backports.wiki.kernel.org/">Linux backports</a>
+                    project which has also
+                    <a
+                        href="https://docs.google.com/presentation/d/1jdqhDbJwlwtYZd7VoE0-Nd-agypJcqg9VM6KIngsP5k/pub?start=false&amp;loop=false&amp;delayms=3000"
+                    >
+                        grown up considerably
+                    </a>
+                    . My involvement with the community will also change but for the better, I will have much more
+                    freedoms. Remember -- FOSS is not driven by corporations,
+                    <i>we the people, the developers</i>
+                    make it and shape it.
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    <iframe
+                        allowfullscreen=""
+                        frame=""
+                        src="//web.archive.org/web/20160310111114if_/http://www.youtube.com/embed/VNkDJk5_9eU"
+                    ></iframe>
+
+                    <p></p>
+                    <div>
+                        <br />
+                    </div>
+                    <div>
+                        After shopping around in the market for a while I'm excited to say I've found a great
+                        alternative, starting 2014 I'll be joining 
+                        <a href="https://en.wikipedia.org/wiki/SUSE">SUSE</a>
+                        , a company that has FOSS in its blood, and a great sense of
+                        <b>fucking humor</b>
+                        .
+                        <p></p>
+                        <div>Snakes go "hiss"</div>
+                        <div>Owls go "hoot"</div>
+                        <div>Horse goes "neigh"</div>
+                        <div>And pigeons "poop"</div>
+                        <div>Lions "roar"</div>
+                        <div>Sheep goes "bahh"</div>
+                        <div>and the platypus goes "rrrrrr"</div>
+                        <div>Geese say "honk"</div>
+                        <div>and Piggies "oink"</div>
+                        <div>and the chimp goes "ah ah ah"</div>
+                        <div>       </div>
+                        <div>[Pre-Chorus]</div>
+                        <div>But there's one sound</div>
+                        <div>that no one knows</div>
+                        <div>
+                            What's the
+                            <span>chameleon say?</span>
+                        </div>
+                        <div>
+                            <br />
+                        </div>
+                        <div>
+                            <br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Automating backport kernel integration support — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">← back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2014-11-17">Nov 17, 2014</time>
+                    <span class="category-badge badge-linux">Linux / Kernel</span>
+                </div>
+                <h1>Automating backport kernel integration support</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2014/11/automating-backport-kernel-integration.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <div style="text-align: center">
+                    <a
+                        data-flickr-embed="true"
+                        href="https://www.flickr.com/photos/phunk/4962031817/in/photolist-8ytHbH-nFqGrf-cisP7A-C8rz8E-gYLsSt-yp3FVE-7H511n-cujWXU-2Y6Dn-nDpgD5-cv6vYy-da4xbr-nFf3UE-4UK83x-7PbuD9-dxh4H1-s1YF5P-kTKoTL-8vrTx8-roazat-rbC9EU-rnUw1z-7VZQaN-6SkcBk-AAFjoc-75S3Rz-tut3pv-edHwCt-rnq2mL-eXC7W7-coW2id-cPn8GC-8vrSGx-p8no91-afC7Ky-A3g1BZ-rwbzUD-9VNK3H-wa3JZK-pt2XXF-zGiFTa-oqNVXh-eaoxo2-oS83pq-wmCW3B-5eVpRk-db2oZ9-dHmFdg-cpndgb-cxk5ZC"
+                        title="Bake, Satyr"
+                    >
+                        <img
+                            alt="Bake, Satyr"
+                            height="182"
+                            src="https://web.archive.org/web/20150803013851im_/https://farm5.staticflickr.com/4145/4962031817_8ed4bfcf3e_b.jpg"
+                            width="400"
+                        />
+                    </a>
+                    <script
+                        async=""
+                        charset="utf-8"
+                        src="//web.archive.org/web/20170606154226js_/http://embedr.flickr.com/assets/client-code.js"
+                    ></script>
+                </div>
+                <div>
+                    <br />
+                    <span style="color: #cc0000">
+                        <b>Updated on 2016-01-19</b>
+                        with description on issue of how systemd limits the number of devices on a Linux system and
+                        references to asynchronous work on memory. Edits reflected in this color.
+                    </span>
+                    <br />
+                    <br />
+                    Hipster and trendy init systems want to boot really fast. As of v4.2 the Linux kernel now sports
+                    asynchronous probe support (
+                    <a href="http://lkml.kernel.org/r/1450516664-4200-1-git-send-email-mcgrof@do-not-panic.com">
+                        this fix posted December 19, 2015 is needed
+                    </a>
+                    &nbsp;for use of the generic async_probe module parameter). This isn't the first time such type of
+                    work has been attempted on Linux though,
+                    <a href="https://lwn.net/Articles/611226/">this lwn article</a>
+                    claims that a long time ago some folks tried to enable asynchronous probe and that ultimately it was
+                    reverted due to large number of issues. Among a few things one major difference with the new
+                    solution is its
+                    <b>opt-in</b>
+                    : userspace or drivers must specifically request for it to be used on a driver, We also support
+                    blacklisting of asynchronous behavior by annotating a driver requires synchronous probe. All this
+                    enables new shiny hipster userspace, while remaining compatible with old userspace and its
+                    expectations. At the 2015 Kernel summit it became apparent a few folks still had questions over
+                    this, so I decided to write this to help re-cap why the work was done, caveats, its relationship
+                    with using
+                    <span style="color: #c27ba0">-EPROBE_DEFER</span>
+                    on your probe routine for making use of the kernel's
+                    <a
+                        href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/base/dd.c#n33"
+                    >
+                        deferred probe mechanism
+                    </a>
+                    , to help testing and productizing with asynchronous probe, and also explain a bit of the short term
+                    and long term road-map. This post also collects a bit of history of what gave rise to Linux
+                    asynchronous probe which I think we can use as a small educational experience on learning how we can
+                    better evolve systemd in the community.
+                    <br />
+                    <br />
+                    <div style="text-align: center">
+                        <a
+                            data-flickr-embed="true"
+                            href="https://www.flickr.com/photos/colorblindpicaso/3035456441/in/photolist-5CevrT-9R2KUF-8xovfz-faQakH-dKHAt-6hNQcD-9SnZrA-fkdhAq-aavRvw-gFZRGm-7TStts-nWDT9n-obdUX-6RrGRn-jUTTq-3iDzy5-o6vB8-6ue6pg-57Feca-87X2tN-b4Q1mz-7zHxAZ-eiYGsn-8ALqy6-521omE-9U2NDz-axarr6-5CcvXi-u1i1Lb-pkPHsU-Dw5VT-c4H6Ed-7LcTmF-6sHcth-8f5rTQ-aszjZd-ABb849-afDaWN-5qtsgV-9XRkpu-faQa76-obdTQ-mYUwE-5P5LJC-wQVLqR-87PieR-9T5fLt-aaEfvc-9UxiCz-6fcKAk"
+                            title="So imagine you are wandering around the jungle and you come up on THIS around a corner.  Ok... so he's only about an inch tall, but if you're a cherry tomato or grub that is bad news."
+                        >
+                            <img
+                                alt="So imagine you are wandering around the jungle and you come up on THIS around a corner.  Ok... so he's only about an inch tall, but if you're a cherry tomato or grub that is bad news."
+                                height="300"
+                                src="https://farm4.staticflickr.com/3070/3035456441_e346e0bde2_b.jpg"
+                                width="400"
+                            />
+                        </a>
+                        <script
+                            async=""
+                            charset="utf-8"
+                            src="//web.archive.org/web/20170606154226js_/http://embedr.flickr.com/assets/client-code.js"
+                        ></script>
+                    </div>
+                    <br />
+                    First to be clear --
+                    <u>&nbsp;asynchronous probe isn't supposed to magically make your kernel boot faster</u>
+                    ,
+                    <i>
+                        it should however
+                        <u>help</u>
+                    </i>
+                    if you happen to have any driver which for whatever reason tends to
+                    <b>have a lot of work done on a driver's probe routine</b>
+                    . Even if that's not the case at times using asynchronous probe can shave down kernel boot time even
+                    if minimally. Other times
+                    <i>it may have no impact at all</i>
+                    &nbsp;or perhaps you may see a small increase for any number of reasons.
+                    <span style="color: #cc0000">
+                        A clear but not obvious gain is the increase for the number of devices a device driver can
+                        support, this is explained below.&nbsp;
+                    </span>
+                    Since this is a new feature we simply don't have enough metrics and enough test coverage yet to
+                    determine how helpful it can be so widely, or what issues could creep up, however it was clear some
+                    folks wanted and needed it.&nbsp;
+                    <b>More importantly</b>
+                    using it can also get driver developers and subsystem maintainers thinking about different
+                    asynchronous behavior considerations in the kernel that
+                    <b>long term</b>
+                    should help us in the community. An example is how although
+                    <i>asynchronous probe should help with long probe</i>
+                    s
+                    <a
+                        href="http://lkml.kernel.org/r/CAB=NE6UBRa0K7=PomJzKxsoj4GzAqkYrkp=O+UfVvu2fwM25pA@mail.gmail.com"
+                    >
+                        we recently determined
+                    </a>
+                    that
+                    <u>you should by no means</u>
+                    consider it as a solution for your probe routine if your driver needs to load firmware on probe and
+                    you may have experienced some race issues with this and the filesystem being mounted -- that problem
+                    need to be resolved separately (see
+                    <a href="http://kernelnewbies.org/KernelProjects/firmware-class-enhancements">
+                        this firmware_class feature enhancement wiki
+                    </a>
+                    &nbsp;and this
+                    <a href="http://kernelnewbies.org/KernelProjects/common-kernel-loader">
+                        common kernel file loader wiki page
+                    </a>
+                    for more details and ideas). In lieu of concrete bullet proof solutions for that problem you might
+                    be
+                    <b>tempted</b>
+                    to think asynchronous probe could
+                    <b>&nbsp;help&nbsp;</b>
+                    and you'd be correct
+                    <u>but</u>
+                    you should be aware of that this is not a rock solid solution to such problems, it'd be a hack, and
+                    this is why its incorrect to use asynchronous probe if you're trying to use it to fix that problem.
+                    Another example is how this begs the question of
+                    <i><b>where else should we be using asynchronous mechanisms</b></i>
+                    , and
+                    <i><b>how do we resolve any possible run time dependency issues</b></i>
+                    ?
+                    <br />
+                    <br />
+                    Asynchronous probe support was added for a few reasons,
+                    <b>
+                        the last&nbsp;
+                        <span style="color: #cc0000">three</span>
+                    </b>
+                    listed here being the major driving factors for getting this developed and merged upstream.
+                </div>
+                <div>
+                    <ul>
+                        <li>Over time there's been a general interest in reducing the kernel's boot time</li>
+                        <li>
+                            <b>A long time ago in a galaxy far far away...</b>
+                            &nbsp;systemd made a
+                            <i>really</i>
+                            <b>well-intentioned</b>
+                            but ultimately incorrect assumption that device driver initialization should take less than
+                            30 seconds, to be more specific the driver's init routine should not take more than 30
+                            seconds. Even as issues started to creep up quite a bit of systemd and kernel developers
+                            vocalized strong support for it being a reasonable timeout value. Some users were really
+                            upset over this though -- driver loading was being killed after 30 seconds, preventing some
+                            drivers from loading completely and in the worst cases if the driver at fault was a storage
+                            driver you would not even be able to boot Linux. Because of the strong agreement on both
+                            camps there was no exceptions to this rule, and the consensus seemed to be that a lot of
+                            drivers should simply be fixed. One puzzle was that issues over drivers being killed due to
+                            the timeout were only reported circa 2014, but the timeout was in place systemd for a long
+                            time. The reason for this was that commit
+                            <a
+                                href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=786235eeba0e1e85e5cbbb9f97d1087ad03dfa21"
+                            >
+                                786235eeba0 by Tetsuo Handa ("kthread: make kthread_create() killable")
+                            </a>
+                            &nbsp;enabled kthread_create() to be killed, this was done in particular to enable out of
+                            memory killers to kill these type of threads (
+                            <a href="https://lwn.net/Articles/611226/">refer to this lwn article for more details</a>
+                            ). Prior to this kernel change, the 30 second timeout was never an issue for systemd users
+                            given that the SIGKILL signal was never actually respected for these types of threads. Even
+                            though the Linux kernel now has asynchronous probe support the original systemd 30 second
+                            timeout caused enough headaches for users that on July 29, 2014 Hannes Reinecke ended up
+                            merging a way to enable Linux distributions to override the timeout through the command
+                            line, refer to
+                            <a
+                                href="https://github.com/systemd/systemd/commit/9719859c07aa13539ed2cd4b31972cd30f678543"
+                            >
+                                systemd commit&nbsp;9719859c07aa13 ("udevd: add --event-timeout commandline option")
+                            </a>
+                            . That didn't seem to be enough to help users so on August 30, 2014 Kay Sievers bumped the
+                            timeout to 60 seconds via
+                            <a
+                                href="https://github.com/systemd/systemd/commit/2e92633dbae52f5ac9b7b2e068935990d475d2cd"
+                            >
+                                systemd commit 2e92633dbae ("udev: bump event timeout to 60 seconds"
+                            </a>
+                            ). In the end though, on September 10, 2014 Tom Gundersen modified the default timeout to
+                            180 seconds via
+                            <a
+                                href="https://github.com/systemd/systemd/commit/b5338a19864ac3f5632aee48069a669479621dca"
+                            >
+                                systemd commit&nbsp;b5338a19864a ("udev: timeout - increase timeout")
+                            </a>
+                            , the purpose of the timeout, as per the commit log message, now is "
+                            <i>to make sure that nothing stays around forever"</i>
+                            . To help capture in logs possible faulty drivers (or any jobs dispatched)&nbsp;Tom
+                            Gundersen also made systemd spit out a warning after 1/3 of the timeout value before killing
+                            it via
+                            <a
+                                href="https://github.com/systemd/systemd/commit/671174136525ddf208cdbe75d6d6bd159afa961f"
+                            >
+                                systemd commit&nbsp;671174136525ddf2 ("udev: timeout - warn after a third of the timeout
+                                before killing")
+                            </a>
+                            .
+                        </li>
+                        <li>
+                            <i>It turns out out though that.</i>
+                            .. Linux batches calling a driver init routine and immediately after that its probe routine,
+                            synchronously, so naturally any delays on probe should contribute to delays as well. So
+                            <b>
+                                the systemd timeout is in effect for the run time combination of both init and probe of
+                                a device driver
+                            </b>
+                            . If we provide a way for userspace to ask the driver core to detach these and call probe
+                            asynchronously we'd be giving systemd what it thought, and a few kernel developers thought,
+                            was actually in place.
+                        </li>
+                        <li>
+                            A delay on your probe means delaying user experience at boot time. If you know off hand your
+                            driver might take a while to load preemptively annotating this on your driver can mean
+                            giving users a better user experience.&nbsp;Dmitry Torokhov ran into this issue while
+                            working on productizing a solution for a popular company where fast boot and a good user
+                            experience was critical.
+                        </li>
+                        <li>
+                            <span style="color: #cc0000">
+                                It turns out that... a systemd timeout on kmod loader (loading modules) has effect not
+                                only on the combination of init&nbsp;+ probe of device drivers, but also since the
+                                kernel serially probes all devices in the same code path it means if you probe 2 devices
+                                the amount of time taken to load your driver will be init time + (number of devices *
+                                probe time for each device). What this means is the systemd timeout also places an upper
+                                bound limit restriction on the number of devices you can use on a system, this is bound
+                                by its init and probe time, and can be computed as follows:
+                            </span>
+                        </li>
+                    </ul>
+                    <pre class="prettyprint">
+number_devices =          systemd_timeout
+                  -------------------------------------
+                      max known probe time for driver
+</pre
+                    >
+                    <div>
+                        <span style="color: #cc0000"><br /></span>
+                    </div>
+                    <div>
+                        Drivers can be built-in to the kernel or built as modules so you can load them after the kernel
+                        boots as independent and self contained objects. It turns out that in practice
+                        <i>
+                            <b>
+                                striving towards having all modules be probed asynchronously tends to work pretty well
+                            </b>
+                        </i>
+                        , whereas
+                        <b>
+                            having all built-in drivers will likely crash your kernel with
+                            <span style="color: #cc0000">high degree of certainty</span>
+                        </b>
+                        . This later issue has to do with the fact that as the kernel boots certain assumptions may be
+                        made which are not satisfied early on and
+                        <b>there's no current easy way</b>
+                        to currently order this well. Its similar to why the
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/base/dd.c#n33"
+                        >
+                            deferred probe mechanism
+                        </a>
+                        &nbsp;on the kernel was added -- sometimes the kernel doesn't always have dependency information
+                        well sorted out.&nbsp;But fret not,
+                        <i>future work</i>
+                        should help with this, and such work should help curtail uses of
+                        <a
+                            href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/base/dd.c#n33"
+                        >
+                            deferred probing
+                        </a>
+                        &nbsp;and enable more broad asynchronous probe use.
+                        <br />
+                        <br />
+                    </div>
+                </div>
+                <div style="text-align: center">
+                    <a
+                        data-flickr-embed="true"
+                        href="https://www.flickr.com/photos/atin800/5668162207/in/photolist-9CSP9B-b1ixn-ag1qWd-rqdsc4-4Cxgd6-6xs6Ei-7N6Mqn-8iSdn9-fYGBjf-afZs1z-oh4NGu-hSivfB-bVNm1L-odXo7s-4DaVbw-6od114-iiizQZ-2hLYq-qGNdnz-bCHvCg-8Nuyjh-7DVH6T-9sZ4G3-9NCSwV-aqzGuJ-ebuGKN-7Kdud8-fvmdqE-amF5QP-b9w2NF-eL5yS8-7SLcW5-mwfZXZ-5RoyVU-bo2eHB-8TiHAy-bo2eHP-8jWH9F-7915Fu-6eqs5u-aqCmLv-nrp1sc-ehoU1u-8jZUoy-4AZFRn-Cb6A2A-C689aB-BLgQ5d-816wLh-bVbsWb"
+                        title="Blood Wolves: Engineer"
+                    >
+                        <img
+                            alt="Blood Wolves: Engineer"
+                            height="320"
+                            src="https://farm6.staticflickr.com/5070/5668162207_f495aee756_b.jpg"
+                            width="320"
+                        />
+                    </a>
+                    <script
+                        async=""
+                        charset="utf-8"
+                        src="//web.archive.org/web/20170606154226js_/http://embedr.flickr.com/assets/client-code.js"
+                    ></script>
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    If you are in control of both hardware and software, that is you have engineers you can pay to
+                    productize a solution, you could likely engineer a solution to vet and ensure boot will happen
+                    properly and in order for both all built-in and modules on your kernel. There is no easy way to do
+                    this, and it is difficult to estimate the amount of work required for this for a device but if you
+                    want to try it -- you can use this out of tree&nbsp;
+                    <a href="http://drvbp1.linux-foundation.org/~mcgrof/patches/2015/12/19/debug-async.patch">
+                        debug-async patch
+                    </a>
+                    and then use the kernel parameters documented there, I summarize them here. Note that using either
+                    of these will taint your kernel.
+                    <br />
+                    <br />
+                    <ul>
+                        <li>
+                            <span style="white-space: pre-wrap">
+                                <span style="font-family: &quot;courier new&quot;, &quot;courier&quot;, monospace">
+                                    <span style="color: #38761d">__DEBUG__kernel_force_builtin_async_probe</span>
+                                    - async probe all built-in drivers
+                                </span>
+                            </span>
+                        </li>
+                        <li>
+                            <span style="white-space: pre-wrap">
+                                <span style="font-family: &quot;courier new&quot;, &quot;courier&quot;, monospace">
+                                    <span style="color: #38761d">__DEBUG__kernel_force_modules_async_probe</span>
+                                    - async probe all modules
+                                </span>
+                            </span>
+                        </li>
+                    </ul>
+                    If you don't have the luxury of having dedicated hardware and software engineers you could at the
+                    very least
+                    <b>
+                        enable all modules to probe asynchronously and hope for the best and report any issues if found
+                    </b>
+                    . Its after all what systemd, and what a lot of developers (many kernel developers inclusive),
+                    originally thought was happening, so naturally bug reports are welcomed to the driver maintainer if
+                    any issues occur. Soon you may see Linux distributions enabling asynchronous probe by default for
+                    all modules. The way I'd implement this on systemd is to enable a Linux distribution to opt-in to
+                    enable async_probe for specific kernels, given a
+                    <a href="http://lkml.kernel.org/r/1450516664-4200-1-git-send-email-mcgrof@do-not-panic.com">
+                        fix is needed
+                    </a>
+                    &nbsp;for using the generic async_probe module parameter though one should only ensure to use it if
+                    this fix has been merged. This makes it tricky to detect if the module parameter is properly
+                    supported or not, enabling it and booting on an older kernel might obviously cause a crash.
+                    <br />
+                    <br />
+                    Getting drivers to load correctly is just one step, remember that prior to asynchronous probe some
+                    userspace expected some device functionality to be available immediately after loading a driver.
+                    With asynchronous probe that is no longer the case, userspace must be vetted and tested for to
+                    ensure they do not rely on synchronous loading of the drivers.
+                </div>
+                <div style="text-align: center">
+                    <br />
+                </div>
+                <br />
+                <a
+                    data-flickr-embed="true"
+                    href="https://www.flickr.com/photos/sharif/2423144088/in/photolist-4G8fjm-7PH1jG-s8ZX5E-nWP32m-656BtK-qqC3k6-4XWeYv-Lp4VW-6NuTMt-827KYQ-dTogvP-4ancGz-5FcqiQ-nGgBMj-xi6g46-fwhGBp-2LGEi-7WhM1N-tEKpW1-oygTgA-5kxn9W-4oPBCg-t2TLAj-pkKPd8-7ePGLe-7eTzBC-6kpdHP-p1Njc2-6mri9L-o884kM-ARNnB-52ntSJ-6UvkSj-cSrzts-mrPBBv-bhiAwF-8H5wUM-vaxXZ9-nTLa1w-77suxn-mXNsG8-c13aK5-ba4can-bqW9yE-aoJCxZ-8qYDu-bFZeFZ-fEgdw-ag7D4W-7hxT1e"
+                    title="parallel"
+                >
+                    <img
+                        alt="parallel"
+                        height="259"
+                        src="https://farm3.staticflickr.com/2368/2423144088_cb47aa7b45_b.jpg"
+                        width="400"
+                    />
+                </a>
+                <script
+                    async=""
+                    charset="utf-8"
+                    src="//web.archive.org/web/20170606154226js_/http://embedr.flickr.com/assets/client-code.js"
+                ></script>
+
+                <br />
+                <br />
+                <div>
+                    If you're a driver developer and know that your driver takes a while to boot, you should be aware
+                    that it can delay boot / user experience, so you likely should consider annotating on your driver
+                    that it prefers asynchronous probe in the driver's source. You can do so as follows:
+                    <br />
+                    <br />
+                    <br />
+                    <pre class="prettyprint">
+static struct pci_driver foo_pci_driver = {
+      ...
+      .driver.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+};
+</pre
+                    >
+                    <br />
+                    <br />
+                    An alternative (
+                    <a href="http://lkml.kernel.org/r/1450516664-4200-1-git-send-email-mcgrof@do-not-panic.com">
+                        provided you have this fix merged
+                    </a>
+                    ) is to pass the generic "async_probe" module parameter to the module you want to load, for
+                    instance:
+                    <br />
+                    <br />
+                    <pre class="prettyprint">
+modprobe cxgb4 async_probe
+</pre
+                    >
+                    <div style="text-align: center">
+                        <br />
+                    </div>
+                    <div style="text-align: left">
+                        <a
+                            data-flickr-embed="true"
+                            href="https://www.flickr.com/photos/lawrence_evil/164135592/in/photolist-fveN1-kpT2vD-pdE77P-b6r4PV-aiXghK-hXHAn-dSHUJB-8YbMM3-pxfFC8-4KufFb-qv1uRf-pYzJ2N-rpJN4-9aZUc6-r5cpkg-pxFwpZ-dJwsoW-BgFko-ojvy7m-4YGSJg-K3z4v-beuYJp-m7AWem-opGAGQ-ognSb1-9eC9an-r1E9Ji-rn1TgC-n6E8sL-5mL4mF-4x9g8p-4tk4SG-rYtqjs-7EFJwx-bVZz89-yHhwE-7Sug1X-kxZy8-jgZbDd-9pUKjF-xikx3T-4GdxHb-dVWcot-4v7H6G-h9JV7B-rmqjRr-q2McXb-eamBGv-4RSmPu-otMmo"
+                            style="text-align: center"
+                            title="Broken Family"
+                        >
+                            <img
+                                alt="Broken Family"
+                                height="200"
+                                src="https://farm1.staticflickr.com/68/164135592_5f8e3c1718_b.jpg"
+                                width="640"
+                            />
+                        </a>
+                    </div>
+                    <br />
+                    Sadly some few drivers cannot work with asynchronous probe at all today, so after testing and if it
+                    poops out you should annotate this sort of hard incompatibility. You can do so as follows:
+                    <br />
+                    <br />
+                    <pre class="prettyprint">
+static struct pci_driver foo_pci_driver = {
+       ...
+       .driver.probe_type = PROBE_FORCE_SYNCHRONOUS,
+};</pre
+                    >
+                    <br />
+                    It should be made clear that this sort of incompatibility should likely be seen more
+                    <span style="color: #990000">as an issue</span>
+                    -- if your driver fails at using asynchronous probe chances are that the issues are some subtle
+                    architectural design flaw in the driver or dependencies. Fixing it may not necessarily be easy and
+                    its precisely for this reason why we have a such a flag to force synchronous probe. Our hope though
+                    is that with time we could phase these issues out.
+                    <br />
+                    <br />
+                    <div style="text-align: center">
+                        <a
+                            data-flickr-embed="true"
+                            href="https://www.flickr.com/photos/ianduffy/4871825092/in/photolist-8qvnSm-7yKJW9-7owLVP-ibNgGh-8TsCf-9UPZvF-i8g9q5-2X53-8yQxKj-jRXtVM-9HpLgF-9YG2nT-8kc79f-i8g6v7-9XpnFC-JByTr-9CVRhk-i8gfaw-8k6NEf-8dQKGU-8tvDEM-QNv1Z-8k6NA3-4wWrH-i8gvK6-fpVtGe-ijXFP-8k8UMv-bXnXj5-5WEtus-9QoUAA-7wYzkq-as9F5E-3FtN5-azPG8P-stwF-j7SJvg-jjyndw-jx8nVc-azPGmx-4GzxSq-aCrsw2-dkb15k-k8u2wR-Jm5UG-ibNqVh-okyFb4-anXc2u-ibFbjD-9vDXAN"
+                            title="Emperor penguin chicks at play"
+                        >
+                            <img
+                                alt="Emperor penguin chicks at play"
+                                height="206"
+                                src="https://farm5.staticflickr.com/4082/4871825092_2b34929d70_b.jpg"
+                                width="400"
+                            />
+                        </a>
+                        <script
+                            async=""
+                            charset="utf-8"
+                            src="//web.archive.org/web/20170606154226js_/http://embedr.flickr.com/assets/client-code.js"
+                        ></script>
+                        &nbsp;
+                    </div>
+                    <br />
+                    Even if we manage to get all drivers working with asynchronous probe we cannot remove synchronous
+                    probe as old userspace exists which relies on such behavior, removing synchronous probe support
+                    would break old userspace. What we we can strive for
+                    <b>long term</b>
+                    though is to enable
+                    <b>new userspace</b>
+                    as best as possible and deal with all asynchronous issues as they come up,
+                    <b>slowly</b>
+                    , this will take time and serious effort. Over time you should be seeing &nbsp;more work in this
+                    area across subsystems, internals, and perhaps even architecture work.
+                    <span style="color: #cc0000">
+                        Just to give you a taste of and provide you an example of such type of work done, you review the
+                        recent asynchronous work by Mel Gorman on on memory on init through commits
+                        1e8ce83cd17fd0f549a7ad145ddd2bfcdd7dfe37..0e1cc95b4cc7293bb7b39175035e7f7e45c90977, please note
+                        these also have a few follow-on fixes
+                    </span>
+                    . Lastly, obviously some systemd design decisions should be taken with a grain of salt, but they
+                    seem to be very well-intentioned, we could use a bit more open and objective communication and
+                    design review between
+                    <b>more</b>
+                    kernel developers and systemd developers. The smoother this gets the smoother the experience we
+                    provide to users should be.
+                </div>
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">← back to timeline</a>
+        </footer>
+    </body>
+</html>

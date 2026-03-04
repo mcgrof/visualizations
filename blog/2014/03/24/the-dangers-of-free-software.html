@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>The dangers of free software — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">← back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2014-03-24">Mar 24, 2014</time>
+                    <span class="category-badge badge-opensource">Open Source</span>
+                </div>
+                <h1>The dangers of free software</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2014/03/the-dangers-of-free-software.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <br />
+                This is part of a 3 piece entry, the cover of which is:
+                <a href="http://www.do-not-panic.com/2014/03/free-software-patents-surveillance-and.html">
+                    free software patents and cosmos
+                </a>
+                <br />
+                <br />
+                <iframe
+                    allowfullscreen=""
+                    frameborder="0"
+                    height="375"
+                    mozallowfullscreen=""
+                    msallowfullscreen=""
+                    oallowfullscreen=""
+                    src="https://www.flickr.com/photos/activesteve/5041066177/player/ee1f83619a"
+                    webkitallowfullscreen=""
+                    width="500"
+                ></iframe>
+
+                <br />
+                <div style="text-align: center">
+                    <br />
+                </div>
+                <br />
+                There are serious dangers with
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                and
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source</b></a>
+                software which I'd like to review. Some zealots may tell you that there is nothing to worry about when
+                embracing
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                and
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source</b></a>
+                software but I'm here to tell you that this is all wrong, explain where all this badness comes from and
+                give some advice about what you can do about it. I will do this by providing a brief summary on the
+                efforts on transforming a non upstream Linux focused company around but would also like to put emphasis
+                on the root of all this evil.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://2.bp.blogspot.com/-0mO64Z0ZY9o/US2V3PjV2DI/AAAAAAABPVw/nVelK4hQSJQ/s1600/20130206_091134.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://2.bp.blogspot.com/-0mO64Z0ZY9o/US2V3PjV2DI/AAAAAAABPVw/nVelK4hQSJQ/s1600/20130206_091134.jpg"
+                            height="240"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                Once upon a time in a not so far distant time I recall being
+                <b>seriously</b>
+                frustrated about progress, progress about pretty much everything related to helping what was once - a
+                small company and later large -
+                <b>evolve</b>
+                to properly understand and participate the Linux upstream community. Before I go on any further I should
+                note that my role at Atheros was clarified since before I got hired and I accepted, I firmly believe
+                that providing a loose interpretation about what happened, without getting into specifics, is part of
+                the rights of my role which was defined below.
+                <br />
+                <blockquote class="tr_bq">
+                    <i>
+                        We are committed to having a driver in upstream kernel. Your role is to help us find that path
+                        to make it happen. We have ideas, if they do not work then we shall try other plans. You shall
+                        be the driving force to get in the kernel. The entirety of your role is to do this and continue
+                        to work with FOSS and Linux wireless. I am a little surprised that you feel uncertainty in that;
+                        which makes me feel that we/I have not communicated effectively. We can talk more live if that
+                        would help. -
+                    </i>
+                    March 20, 2008
+                    <i><br /></i>
+                </blockquote>
+                That made things crystal clear, so I accepted! I packed my bags and left dirty Jersey behind. With
+                confidence I can say
+                <a href="http://www.do-not-panic.com/2012/03/what-have-you-done-for-me-lately.html">
+                    I gave it my very fucking best
+                </a>
+                , and am happy to say that Atheros
+                <b>even become a leader</b>
+                , we even put out
+                <a href="https://www.fsf.org/news/ryf-certification-thinkpenguin-usb-with-atheros-chip">
+                    open firmware for 802.11 device drivers
+                </a>
+                , but after
+                <i>some big changes...</i>
+                and even though I also gave it my best after these changes...
+                <a href="http://www.do-not-panic.com/2013/11/i-quit-qualcomm-today-whoohoo.html">
+                    I had to throw the towel
+                </a>
+                -- specially once my own freedoms and others' freedoms came to be questioned. There's some lessons to be
+                learned here but more importantly, without getting into the specifics, are the realizations of
+                <b>why</b>
+                the tensions arose, understanding
+                <b>where they came</b>
+                from and
+                <i>how to better prepare</i>
+                for the future.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="https://web.archive.org/web/20091117011631im_/http://upload.wikimedia.org/wikipedia/en/f/fb/Pointy-Haired_Boss.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="https://web.archive.org/web/20091117011631im_/http://upload.wikimedia.org/wikipedia/en/f/fb/Pointy-Haired_Boss.jpg"
+                        />
+                    </a>
+                </div>
+                <br />
+                There is nothing more disturbing to a free software hacker than a
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                , a term popularized through
+                <a href="http://en.wikipedia.org/wiki/Dilbert">Dilbert</a>
+                in 1989 and specifically within our
+                <a href="http://en.wikipedia.org/wiki/Atheros">Atheros</a>
+                group's hacker culture by
+                <a href="http://msujith.net/">sujith</a>
+                . The term caught on some love within the group, to the point we even used it publicly for predicting
+                the next time Linus Torvalds would decide to release the next kernel release
+                <b>for them</b>
+                through the
+                <a href="http://phb-crystal-ball.org/">phb-crystal-ball</a>
+                . You see, in any
+                <b>evolving</b>
+                company, as you try to get work done you could eventually hit a brick wall by a
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                .&nbsp;
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                s don't necessarily need to exist though, I'm happy to report that I haven't ran into a single
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                at SUSE now though. My new manager is a direct contributor to the Linux kernel and I wouldn't be
+                surprised if he surpasses me on upstream contributions. But the corporate world is
+                <b>plagued</b>
+                with
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                s and this is specially true for silicon valley companies making hardware. Its an epidemic. One of the
+                disturbing aspect of
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHBs</a>
+                though is that
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHBs</a>
+                need more
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                s around, and they speak the same language. They have no fucking clue what they are talking about, so
+                they obviously need others to ramble off on tangents that make no fucking sense whatsoever. You are
+                <b>not</b>
+                a
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                when you are comfortable in accepting
+                <i>you just fucking don't know</i>
+                and stop making stupid fucking assumptions and getting in the way of engineer's work, or at the very
+                least show effort to and care to analyze proposals. I became increasingly concerned over
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHBs</a>
+                though, not because they were getting in my way, although that was disturbing, but because they actually
+                existed and because of the unnecessary tensions that arose because of them. It was also frightening as I
+                was working in Silicon Valley with brilliant fuckers, and I struggled to understand the nature of the
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                , you see a
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                can even be a rocket scientist, I kid you not. It didn't make any fucking sense.
+                <br />
+                <br />
+                <div style="text-align: center">
+                    <iframe
+                        allowfullscreen=""
+                        frameborder="0"
+                        height="320"
+                        mozallowfullscreen=""
+                        msallowfullscreen=""
+                        oallowfullscreen=""
+                        src="https://www.flickr.com/photos/mongreloid/2347236377/player/17c8fd44a8"
+                        webkitallowfullscreen=""
+                        width="500"
+                    ></iframe>
+                </div>
+                <br />
+                WTF was going on, how could this be? There's two possible sides to the answers for this question. In the
+                end you are either the one who is nuts or your
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                is nuts. But this is beyond
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHBs</a>
+                , you see, who do you think ends up at upper middle management at corporations? Upper echelons at
+                corporations breed
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHBs</a>
+                , and for a lot of folks in the corporate world this could mean a ticket to going back to your original
+                country and putting down a
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                fort there too, and maybe even help your peers and own country's economy. There's a slew of collateral
+                damage incurred for a company that is not used to doing free software development and all of a sudden
+                change to do so, and even more so if it decides to become a
+                <b>leader</b>
+                with free software. The collateral damage makes
+                <b>market capital sense</b>
+                in light of the gains of the
+                <a href="http://en.wikipedia.org/wiki/Collaborative_software_development_model">
+                    open collaborative development models
+                </a>
+                , specifically of working upstream on the Linux kernel and in consideration of the
+                <b>other</b>
+                business collateral damage if its competitors are embracing upstream development
+                <b>better.</b>
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                s are only a small part of the issues you could run into though. Upon a free software corporate culture
+                change everyone needed to become educated
+                <i>somehow</i>
+                about free software and for those on the
+                <a href="http://en.wikipedia.org/wiki/German_Reich">Nazi German Reich</a>
+                who worked only on proprietary software, it meant you had to go change your outfit and either join the
+                allied forces or go to one of those remaining corners full of cobwebs left with some room for
+                proprietary software development, or you go rediscover yourself and quit.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://upload.wikimedia.org/wikipedia/commons/6/6f/Editorial_cartoon_depicting_Charles_Darwin_as_an_ape_(1871).jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://upload.wikimedia.org/wikipedia/commons/6/6f/Editorial_cartoon_depicting_Charles_Darwin_as_an_ape_(1871).jpg"
+                            height="320"
+                            width="237"
+                        />
+                    </a>
+                </div>
+                <br />
+                Markets and business models
+                <b>evolve</b>
+                , employment is simply an attribute of how folks can fit into the current economic landscape.
+                <br />
+                <blockquote class="tr_bq">
+                    The nature of the
+                    <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                    is simply an artifact of
+                    <b>accelerated evolution</b>
+                    of markets and business models, and the
+                    <i>inability</i>
+                    or
+                    <i>lack of true will</i>
+                    to embrace the changes that they bring.
+                </blockquote>
+                This is perhaps hard to understand, and definitely hard to swallow as it has other implications. When I
+                tell people that a current business model that they embrace is archaic they're typical reaction is to
+                cringe in disbelief and oblivious dismissal. As an example, I don't think the web services business
+                model is a strong one, specially if user freedoms are being compromised but I actually don't expect
+                anyone to believe me though, specially as we're in a ooze of comfort for
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source</b></a>
+                . You see the concept of
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source</b></a>
+                software is simply an apologetic excuse for adopting only
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                licenses which were
+                <b>compatible</b>
+                with existing business models at the time these two terms started differentiating. The results are a
+                boom of adoption of
+                <a href="http://en.wikipedia.org/wiki/Free_and_open-source_software">Free and Open Source Software</a>
+                but only in the realms of what was expected up to the freedoms granted by the GPLv2, and even the GPLv2
+                is still looked at with careful eyes by a few silly corporations like Apple and Microsoft.
+                <a href="http://en.wikipedia.org/wiki/Copyleft">Copyleft</a>
+                is an innovative legal strategy used by more modern evolved software copyright licenses, starting with
+                the GPL, which require the same rights be transferred to modified versions of the software, recursively,
+                precluding usage of these types of licenses in proprietary software. Licenses that do not use
+                <a href="http://en.wikipedia.org/wiki/Copyleft">copyleft</a>
+                are considered
+                <a href="http://en.wikipedia.org/wiki/Permissive_free_software_licence">permissive licenses</a>
+                -- you can mix and use them with proprietary software. Markets always
+                <b>evolve</b>
+                though and in this particular case the software market has
+                <b>evolved</b>
+                best through collaborative development models. Markets
+                <b>must keep evolving</b>
+                though, but software is not the only thing that will evolve,
+                <u>law and legal strategies to protect</u>
+                <a href="http://en.wikipedia.org/wiki/Collaborative_software_development_model">
+                    open collaborative development models
+                </a>
+                will evolve as well, and those that are not ready when the next big swing comes will simply be put out
+                of the way by the combination of the fast pace of both the
+                <b>innovation</b>
+                of the
+                <a href="http://en.wikipedia.org/wiki/Collaborative_software_development_model">
+                    open collaborative development models
+                </a>
+                and through
+                <b>new legal strategies</b>
+                that protect these ecosystems.
+                <br />
+                <br />
+                <div style="text-align: center">
+                    <img
+                        src="https://docs.google.com/drawings/d/1-LnC6065LlOILu0AnkwXnbAvkR_oTUdJSHMtm8a45MU/pub?w=331&amp;h=230"
+                    />
+                </div>
+                <br />
+                Let me give you a small example of how the markets have
+                <b>evolved</b>
+                slightly
+                <u>over the last few years</u>
+                since the popularization of
+                <a href="http://en.wikipedia.org/wiki/Open_source_software">open source</a>
+                . With regards to
+                <a href="http://en.wikipedia.org/wiki/Open_source_software">open source</a>
+                software development in current markets what is the biggest pain in the ass that engineers in companies
+                can run into? Its fucking patents. A
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                is to open source software engineers as a
+                <a href="http://en.wikipedia.org/wiki/Patent_troll">patent troll</a>
+                is to an
+                <a href="http://en.wikipedia.org/wiki/Open_source">open source</a>
+                corporate leader. This is exactly why large projects like
+                <a href="http://en.wikipedia.org/wiki/Apache">Apache</a>
+                ,
+                <a href="http://en.wikipedia.org/wiki/Apache_Hadoop">Hadoop</a>
+                ,
+                <a href="http://en.wikipedia.org/wiki/OpenStack">OpenStack</a>
+                ,
+                <a href="http://en.wikipedia.org/wiki/Android_%28operating_system%29">Android</a>
+                are licensed under the
+                <a href="http://en.wikipedia.org/wiki/Apache_License">Apache 2.0 license</a>
+                , which ensures that no contributor could ever become a patent troll for the ecosystem. The
+                <a href="http://en.wikipedia.org/wiki/Apache_License">Apache 2.0 license</a>
+                is therefore an epic
+                <b>legal evolution</b>
+                with regards to freedoms,
+                <i>in the marketplace</i>
+                . Its important to highlight however that the
+                <a href="http://en.wikipedia.org/wiki/Apache_License">Apache 2.0 license</a>
+                is not the only software license to include patent protection provisions, the
+                <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3">GPLv3</a>
+                license include these as well but due to what I believe now to be
+                <b>unnecessary</b>
+                tensions that arose during the brutal way in which consideration for
+                <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3">GPLv3</a>
+                for the Linux kernel was handled (
+                <a href="http://www.do-not-panic.com/2012/07/gay-boring-gay-google-and-copyleft-next.html">
+                    which I also briefly hinted at here
+                </a>
+                ),&nbsp; unfortunately the
+                <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3">GPLv3</a>
+                didn't catch the next immediate big wave in the Linux market place.
+                <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3">GPLv3</a>
+                fans could argue that should the Linux kernel have embraced the
+                <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3">GPLv3</a>
+                we would not be in the situation we are in now with patents on the Linux ecosystem, and although one
+                could argue against this as well -- we have to accept the patent issues certainly were left untouched
+                and one has to accept the ramifications of that. The embracing of the
+                <a href="http://en.wikipedia.org/wiki/Apache_License">Apache 2.0 license</a>
+                in major Linux ecosystem projects could be a good aftermath result of that.
+                <br />
+                <blockquote class="tr_bq">
+                    The
+                    <a href="http://en.wikipedia.org/wiki/Apache_License">Apache 2.0 license</a>
+                    provides an innovative legal protection strategy to the
+                    <a href="http://en.wikipedia.org/wiki/Patent_troll">patent troll</a>
+                    problem that
+                    <i>apologetic</i>
+                    <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source</b></a>
+                    enthusiast corporations had, that still wished to strive for
+                    <a href="http://en.wikipedia.org/wiki/Collaborative_software_development_model">
+                        open collaborative development models
+                    </a>
+                    through
+                    <a href="http://en.wikipedia.org/wiki/Permissive_free_software_licence">permissive licenses</a>
+                    .
+                </blockquote>
+                The
+                <a href="http://en.wikipedia.org/wiki/Apache_License">Apache 2.0 license</a>
+                is compatible with the
+                <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3">GPLv3</a>
+                license because they both have patent provisions. The difference of course is that the
+                <a href="http://en.wikipedia.org/wiki/Apache_License">Apache 2.0 license</a>
+                is a
+                <a href="http://en.wikipedia.org/wiki/Permissive_free_software_licence">permissive license</a>
+                while the
+                <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3">GPLv3</a>
+                is a
+                <a href="http://en.wikipedia.org/wiki/Copyleft">copyleft</a>
+                license. Strategically, although I believe not planned in any way, they both were trying to address the
+                same series of patent problems we had and expected we'd have more of today.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://1.bp.blogspot.com/-CsZEaxTS7Lk/UAby6ZyVLXI/AAAAAAAA2do/GQBSjaIfJCQ/s1600/IMG_20120715_063233.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            src="http://1.bp.blogspot.com/-CsZEaxTS7Lk/UAby6ZyVLXI/AAAAAAAA2do/GQBSjaIfJCQ/s1600/IMG_20120715_063233.jpg"
+                            height="320"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                The dangers of
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                and
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source</b></a>
+                are that they are simply part of the
+                <b>evolutionary process</b>
+                , which is the
+                <b>greater evil</b>
+                (which obviously isn't evil), and there is always collateral with evolution: PHBs, legal PHBs, patent
+                trolls, supply and demand for good engineers, non-PHBs, savvy attorneys, savvy marketing folks, you name
+                it. The list goes on and on. Without properly accepting and predicting
+                <b>business model evolutions</b>
+                fans of advanced copyleft licenses such as the
+                <a href="http://en.wikipedia.org/wiki/Affero_General_Public_License">AGPL</a>
+                license today will face the same
+                <a href="http://en.wikipedia.org/wiki/Persona_non_grata">persona non grata</a>
+                looks and experience the same tensions as I did with
+                <a href="http://en.wikipedia.org/wiki/Pointy-haired_Boss">PHB</a>
+                s when moving towards a Linux upstream model. The difficulty in all this lies in that
+                <a href="http://en.wikipedia.org/wiki/Free_software"><b>free software</b></a>
+                and
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source</b></a>
+                are not popularly trained as part of evolution when teaching or training folks on software engineering
+                principles. This will obviously change but it has to happen sooner rather than later. Software is also
+                highly evolutionary and changing a company to move away from proprietary software development to an
+                <a href="http://en.wikipedia.org/wiki/Open_source_software"><b>open source</b></a>
+                model requires a business model consideration, a business model evolution. I have previously explained
+                how I believe
+                <a href="http://www.do-not-panic.com/2013/08/evolving-capitalism-with-ethical.html">
+                    capitalism can be evolved by taking into consideration ethical attributes
+                </a>
+                , this is the landscape in which I believe advanced copyleft can be appreciated, and folks should
+                prepare for the
+                <b>evolutions in business models</b>
+                that this can bring.
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">← back to timeline</a>
+        </footer>
+    </body>
+</html>

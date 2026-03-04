@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Connecting the dots... — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2012-03-13">Mar 13, 2012</time>
+                    <span class="category-badge badge-philosophy">Philosophy</span>
+                </div>
+                <h1>Connecting the dots...</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2012/03/connecting-dots.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="https://web.archive.org/web/20160422065436im_/http://www.theclevelandfan.com/images/stories/dots.gif"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="320"
+                            src="https://web.archive.org/web/20160422065436im_/http://www.theclevelandfan.com/images/stories/dots.gif"
+                            width="295"
+                        />
+                    </a>
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: left">
+                    <br />
+                </div>
+                <div class="separator" style="clear: both; text-align: center">
+                    <br />
+                </div>
+                <br />
+                As much as I hate to reference Steve Jobs there is one thing that I will remember him for that I thought
+                was good, his
+                <a href="http://www.youtube.com/watch?v=D1R-jKKp3NA" target="_blank">
+                    famous 2005 Stanford Commencement Speech
+                </a>
+                . Central to the first part of his speech is the idea of "
+                <i>connecting the dots</i>
+                ", living your life loosely, following all your interests, not worrying too much, with the dots
+                eventually connecting somehow. I remember sending this speech to friends concerned about &nbsp;being
+                undecided about school and feeling pressure. I am not sure if it ever got through to them but truth is
+                there is there should be no rush, and I agree one should follow one own's interests, what makes us
+                happy. Eventually these things may come in handy as the dots start connecting in your life.
+                <br />
+                <br />
+                The dots are starting to connect for me and I find myself now understanding why I tick the way I do,
+                what motivates me and why I am passionate about the things I am passionate for. Mind you, I'm still
+                young, only 31, but yet the dots are connecting fast and I think its good to reflect and realize what
+                these dots are and how they make you tick. I'll reveal a few of these and I think that can also help my
+                friends understand &nbsp;why I tick the way I do and what I am passionate about some of the few things I
+                am so passionate for.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="https://web.archive.org/web/19990423050317im_/http://www.isc.tamu.edu/~lewing/linux/sit3-shine.7.gif"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="320"
+                            src="https://web.archive.org/web/19990423050317im_/http://www.isc.tamu.edu/~lewing/linux/sit3-shine.7.gif"
+                            width="290"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                As far as technology is concerned for me so far, the dots began with hacking. I
+                was&nbsp;intrigued&nbsp;by the idea of hacking and naturally I started hacking on Linux circa v2.6.5
+                purely as a challenge, interest, and being intrigued as to how this crap all worked. It took a long time
+                to learn to work upstream and I remember having heated debates with upstream maintainers, particularly
+                <a href="https://plus.google.com/105424721218711536033/posts" target="_blank">Jeff Garzik</a>
+                &nbsp;who at that time maintained networking drivers and accepted 802.11 drivers as well, over random
+                stupid things. At that point things were pretty simple though and frankly 802.11 sucked, mainly due to
+                its infancy and as far as the kernel is concerned netlink wasn't being used yet t help improve APIs.
+                <br />
+                <br />
+                <a
+                    href="http://www.flickr.com/photos/mcgrof/4191462/"
+                    title="RUSLUG grub rutgers-winter by mcgrof, on Flickr"
+                >
+                    <img
+                        alt="RUSLUG grub rutgers-winter"
+                        height="375"
+                        src="http://farm1.staticflickr.com/4/4191462_db8fff8c83.jpg"
+                        width="500"
+                    />
+                </a>
+                <br />
+                <br />
+                After gaining some experience with Linux kernel hacking I then graduated college with a Computer Science
+                degree, mainly because it just made sense at that point, but I had a lot of other interests. One of my
+                other interests was
+                <b>philosophy</b>
+                and it just so happens that part of the Linux kernel hacking dealt with dealing with licensing,
+                something that typical proprietary programmers do not have to even consider when working for typical
+                companies. At school I also had a hard time finding interested geeks in kernel hacking when I started
+                and I figured starting a Linux Users' Group,
+                <a href="http://ruslug.rutgers.edu/" target="_blank">RUSLUG</a>
+                , would help with that. It didn't. But I did get to meet fun interesting folks, some of which I still
+                remain in contact with.
+
+                <br />
+                <br />
+                To start
+                <a href="http://ruslug.rutgers.edu/" target="_blank">RUSLUG</a>
+                we needed an organization mentor, and that allowed me to meet
+                <a
+                    href="http://www.legacy.com/obituaries/mycentraljersey/obituary.aspx?n=joseph-f-miklojcik&amp;pid=151581037"
+                >
+                    Joseph F. Miklojcik III
+                </a>
+                who unfortunately passed away at only age 41 last year. Joe ended up becoming my boss for a while as a
+                student programmer making RPMs out of all things for Solaris. But Joe became more than that for me, he
+                became a mentor. It was as close to as a real hacker as I had ever met in person. He had good stories
+                too. One example was that of how after school he started working for a proprietary software company
+                writing tons of code to write an editor which competed at that time with good 'ol
+                <a href="http://www.gnu.org/software/emacs/">GNU Emacs</a>
+                . The company worked really hard at writing and competing with
+                <a href="http://www.gnu.org/software/emacs/">GNU Emacs</a>
+                and never imagined any pesky open project may seriously compete with their own software. Heck, they even
+                sold the editor to NASA! Why in the hell would NASA, of all organizations, use an open editor such as
+                this thing called
+                <a href="http://www.gnu.org/software/emacs/">"GNU Emacs"</a>
+                . No way. Obviously they were wrong, you see
+                <a href="http://identi.ca/rms">Richard Stallman</a>
+                , as
+                <a href="http://www.youtube.com/watch?v=I25UeVXrEHQ">crazy as he may seem</a>
+                is one hell of a programmer and the shit he did to this day is likely not appreciated by many. Joe did
+                try to explain to me his capability as a programmer and I believed him.
+
+                <br />
+                There was one thing that one famous programmer disagreed with Stallman on -- style.
+                <a href="https://plus.google.com/102150693225130002912/posts">Linus Torvalds</a>
+                writes on the Linux kernel's
+                <a
+                    href="http://git.kernel.org/?p=linux/kernel/git/torvalds/linux.git;a=blob;f=Documentation/CodingStyle#l10"
+                >
+                    CodingStyle guidelines
+                </a>
+                :
+                <br />
+                <blockquote>
+                    <span style="color: #666666">
+                        First off, I'd suggest printing out a copy of the GNU coding standards, and NOT read it.
+                    </span>
+                    <span style="color: red">Burn them</span>
+                    <span style="color: #666666">, it's a</span>
+                    <span style="color: red">great symbolic gesture</span>
+                    <span style="color: #666666">.</span>
+                </blockquote>
+                Angry? Heh. Wrong or not -- it did not matter. Linus also happens to be one of the best programmers the
+                community has seen and he wrote one piece of code that Richard did not have as part of his
+                <a href="http://www.gnu.org/">GNU Operating System</a>
+                , but it was very important, the
+                <a href="http://en.wikipedia.org/wiki/Kernel_(computing)">kernel</a>
+                . With
+                <a href="http://kernel.org/">Linux</a>
+                , the
+                <a href="http://www.gnu.org/">GNU Operating System</a>
+                was a complete free and open Operating System. As it turned out
+                <a href="http://kernel.org/">Linux</a>
+                picked up traction -- and fast. It is now the fastest growing software project in the world. Don't
+                believe me? A few stats for the v3.2 kernel release by which
+                <a href="https://plus.google.com/111049168280159033135/posts">Greg Kroah-Hartman</a>
+                has put together on his
+                <a href="https://github.com/gregkh/kernel-development/blob/master/kernel-development.odp">
+                    kernel development slides
+                </a>
+                :
+
+                <br />
+                <blockquote>
+                    <pre>
+37,617 files
+14,998,000 lines of code
+3,160 developers
+439 companies
+
+12,300 lines added
+  8,800 lines removed
+  2,300 lines modified
+per day for all of 2011
+
+5.77 changes per hour 24x7
+</pre
+                    >
+                </blockquote>
+                No one can compete with this pace of development. Not even Stallman. But being at
+                <a href="http://ruslug.rutgers.edu/" target="_blank">RUSLUG</a>
+                also pushed me to learn and talk about other things than just kernel stuff. In fact at one point we
+                invited Stallman to come give a talk, he refused given that our user group's name did not include the
+                word "GNU" in it. He indicated that this was not acknowledging a huge amount of history and effort that
+                went into completing a full open Operating System. We didn't know what to do so we discussed it among
+                ourselves through our mailing lists, and
+                <a href="http://en.wikipedia.org/wiki/Internet_Relay_Chat">IRC</a>
+                . The verdict was we would not change our name. Stallman refused to come but instead
+                <a href="http://www.ebb.org/bkuhn/">Bradley M. Kuhn</a>
+                came for a talk. Bradley struck us a not crazy, very easy going and not an extremist. I don't even
+                remember what his talk was about but I remember it being great. That was when I first met Bradley.
+                <br />
+                <br />
+                <div class="separator" style="clear: both; text-align: center">
+                    <a
+                        href="http://www.gnu.org/graphics/bahlon/3d-gnu-head.jpg"
+                        imageanchor="1"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="308"
+                            src="http://www.gnu.org/graphics/bahlon/3d-gnu-head.jpg"
+                            width="320"
+                        />
+                    </a>
+                </div>
+                <br />
+                <br />
+                But
+                <a href="http://ruslug.rutgers.edu/" target="_blank">RUSLUG</a>
+                also taught me to think about the
+                <b><i>Free Software Philosophy</i></b>
+                and the moral claims that Stallman preached about through his Free Software movement. The moral
+                obligations that he feels we are entitled to are all reflected neatly in the license he authored
+                <a href="http://www.gnu.org/licenses/gpl-2.0.html">the GPLv2</a>
+                . Stallman would be very pleased to find out that good 'ol Linus ended up embracing
+                <a href="http://www.gnu.org/licenses/gpl-2.0.html">the GPLv2</a>
+                . Despite that the
+                <a href="http://ruslug.rutgers.edu/" target="_blank">RUSLUG</a>
+                was already decided on the simple group name title change I was still philosophically at ends with the
+                moral requirements claim on software. I decided my goal was to come to a decision on a position on this
+                by the time I grated. I did graduate but -- I was unable to come to a conclusion by that time. I did
+                pick up a lot of interest also in Business Ethics and took a few courses on that. It was a lot of fun. I
+                passed the final exam without studying (due to time), the exam covered one case study I knew very well
+                -- Microsoft imposing their own Java virtual machine onto the world on their Internet Explorer web
+                browser. I like to believe I vented eloquently on the exam.
+
+                <br />
+                <br />
+                After graduation I hopped around random CS related type jobs, customer support for some Unix crap
+                software, Web Developer, NOC Engineer, Systems Engineer, Security Engineer, in the end it didn't matter.
+                All I wanted to do was hack on the kernel and I found any excuse to make any issue I found a kernel
+                related issue. But it also helped me become a better engineer all around as it meant I wanted to
+                understand the kernel well. After having a great career moving up fast I ended up working for the
+                financial industry and landed a gig at Merrill Lynch. It sucked. It didn't work out, and I got fed up
+                with those sorts of jobs. I wanted to only do Linux kernel development. I took a huge paycut and went to
+                my alma mater a joined the
+                <a href="http://www.orbit-lab.org/">Orbit-lab</a>
+                project and did Linux kernel hacking for shits and giggles, one of the only places in New Jersey that I
+                was aware of that was hiring hackers, and curiously for 802.11.
+
+                <br />
+                <br />
+                That was fun :) but they had me work on a Linux kernel driver I told everyone I would always avoid:
+                <a href="http://madwifi-project.org/">MadWifi</a>
+                . The
+                <a href="http://madwifi-project.org/">MadWifi</a>
+                story is long, in what I call the
+                <i>ath5k wars</i>
+                involved legal issues, about 3 slashdot articles that I remember, huge flamewars and a lot of rants. The
+                story endup up well though and the community managed to jump ship on
+                <a href="http://madwifi-project.org/">MadWifi</a>
+                and we finally got a proper replacement in the Linux kernel, through the
+                <a href="http://wireless.kernel.org/en/users/Drivers/ath5k">ath5k</a>
+                driver. But through the
+                <i>ath5k wars</i>
+                we dealt with a lot of legal issues and concerns, and it just so happened that
+                <a href="http://www.ebb.org/bkuhn/">Bradley M. Kuhn</a>
+                had started a non-profit organization,
+                <a href="http://www.softwarefreedom.org/">SFLC</a>
+                , to help representing Free Software developer with legal issues, the core idea was to bring some of the
+                sanity that the good 'ol GNU project had to other larger FOSS projects. It worked out pretty well for us
+                and if it was not for the
+                <a href="http://www.softwarefreedom.org/">SFLC</a>
+                I doubt we would have good open Linux 802.11 drivers. This was the second time working with Bradley
+                somehow.
+                <br />
+                <br />
+                One thing happened during the
+                <i>ath5k wars</i>
+                though -- as a consequence of dealing with
+                <a href="http://www.softwarefreedom.org/">SFLC</a>
+                so much, I also learned quite a bit of licensing legalese. I'm certainly no attorney -- but what I
+                learned during this time to this day remains priceless. I always have avoided drama and politics, and I
+                hate legalese, but somehow I keep being drawn to it like a magnet.
+                <br />
+                <br />
+                After the
+                <i>ath5k wars</i>
+                I needed cash for my mortgage and I was in serious denial about not needing to find another job for a
+                long time. Of all offers I took
+                <a href="http://en.wikipedia.org/wiki/Qualcomm_Atheros">Atheros'</a>
+                &nbsp;and started working on the first properly company sponsored Linux upstream 802.11 driver,
+                <a href="http://wireless.kernel.org/en/users/Drivers/ath9k">ath9k</a>
+                . All the lessons I had learned before on legalese, how to properly work upstream on the Linux kernel
+                had all paid off for this project. The project was successful despite the
+                <b>huge</b>
+                major challenges we faced. To this day I consider it one of the most complicated drivers we have and the
+                legal questions could easily have doomed it, particularly in regards to regulatory and the challenge of
+                finding a solution for regulatory for open platforms. I should mention though that one of the things
+                that particularly hurt from the work we did was that although we had upstreamed the first complete ISC
+                licensed driver into the Linux kernel we, Linux wireless developers, for silly reasons were still at
+                odds with OpenBSD, despite our original reuse of code from OpenBSD's ar5k for ath5k... Despite the
+                success of the driver its perhaps probably alarming to think that such a thing would bug me, but it does
+                and I wish we would work better together with other communities.
+                <br />
+                <br />
+                Joe had passed away in 2011, only a few months ago, and what found it amazing his
+                <a
+                    href="http://www.legacy.com/obituaries/mycentraljersey/obituary.aspx?n=joseph-f-miklojcik&amp;pid=151581037"
+                >
+                    obituary
+                </a>
+                stated,
+                <i>"In lieu of flowers, please consider memorial contributions to the Electronic Frontier Foundation</i>
+                ". I my jaw dropped, but not at being surprised, this was certainly how Joe would have liked it, I was
+                happy. I decided I was not sending any flowers nor would I contribute yet to the
+                <b>EFF</b>
+                . Instead I promised to
+                <b>work harder</b>
+                in spirit of
+                <i>
+                    <b>what I believe is right</b>
+                    ,
+                </i>
+                and I would use my own philosophical principles that I have concluded on Free Software, but I would also
+                accept no compromises on
+                <b>shit engineering</b>
+                anymore, Joe knew at certain point his company would not compete with GNU Emacs, I promised myself I
+                would go
+                <b>beyond the call of duty</b>
+                and would not let any piece of crap code get in the way anymore,
+                <b>ever</b>
+                . If you know something is right --
+                <b>fight for it</b>
+                . But I am also going to focus on this with proper business ethics in mind. Its easier said than done.
+                So we'll see.
+                <br />
+                <br />
+                And here I am now, connecting more dots. I'll just say the next few months are going to be interesting.
+                I'll be blogging about more dots and how they connect as time goes by. Understanding
+                <i><b>intent and motivation</b></i>
+                though is very key to understanding community development, and I hope I've made my
+                <b>intent and motivation</b>
+                clear.
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>City life: Santiago and Buenos Aires — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2013-03-03">Mar 3, 2013</time>
+                    <span class="category-badge badge-travel">Travel / Outdoors</span>
+                </div>
+                <h1>City life: Santiago and Buenos Aires</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2013/03/city-life-santiago-and-buenos-aires.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <a
+                    href="http://1.bp.blogspot.com/-EJW7d5tpcUE/UTQG0bn5FOI/AAAAAAABPqk/QBEp0b1YEEA/s1600/23405_10102266688350259_232913563_n.jpg"
+                >
+                    <img
+                        src="http://1.bp.blogspot.com/-EJW7d5tpcUE/UTQG0bn5FOI/AAAAAAABPqk/QBEp0b1YEEA/s400/23405_10102266688350259_232913563_n.jpg"
+                    />
+                </a>
+
+                <p></p>
+                <p>
+                    I live in a San Francisco so I figured I couldn't pass up on the opportunity to visit the major
+                    cities in the two countries I was visiting during my visit to Patagonia, Chile and Argentina. My
+                    first ventures were in Santiago. I then would venture out to Palermo in Buenos Aires, Argentina. I
+                    figured this would be a good way to settle back down from the mountain life.
+                </p>
+                <p>
+                    <a
+                        href="http://3.bp.blogspot.com/-4SQQfMVSNXw/UTQGNUXSa5I/AAAAAAABPqY/9ALZFfh4_XE/s1600/561525_10102348505742549_153889306_n.jpg"
+                    >
+                        <img
+                            src="http://3.bp.blogspot.com/-4SQQfMVSNXw/UTQGNUXSa5I/AAAAAAABPqY/9ALZFfh4_XE/s400/561525_10102348505742549_153889306_n.jpg"
+                        />
+                    </a>
+                </p>
+                <p>
+                    During my exploration around Puerto Montt I I met Kari who challenged me to try
+                    <a href="http://en.wikipedia.org/wiki/Pisco">Pisco</a>
+                    . I tried it, but we ended up closing the bar that night. I could not have met a better guide for
+                    Santiago. Santiago was huge and Kari would show end up showing me its best spots. We even got to
+                    venture out to the beach, Maitencillo, a laid back beach town that apart from a vibrant night life
+                    also offered a bit of surfing and Kayaking. Kari taught me how to Kayak and instilled into me the
+                    desire to eventually try it on a river.
+                </p>
+                <p>
+                    <a
+                        href="http://3.bp.blogspot.com/-sbaAIWFPE88/US2V3IGQlZI/AAAAAAABPVw/zug4WhQCH7I/s1600/20130216_205024.jpg"
+                    >
+                        <img
+                            src="http://3.bp.blogspot.com/-sbaAIWFPE88/US2V3IGQlZI/AAAAAAABPVw/zug4WhQCH7I/s400/20130216_205024.jpg"
+                        />
+                    </a>
+                </p>
+                <p>
+                    <br />
+
+                    <a
+                        href="http://1.bp.blogspot.com/-7pLGKd0EfBI/US2V3Gk0kcI/AAAAAAABPVw/AuKGGFUR7Fo/s1600/20130217_125704.jpg"
+                    >
+                        <img
+                            src="http://1.bp.blogspot.com/-7pLGKd0EfBI/US2V3Gk0kcI/AAAAAAABPVw/AuKGGFUR7Fo/s400/20130217_125704.jpg"
+                        />
+                    </a>
+
+                    <br />
+                    Kari also showed me the best of Chilean cuisine. I had mentioned before that I had to give in to
+                    eating meat during my visit. If you get a chance be sure to try the Empanada de Macha Queso and
+                     Tortilla Española de Camaron. I ending up showing Kari to surf a bit in Matencillo but Maitencillo
+                    has only one decent beach break and its super crowded. Folks were wearing wet suits but I was fine
+                    with just a t-shirt. The amount of people on the water make surfing in Maitencillo more of a game
+                    where you are to dodge people as you surf back in. As for the city life I recommend you visit the
+                    night life around Ñiñoa, there we met with some of Kari's friends and had a blast.
+                </p>
+                <p>
+                    <a
+                        href="http://2.bp.blogspot.com/-CpgqIGfiPeY/US2V3NNkjZI/AAAAAAABPVw/Pp1A288dgDE/s1600/20130222_173847.jpg"
+                    >
+                        <img
+                            src="http://2.bp.blogspot.com/-CpgqIGfiPeY/US2V3NNkjZI/AAAAAAABPVw/Pp1A288dgDE/s400/20130222_173847.jpg"
+                        />
+                    </a>
+
+                    <br />
+
+                    Palermo is the party center of Buenos Aires. Some clubs take advantage of their location and space
+                    that during the day they turn their club into a market bar. People party hard here and this city
+                    really made me start feeling my age. People
+                    <b>start</b>
+                    going out at 2am! That's when we close our bars in SF!
+
+                    <br />
+
+                    <a
+                        href="http://2.bp.blogspot.com/-vOHqI7GxleU/US2V3NY5-cI/AAAAAAABPVw/sbALxlrQBZQ/s1600/20130223_140346.jpg"
+                    >
+                        <img
+                            src="http://2.bp.blogspot.com/-vOHqI7GxleU/US2V3NY5-cI/AAAAAAABPVw/sbALxlrQBZQ/s400/20130223_140346.jpg"
+                        />
+                    </a>
+
+                    <br />
+
+                    I explored Boca, where the Boca Jrs play, and got to see Caminito, a little artistic path full of
+                    Tango and art. Boca Jr who? I didn't know who they were but my cousins insisted this was an epic
+                    soccer place to be at.
+
+                    <br />
+
+                    <a
+                        href="http://4.bp.blogspot.com/-kpKmsAv0AcE/US2V3AnLAaI/AAAAAAABPVw/VxHYbQixsPk/s1600/20130223_194137.jpg"
+                    >
+                        <img
+                            src="http://4.bp.blogspot.com/-kpKmsAv0AcE/US2V3AnLAaI/AAAAAAABPVw/VxHYbQixsPk/s400/20130223_194137.jpg"
+                        />
+                    </a>
+
+                    <br />
+
+                    <a
+                        href="http://3.bp.blogspot.com/-0FoisrUHz7E/US2V3JmfrFI/AAAAAAABPVw/jHGFlNc8Cok/s1600/20130223_183756.jpg"
+                    >
+                        <img
+                            src="http://3.bp.blogspot.com/-0FoisrUHz7E/US2V3JmfrFI/AAAAAAABPVw/jHGFlNc8Cok/s400/20130223_183756.jpg"
+                        />
+                    </a>
+
+                    <br />
+
+                    I hung out mostly with couchsurfers and they taught me quite a bit about Argentina. One thing is
+                    clear, folks in Santiago talk shit about folks in Buenos Aires and folks in Buenos Aires talk shit
+                    about folks in Chile. I just don't get it. Both have great cities, they share of the most precious
+                    mountain ranges on the planet, and have great people.
+
+                    <br />
+
+                    <a
+                        href="http://2.bp.blogspot.com/-IzY8Oxr30kU/US2V3Nnq5UI/AAAAAAABPVw/GtoWFW6KwdQ/s1600/20130219_234424_LLS.jpg"
+                    >
+                        <img
+                            src="http://2.bp.blogspot.com/-IzY8Oxr30kU/US2V3Nnq5UI/AAAAAAABPVw/GtoWFW6KwdQ/s400/20130219_234424_LLS.jpg"
+                        />
+                    </a>
+
+                    <br />
+
+                    Pisco and Patagonia Amber Lager beer. Be sure to try them both. Tap beer is called Schop, I frankly
+                    was not a fan of the local brews but I was impressed with both country's selection of "Artesanal"
+                    beers. That's the good beer, but almost twice as expensive.
+
+                    <br />
+
+                    <a
+                        href="http://3.bp.blogspot.com/-gj8m6eFpL9g/US2V3Iou3mI/AAAAAAABPVw/i3m7fGnn1-k/s1600/20130207_201121.jpg"
+                    >
+                        <img
+                            src="http://3.bp.blogspot.com/-gj8m6eFpL9g/US2V3Iou3mI/AAAAAAABPVw/i3m7fGnn1-k/s400/20130207_201121.jpg"
+                        />
+                    </a>
+
+                    <br />
+
+                    In one spot I saw someone had picked out tux, the Linux Penguin, inverted him and used it for a sign
+                    for an events hall. Cute. I was pleased to see a lot of folks had heard of WikiLeaks to the extend
+                    at last in Argentina the book ArgenLeaks was sold out everywhere. I had a great time in both cities
+                    and value the new friendships I made, both randomly and through couchsurfing.
+                </p>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

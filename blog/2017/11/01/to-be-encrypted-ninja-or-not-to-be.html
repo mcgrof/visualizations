@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>To be an encrypted ninja or not to be... — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2017-11-01">Nov 1, 2017</time>
+                    <span class="category-badge badge-tools">Tools</span>
+                </div>
+                <h1>To be an encrypted ninja or not to be...</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2017/11/to-be-encrypted-ninja-or-not-to-be.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source &#8599;
+                </a>
+            </header>
+            <div class="post-content">
+                <p>
+                    Its a debate whether or not
+                    <b>foreign powers</b>
+                    hacked into Hillary Clinton's private email servers. There is
+                    <a
+                        href="https://www.washingtonpost.com/world/national-security/fbi-no-evidence-clintons-email-was-hacked-by-foreign-powers-but-it-could-have-been/2016/07/05/93334ba0-42dc-11e6-8856-f26de2537a9d_story.html?utm_term=.0ae3390ad041"
+                    >
+                        consensus however that the private email server was hacked though
+                    </a>
+                    , and this is precisely how emails can easily get leaked. To solve this sort of problem you can
+                    either have Hilary and Hilary's friend's become ninjas at cryptography, have cryptography tools
+                    become mainstream and transparent, or have a middle ground solution somehow. For this year's 2017
+                    Hackweek at
+                    <span style="color: #274e13"><b>SUSE</b></span>
+                    and
+                    <a href="https://www.aaronswartzday.org/sanfrancisco/">Aaron Swartz day</a>
+                    I have worked on a middle ground solution as a
+                    <b>proof of concept</b>
+                    using GPG, forcing all incoming emails to you to be encrypted, even if you use gmail or yahoo to
+                    store your emails. On this post I will explain the motivation for such work, and document how to
+                    accomplish this for yourself, should you want to implement this for yourself.
+                </p>
+                <p>
+                    <a
+                        href="https://1.bp.blogspot.com/-Nnld4IBNVgQ/WhYH3YifSkI/AAAAAAADYCE/7feXqH0aWUgZAkA606ma5dZWdj4IoEUlwCLcBGAs/s1600/encrypted-ninja.png"
+                        style="margin-left: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="315"
+                            src="https://1.bp.blogspot.com/-Nnld4IBNVgQ/WhYH3YifSkI/AAAAAAADYCE/7feXqH0aWUgZAkA606ma5dZWdj4IoEUlwCLcBGAs/s320/encrypted-ninja.png"
+                            width="320"
+                        />
+                    </a>
+                    <b>Motivation</b>
+                </p>
+                <p>
+                    Emails sent to you when you are using popular email servers such as gmail or yahoo get encrypted
+                    only on the wire, as they make their way onto email servers hosted by the companies that provide
+                    these services. The emails are however stored unencrypted. Likewise for typical private email
+                    servers. You are at left at the whims of the security best practices of these companies, and even if
+                    you did have your private email server, to get things done right requires substantial work. In fact,
+                    even if you used a good company to store your email, you may still face issues with ensuring your
+                    email privacy remains outside of the control of intelligence agencies which may argue they should be
+                    able to read everyone's email.
+                </p>
+                <p>Reasons for wanting your emails stored with good cryptography vary but here are a few reasons:</p>
+                <ul>
+                    <li>You're a politician</li>
+                    <li>You're a therapist</li>
+                    <li>You're a journalist</li>
+                    <li>You're a human rights advocate</li>
+                    <li>You just give a damn about privacy</li>
+                </ul>
+                <p>
+                    For most people's day to day, the below diagram simplifies and reveals how email transactions work,
+                    Exhibit-A:
+                </p>
+                <p>
+                    <a
+                        href="https://2.bp.blogspot.com/-5lKf4vEF6e8/WhYLSSoHazI/AAAAAAADYCQ/x9ANq95rUIs2AUQpMJnxzlhGaEfO1OZoQCLcBGAs/s1600/exhibit-a.png"
+                        style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="71"
+                            src="https://2.bp.blogspot.com/-5lKf4vEF6e8/WhYLSSoHazI/AAAAAAADYCQ/x9ANq95rUIs2AUQpMJnxzlhGaEfO1OZoQCLcBGAs/s400/exhibit-a.png"
+                            width="400"
+                        />
+                    </a>
+
+                    <br />
+
+                    One solution to this is to have everyone, for example, use encryption tools when crafting and
+                    sending emails, Exhibit-B:
+                </p>
+                <p>
+                    <a
+                        href="https://1.bp.blogspot.com/-DnRJ6P3mLzc/WhYMbe1Y1aI/AAAAAAADYCc/QKSkkDyzLaATODfBlRQxPtiJMmK1WYezgCLcBGAs/s1600/exhibit-b.png"
+                        style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em"
+                    >
+                        <img
+                            border="0"
+                            height="117"
+                            src="https://1.bp.blogspot.com/-DnRJ6P3mLzc/WhYMbe1Y1aI/AAAAAAADYCc/QKSkkDyzLaATODfBlRQxPtiJMmK1WYezgCLcBGAs/s400/exhibit-b.png"
+                            width="400"
+                        />
+                    </a>
+
+                    <br />
+
+                    This is a bit unrealistic, however for some folks this is possible, for instance if you're a
+                    journalist working with very sensitive material. If you fall into one of the categories below you
+                    might not be able to get to this point:
+
+                    <br />
+                </p>
+                <ul>
+                    <li>
+                        You're a human rights watch group worker dealing with folks who can't easily become ninjas... 
+                    </li>
+                    <li>
+                        Your're a therapist, who obviously deals with folks who don't even care about what a crypto
+                        ninja is
+                    </li>
+                    <li>You're a politician and just want to encrypt everything</li>
+                    <li>
+                        You want to
+                        <a href="http://www.do-not-panic.com/2013/05/making-your-e-mail-public.html">
+                             open up your email 
+                        </a>
+                        on a certain date and use an escrow to stash your PGP key, such key becomes public after certain
+                        date
+                    </li>
+                    <li>
+                        You want to ask company admins to setup a secure and sensible way to forward some company emails
+                        to a public mail server safely (say, a way to get work email on public servers)
+                    </li>
+                    <li>You just care about cryptography</li>
+                    <li>You cannot trust your email provider's data store at all</li>
+                    <li>You don't want your data to be scraped by the company hosting it</li>
+                </ul>
+                <br />
+
+                Making cryptography more easily accessible is a much better approach. Such good efforts exists, one
+                example I found was
+                <a href="https://flowcrypt.com/">FlowCrypt</a>
+                which lets you uses Public Key Cryptography, however that does mean trying to trust a private key on the
+                plugin store locally. Another effort, which doesn't use Public Key Cryptography is
+                <a href="https://www.streak.com/securegmail">SecureGmail</a>
+                by streak, you encrypt emails using a one way cipher. Both and similar solutions still require some
+                effort or deploying some sort of software on the sender's side.
+
+                <br />
+
+                What I've worked on means as a ninja, or if you have a ninja friend, you get the benefit of having your
+                emails stored on your preferred email server encrypted, provided you can trust a particular middle
+                service provider I'll describe how to set up, and you can get it secured. You end up with the following,
+                Exhibit-C:
+
+                <br />
+
+                <a
+                    href="https://4.bp.blogspot.com/-TatSh4XNOFI/WhYPqzhwgfI/AAAAAAADYCo/hQPCcCTsbfQQAudTh1j7v8cZ3RrS1M3igCLcBGAs/s1600/exhibit-c.png"
+                    style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em"
+                >
+                    <img
+                        border="0"
+                        height="103"
+                        src="https://4.bp.blogspot.com/-TatSh4XNOFI/WhYPqzhwgfI/AAAAAAADYCo/hQPCcCTsbfQQAudTh1j7v8cZ3RrS1M3igCLcBGAs/s400/exhibit-c.png"
+                        width="400"
+                    />
+                </a>
+
+                To accomplish this we need a middle end system which does the actual encryption for you using your
+                public key. Email providers such as Google, Yahoo, and others won't do this for us today, and they have
+                some reasons not to. By scraping your email they get the ability to provide search facilities, they get
+                to scrape emails as they might legally see fit, and advertise for you. This is how they make money off
+                of storing our emails for free. Using a middle layer to encrypt your email is reflected in the following
+                diagram, Exhibit-D:
+
+                <br />
+
+                <a
+                    href="https://2.bp.blogspot.com/-Z1M2NpaP7ag/WhYRxCnVcGI/AAAAAAADYC0/_zlHGt19RIoMzi1cHJbOIhBPVyE8xWoxwCLcBGAs/s1600/exhibit-d.png"
+                    style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em"
+                >
+                    <img
+                        border="0"
+                        height="90"
+                        src="https://2.bp.blogspot.com/-Z1M2NpaP7ag/WhYRxCnVcGI/AAAAAAADYC0/_zlHGt19RIoMzi1cHJbOIhBPVyE8xWoxwCLcBGAs/s400/exhibit-d.png"
+                        width="400"
+                    />
+                </a>
+
+                One must admin that this shifts trust to a particular server admin who sets this server up,  and to
+                trust the setup to parse and bounce emails to your preferred email server properly. Your emails are
+                still at risk but they are not stored on the middle server if done propery, they are just being piped
+                through. Also,
+                <b>with unencrypted emails even your old emails are at risk</b>
+                , once an email server is compromised all your emails stored on that server are at risk. With a super
+                simple service such as the one I am describing, it would be fairly easy to monitor against attacks and
+                only protect one thing: receive encrypted emails via TLS, encrypt them write away without writing them
+                to disk, and immediately bounce them. Nothing unencrypted lands on disk or storage.
+
+                <br />
+
+                <b>How do I get this?</b>
+
+                <br />
+
+                If you're curious to try it for a few tests cases, you trust me for such tests cases, shoot me an email
+                and I can set you up with an account on my proof of concept email system, 
+                <a href="https://encrypted.ninja/">encrypted.ninja</a>
+                . I can give you an account on such system, and if you get an email sent to that email address
+                <b>all emails will be immediately bounced back to you, encrypted with your PGP key</b>
+                .
+
+                <br />
+
+                I would not recommend you to use this setup just as-is though, it'd be best to have spam detection be
+                done on your behalf, otherwise it may be possible your email provided's spam detection tool won't pick
+                up spam, and you end up getting tons of spam.
+
+                <br />
+
+                As such, this is just a
+                <b>proof of concept</b>
+                at this point.
+
+                <b><br /></b>
+
+                <b>How do I replicate your setup?</b>
+
+                <br />
+
+                Even though this uses PGP keys to encrypt data, you'll need to set up an email server with proper TLS
+                certificates for encryption for communication between senders and bouncing emails to email servers.
+                Fortunately
+                <a href="https://encrypted.ninja/">letsencrypt</a>
+                can give you a free certificate, it must be renewed (easy to do). The same SSL certificate you get for
+                them for your apache setup can be used for email as well. So first thing you should do is get a DNS
+                name, then get a simple website up with an SSL certificate from
+                <a href="https://encrypted.ninja/">letsencrypt</a>
+                .
+
+                <br />
+
+                If you have control over the email server you may not want to give an full shell login account to all
+                users, but just an email alias. I used postfix for my email server, as its easy to setup, and has some
+                hooks we'll use later. So get yourself postfix installed and setup, no need to setup TLS for your first
+                setup. Just get it receiving emails locally first. Once you have that setup, setup the same SSL
+                certificate you used for your apache setup for your postfix configuration. The following is my setup,
+                roughly.
+
+                <a href="https://gist.github.com/mcgrof/3ca6ff5a005a198c808cdff31d782dbd">
+                    <code>/etc/postfix/main.cf</code>
+                </a>
+
+                <br />
+                <div>
+                    You'll then need to edit /etc/postfix/master.cf and add the following phphook like, and replace your
+                    smtp line with the one below as well:
+                </div>
+                <div>
+                    <br />
+                </div>
+                <code>
+                    pgphook unix - n n - - pipe flags=F user=www-data argv=/opt/bin/mail2pgp.sh ${sender} ${size}
+                    ${recipient}
+                    <br />
+                    smtp inet n - - - - smtpd -o content_filter=pgphook:dummy
+                </code>
+                <br />
+                <div>
+                    <br />
+                </div>
+                <div>Then setup virtual aliases, /etc/postfix/address.txt looks like this:</div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    <div>
+                        <code>mcgrof@encrypted.ninja FILTER pgphook:dummy</code>
+                    </div>
+                    <div>
+                        <br />
+                    </div>
+                </div>
+                <div>Add more entries per email address you want to add. After updating it you must run:</div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    <code>postmap /etc/postfix/address.txt</code>
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    Then its all a matter or just one script and one procmailrc file, and ensuring the script, its gpg
+                    directory, and keyring are all owned by the user the email server runs as. That's it.
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>I stashed the script, procmailrc and gpg directory and keyring for the email server in:</div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    <code>/opt/mail2pgp/</code>
+                </div>
+                <div>
+                    <code>mkdir /opt/mail2pgp/.gnupg</code>
+                </div>
+                <div>
+                    <code>chmod o-rwx /opt/mail2pgp/.gnupg</code>
+                </div>
+                <div>
+                    <code>chmod g-rwx /opt/mail2pgp/.gnupg</code>
+                </div>
+                <div>
+                    <code>sudo chown -R www-data /opt/mail2pgp/</code>
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    To create a keyring with keys, or update them later with new keys as you update the alias file, and
+                    script provided later:
+                </div>
+                <div></div>
+                <div>
+                    <code>gpg --search-keys hexkeyid</code>
+                </div>
+                <div>
+                    <code>gpg --export --output keyring.gpg</code>
+                </div>
+                <div>
+                    <code>cp keyring.gpg /opt/mail2pgp/keyring.gpg</code>
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>The script:</div>
+                <div>
+                    <a href="https://gist.github.com/mcgrof/5b7e3fa4d6c9a5f176958f43c58b1711"><br /></a>
+                </div>
+                <div>
+                    <a href="https://gist.github.com/mcgrof/5b7e3fa4d6c9a5f176958f43c58b1711">
+                        <code>/opt/bin/mail2pgp.sh</code>
+                    </a>
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>You'll also need a MIME preamble, and postfix:</div>
+                <div></div>
+                <div>
+                    <a href="https://gist.github.com/mcgrof/ef483af303c40ff555b39f4de4d4173a">
+                        <code>/opt/mail2pgp/gpg-mime-start</code>
+                    </a>
+                </div>
+                <div>
+                    <a href="https://gist.github.com/mcgrof/88ec8bd8fcb6ffb4b30eb40b54d9fe52">
+                        <code>/opt/mail2pgp/gpg-mime-end</code>
+                    </a>
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>And finally, the procailrc file:</div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    <a href="https://gist.github.com/mcgrof/3819e61038f3caeab8cc6d03fdd7bbbe">
+                        <code>/opt/mail2pgp/.procmailrc</code>
+                    </a>
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    That's it. In fact, you can use the MIME  preamble and postfix and procmailrc file as a template on
+                    a system you *don't* have root on to bounce encrypted emails out to you in a much more secure way as
+                    well.
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>Now I'll surely see someone try to hack this server :) and I'm sure they will ;)</div>
+            </div>
+        </article>
+        <footer class="post-footer">
+            <a href="../../../../index.html">&#8592; back to timeline</a>
+        </footer>
+    </body>
+</html>

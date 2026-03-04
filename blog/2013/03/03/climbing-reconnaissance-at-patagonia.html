@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Climbing reconnaissance at Patagonia — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2013-03-03">Mar 3, 2013</time>
+                    <span class="category-badge badge-travel">Travel / Outdoors</span>
+                </div>
+                <h1>Climbing reconnaissance at Patagonia</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2013/03/climbing-reconnaissance-at-patagonia.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <div dir="ltr">
+                    <a
+                        href="http://1.bp.blogspot.com/-jMFE02W2vv4/US2V3AF7kTI/AAAAAAABPVw/QmlQ96_M-4Y/s1600/20130204_121913.jpg"
+                    >
+                        <img
+                            src="http://1.bp.blogspot.com/-jMFE02W2vv4/US2V3AF7kTI/AAAAAAABPVw/QmlQ96_M-4Y/s400/20130204_121913.jpg"
+                        />
+                    </a>
+                    <br />
+                    I started learning about
+                    <b>Patagonia</b>
+                    when
+                    <a href="http://www.do-not-panic.com/2012/03/rock-climbing-infatuation.html">
+                        I got into rock climbing
+                    </a>
+                     one year ago, and I started considering new climbing mecas to visit after
+                    <a href="http://www.do-not-panic.com/2013/03/celebrating-one-year-of-rock-climbing.html">
+                        starting to climb in Yosemite
+                    </a>
+                    and reading about other places. I read mostly about the
+                    <b>Fitz Roy</b>
+                    area, and the descriptions were all similar: it is a
+                    <b>meca</b>
+                    , there is no other place like it and its weather was highly unpredictable and at times treacherous.
+                    With time a friend and I started toying with the idea of visiting, although I was thrilled of the
+                    idea of going I had read enough to know already that this was
+                    <b>no place</b>
+                    for
+                    <b>beginner</b>
+                    rock climbers like myself, and that weather conditions could be nefarious. My friend treks but I
+                    never had done long distance hikes, all I ever had done was a few small hikes (~8 miles) and a bit
+                    of trail running here and there, I certainly didn't have enough gear. I love trying new things
+                    though and trekking seemed like a good way to do what I like to personally call
+                    <b>climbing reconnaissance</b>
+                    work on an area: familiarizing yourself with the area, picking up topos (climbing guides), meeting
+                    local rock climbers, anything that can help for gaining confidence for a future trip. Its how I
+                    started rock climbing in Yosemite. Reconnaissance for me also means diving hard into the local
+                    history, getting an appreciation of effort required to really rock climb in the area. One can surely
+                    hire guides but its prohibitively expensive and where's the fun in that?
+                </div>
+                <div dir="ltr">
+                    <br />
+
+                    <a
+                        href="http://2.bp.blogspot.com/-jy2LUk0nx8k/US2V3Ok-MpI/AAAAAAABPVw/_lZ4LQbG9PA/s1600/20130128_201712.jpg"
+                    >
+                        <img
+                            src="http://2.bp.blogspot.com/-jy2LUk0nx8k/US2V3Ok-MpI/AAAAAAABPVw/_lZ4LQbG9PA/s400/20130128_201712.jpg"
+                        />
+                    </a>
+                    <br />
+                    <b>Climbing reconnaissance</b>
+                     work may sound like a fucking joke to some but let me assure you that climbing outdoors is
+                    extremely different than indoors and that even approaches, just getting to the base of where you'll
+                    start climbing, can be a huge challenge in itself. I've lost myself before twice for over 1 hour in
+                    one approach in Yosemite that a guide books told me was just about 5-10 minutes from where you park.
+                    Its no fun if you don't have much time to climb and you spent most of your day just walking around
+                    with equipment. The Fitz Roy area I hoped would give me a broader sense of appreciation for what all
+                    those climbers wrote about, talked about and dreamed about, with a very different settings, one
+                    surrounded by Glaciers. Patagonia is also very big and just sticking to one area didn't make much
+                    sense for this trip. I wanted to appreciate every inch of Patagonia that I possibly could.
+                </div>
+                <div dir="ltr">
+                    <br />
+
+                    <a
+                        href="http://4.bp.blogspot.com/-q7Cjbpkcnjs/US2V3FGu68I/AAAAAAABPVw/nXfH52Jp9zU/s1600/20130128_201806.jpg"
+                    >
+                        <img
+                            src="http://4.bp.blogspot.com/-q7Cjbpkcnjs/US2V3FGu68I/AAAAAAABPVw/nXfH52Jp9zU/s400/20130128_201806.jpg"
+                        />
+                    </a>
+                    <br />
+                    To my disbelief, with time the stars aligned with work, a bit of savings, and I finally booked my
+                    ticket. I frankly didn't plan much except buying two books both by Lonely Planet: a general
+                    <a href="http://www.lonelyplanet.com/argentina">Argentina</a>
+                    guide, and
+                    <a href="http://shop.lonelyplanet.com/south-america/trekking-in-the-patagonian-andes-4/">
+                        Trekking in the Patagonian Andes
+                    </a>
+                    , coordinating my flights around points of interest and ensuring I had enough gear and time from
+                    work to do this venture. I figured the rest would come along the way.
+                </div>
+                <div dir="ltr">
+                    There is so much I'd like to write about Patagonia that I'll split up my Patagonia post into a few
+                    sections that should allow easier digestion. I also took a lot of pictures and got almost 6 GiB
+                    worth of video. I don't have time to edit these videos so I just threw them together into one huge
+                    mash up for each section. Choose wisely... or something.
+                    <p></p>
+                    <p>Pictures:</p>
+                </div>
+                <div dir="ltr">
+                    <br />
+                    <ul>
+                        <li>
+                            <a
+                                href="https://plus.google.com/photos/101487746899672598413/albums/5849496267030764209?authkey=CMKk8cKCnbj_AQ"
+                            >
+                                Album of all the pictures
+                            </a>
+                        </li>
+                        <li><a href="http://instagram.com/mcgrof">Follow me on instagram</a></li>
+                    </ul>
+                    <div>Video:</div>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="http://www.youtube.com/watch?v=qvTQf9QVTdo">
+                                    Patagonia I   - Torres Del Paine - W Trek
+                                </a>
+                            </li>
+                            <li>
+                                <a href="http://www.youtube.com/watch?v=cI4lddJzMsY">
+                                    Patagonia II  - Glaciar Perito Moreno
+                                </a>
+                            </li>
+                            <li>
+                                <a href="http://www.youtube.com/watch?v=uJjB7SZOJs0">
+                                    Patagonia III - Fitz Roy and Cerro Torre
+                                </a>
+                            </li>
+                            <li>
+                                <a href="http://www.youtube.com/watch?v=w-rTHWqrXto">
+                                    Patagonia IV - Bariloche / Nahuel Huapi
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <br />
+                    </div>
+                    <div>Blog posts:</div>
+                    <ul>
+                        <li>
+                            <a href="http://www.do-not-panic.com/2013/03/patagonia-travel-arrangements.html">
+                                Patagonia: Travel arrangements
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://www.do-not-panic.com/2013/03/patagonia-trekking-gear.html">
+                                Patagonia: Trekking gear
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://www.do-not-panic.com/2013/03/patagonia-trekking-w-torres-del-paine.html">
+                                Patagonia: Trekking the W - Torres Del Paine
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://www.do-not-panic.com/2013/03/patagonia-trekking-around-fitz-roy.html">
+                                Patagonia: Trekking around Fitz Roy
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://www.do-not-panic.com/2013/03/patagonia-trail-running-around-bariloche.html">
+                                Patagonia: Trail running around Bariloche
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://www.do-not-panic.com/2013/03/patagonia-quick-glance-at-its-history.html">
+                                Patagonia: Quick glance at its history
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://www.do-not-panic.com/2013/03/city-life-santiago-and-buenos-aires.html">
+                                City life: Santiago and Buenos Aires
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div dir="ltr">
+                    I'm going to warn you -- the sections on trekking will have boat loads of information from a
+                    beginner rock climber's perspective, that's my focus after all. I will talk about the trekking but
+                    that was secondary to me ;)
+                </div>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>

@@ -1,0 +1,1563 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="do-not-panic.com — 15 years of writing on Linux kernel development, open source, travel, philosophy, and tools by Luis Chamberlain."
+        />
+        <meta name="theme-color" content="#08080d" />
+        <title>do-not-panic.com</title>
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                font-size: 15px;
+                line-height: 1.7;
+                overflow-x: hidden;
+            }
+
+            #star-canvas {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 0;
+                pointer-events: none;
+            }
+
+            /* ── Hero Section ────────────────────────────── */
+
+            .site-header {
+                position: relative;
+                z-index: 2;
+                text-align: center;
+                padding: 80px 20px 48px;
+                background: linear-gradient(180deg, #08080d 0%, transparent 100%);
+            }
+
+            .site-header h1 {
+                font-size: clamp(36px, 7vw, 64px);
+                font-weight: 900;
+                background: linear-gradient(135deg, #44aaff, #cc66ff, #ff6699);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                letter-spacing: -1px;
+                margin-bottom: 12px;
+                filter: drop-shadow(0 0 20px rgba(100, 140, 255, 0.3)) drop-shadow(0 0 40px rgba(204, 102, 255, 0.15));
+            }
+
+            .site-header .tagline {
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 8px;
+                letter-spacing: 0.5px;
+            }
+
+            .site-header .author {
+                font-size: 14px;
+                color: #888;
+                margin-bottom: 24px;
+            }
+
+            .stats {
+                display: flex;
+                justify-content: center;
+                gap: 32px;
+                font-size: 14px;
+                color: #555;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+
+            .stats span {
+                color: #888;
+                font-weight: 700;
+            }
+
+            /* ── Filter Bar ──────────────────────────────── */
+
+            .filter-bar {
+                position: sticky;
+                top: 0;
+                z-index: 10;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 8px;
+                padding: 14px 20px;
+                background: rgba(8, 8, 13, 0.92);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border-bottom: 1px solid #1a1a25;
+            }
+
+            .filter-btn {
+                background: transparent;
+                border: 1px solid #222;
+                color: #666;
+                font-family: inherit;
+                font-size: 12px;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                padding: 8px 16px;
+                border-radius: 20px;
+                cursor: pointer;
+                transition: all 0.25s ease;
+            }
+
+            .filter-btn:hover {
+                color: #aaa;
+                border-color: #444;
+            }
+
+            .filter-btn.active {
+                color: #fff;
+                border-color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+            }
+
+            /* ── Card Grid ───────────────────────────────── */
+
+            .card-grid {
+                position: relative;
+                z-index: 1;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 1.5rem;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 2rem;
+            }
+
+            /* ── Year Markers ────────────────────────────── */
+
+            .year-marker {
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 32px 0 12px;
+                position: relative;
+            }
+
+            .year-marker .year-label {
+                font-size: clamp(48px, 10vw, 80px);
+                font-weight: 900;
+                color: rgba(255, 255, 255, 0.03);
+                letter-spacing: -2px;
+                line-height: 1;
+                user-select: none;
+            }
+
+            /* ── Card ────────────────────────────────────── */
+
+            .card {
+                position: relative;
+                text-decoration: none;
+                color: inherit;
+                display: block;
+                opacity: 0;
+                transform: translateY(20px);
+                transition:
+                    opacity 0.5s ease,
+                    transform 0.5s ease;
+            }
+
+            .card.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .card-visual {
+                position: relative;
+                aspect-ratio: 1 / 1;
+                border-radius: 6px;
+                overflow: hidden;
+                background: #161622;
+                transition:
+                    transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    box-shadow 0.3s ease;
+                z-index: 1;
+            }
+
+            .card-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.4s ease;
+                display: block;
+            }
+
+            .card-placeholder {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 48px;
+                color: rgba(255, 255, 255, 0.06);
+                background: linear-gradient(135deg, #0f0f16 0%, #161622 100%);
+            }
+
+            .card:hover .card-visual {
+                transform: scale(1.05);
+                box-shadow: 0 14px 36px rgba(0, 0, 0, 0.7);
+                z-index: 10;
+                border-radius: 6px 6px 0 0;
+            }
+
+            .card:hover .card-img {
+                transform: scale(1.1);
+            }
+
+            /* ── Card Meta ───────────────────────────────── */
+
+            .card-meta {
+                position: relative;
+                padding: 0.6rem 0.5rem 0.3rem;
+                background: #1a1a1a;
+                transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                z-index: 2;
+                border-radius: 0 0 6px 6px;
+            }
+
+            .card:hover .card-meta {
+                transform: scale(1.05);
+                z-index: 11;
+                border-radius: 0;
+            }
+
+            .card-meta-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 4px;
+                font-size: 13px;
+            }
+
+            .card-date {
+                color: #555;
+            }
+
+            .card-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 2px 8px;
+                border-radius: 10px;
+                font-weight: 600;
+            }
+
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+
+            .card-title {
+                font-size: 17px;
+                font-weight: 700;
+                line-height: 1.4;
+                color: #ccc;
+            }
+
+            .card:hover .card-title {
+                color: #eee;
+            }
+
+            /* ── Hover Detail Overlay ────────────────────── */
+
+            .card-body {
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                width: 520px;
+                max-width: 90vw;
+                background: #1c1c1c;
+                border-radius: 0 0 6px 6px;
+                padding: 1rem 1.2rem;
+                z-index: 9;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+                opacity: 0;
+                visibility: hidden;
+                transform: translate(-50%, -8px);
+                transform-origin: top center;
+                transition:
+                    opacity 0.25s ease,
+                    visibility 0.25s ease,
+                    transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                pointer-events: none;
+            }
+
+            .card:hover .card-body {
+                opacity: 1;
+                visibility: visible;
+                transform: translate(-50%, 0);
+                pointer-events: auto;
+            }
+
+            .card-excerpt {
+                font-size: 14px;
+                color: #999;
+                line-height: 1.6;
+                margin-bottom: 0.8rem;
+            }
+
+            .card-footer {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .card-source {
+                font-size: 11px;
+                color: #444;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .card-link {
+                font-size: 13px;
+                color: #44aaff;
+                font-weight: 600;
+            }
+
+            /* Last-row cards expand upward */
+            .card.expand-up .card-body {
+                top: auto;
+                bottom: 100%;
+                border-radius: 6px 6px 0 0;
+                transform-origin: bottom center;
+                transform: translate(-50%, 8px);
+            }
+
+            .card.expand-up:hover .card-body {
+                transform: translate(-50%, 0);
+            }
+
+            .card.expand-up:hover .card-visual {
+                border-radius: 0 0 6px 6px;
+            }
+
+            /* ── No Results ──────────────────────────────── */
+
+            .no-results {
+                text-align: center;
+                padding: 80px 20px;
+                color: #444;
+                font-size: 14px;
+                display: none;
+                grid-column: 1 / -1;
+            }
+
+            /* ── Footer ──────────────────────────────────── */
+
+            .footer {
+                position: relative;
+                z-index: 1;
+                text-align: center;
+                padding: 40px 20px 60px;
+                font-size: 13px;
+                color: #333;
+            }
+
+            /* ── Mobile ──────────────────────────────────── */
+
+            @media (max-width: 640px) {
+                .site-header {
+                    padding: 48px 16px 32px;
+                }
+
+                .stats {
+                    gap: 16px;
+                    font-size: 12px;
+                }
+
+                .filter-bar {
+                    gap: 6px;
+                    padding: 10px 12px;
+                }
+
+                .filter-btn {
+                    font-size: 10px;
+                    padding: 6px 12px;
+                }
+
+                .card-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                    gap: 0.8rem;
+                    padding: 1rem;
+                }
+
+                .year-marker .year-label {
+                    font-size: 48px;
+                }
+
+                /* On mobile: no hover overlay, show body inline */
+                .card-body {
+                    position: relative;
+                    top: auto;
+                    left: auto;
+                    width: 100%;
+                    max-width: 100%;
+                    opacity: 1;
+                    visibility: visible;
+                    transform: none;
+                    pointer-events: auto;
+                    box-shadow: none;
+                    border-radius: 0 0 6px 6px;
+                    padding: 0.6rem 0.5rem;
+                }
+
+                .card:hover .card-visual {
+                    transform: none;
+                    box-shadow: none;
+                    border-radius: 6px 6px 0 0;
+                }
+
+                .card:hover .card-meta {
+                    transform: none;
+                }
+
+                .card.expand-up .card-body {
+                    top: auto;
+                    bottom: auto;
+                    border-radius: 0 0 6px 6px;
+                    transform: none;
+                }
+
+                .card-title {
+                    font-size: 14px;
+                }
+
+                .card-excerpt {
+                    font-size: 12px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="star-canvas"></canvas>
+
+        <header class="site-header">
+            <h1>do-not-panic.com</h1>
+            <p class="tagline">Linux kernel &middot; open source &middot; travel &middot; philosophy &middot; tools</p>
+            <p class="author">by Luis Chamberlain</p>
+            <div class="stats">
+                <div>
+                    <span>69</span>
+                    posts
+                </div>
+                <div>
+                    <span>15</span>
+                    years
+                </div>
+                <div>
+                    <span>7</span>
+                    categories
+                </div>
+            </div>
+        </header>
+
+        <nav class="filter-bar" id="filter-bar"></nav>
+
+        <main class="card-grid" id="card-grid"></main>
+        <p class="no-results" id="no-results">No posts match this filter.</p>
+
+        <footer class="footer">do-not-panic.com &copy; 2011&ndash;2026 Luis Chamberlain</footer>
+
+        <script>
+            var CATEGORIES = [
+                { key: "all", label: "All" },
+                { key: "linux", label: "Linux / Kernel" },
+                { key: "opensource", label: "Open Source" },
+                { key: "travel", label: "Travel / Outdoors" },
+                { key: "philosophy", label: "Philosophy" },
+                { key: "ai", label: "AI / Tech" },
+                { key: "tools", label: "Tools" },
+                { key: "viz", label: "Visualizations" },
+            ]
+
+            var POSTS = [
+                {
+                    id: 72,
+                    date: "2026-03-04",
+                    title: "PTP: Resolving the Independence Flaw",
+                    excerpt:
+                        "Interactive deep dive into Parallel Token Prediction (PTP) — how normalizing flows fix the independence flaw in multi-token prediction.",
+                    category: "viz",
+                    source: "viz",
+                    url: "viz/2026/03/04/ptp-viz.html",
+                    image: "images/72.png",
+                },
+                {
+                    id: 71,
+                    date: "2026-03-04",
+                    title: "Weight Decay ≠ L2 Regularization",
+                    excerpt:
+                        "Interactive visualization explaining why weight decay and L2 regularization diverge with Adam, and how AdamW fixes it.",
+                    category: "viz",
+                    source: "viz",
+                    url: "viz/2026/03/04/weight-decay.html",
+                    image: "images/71.png",
+                },
+                {
+                    id: 1,
+                    date: "2026-03-04",
+                    title: "Musk Projection Reality Check — Dwarkesh Podcast Feb 2026",
+                    excerpt:
+                        "Every major claim from Elon Musk on the Dwarkesh Podcast stress-tested with a 0-100 reality score.",
+                    category: "viz",
+                    source: "viz",
+                    url: "viz/2026/03/04/musk-dwarkesh-projections.html",
+                    image: "images/1.png",
+                },
+                {
+                    id: 2,
+                    date: "2022-12-22",
+                    title: "kdevops v6.2-rc1 released",
+                    excerpt:
+                        "After three years, kdevops v6.2-rc1 has been released. 680 commits over 8 months with support for Zoned storage and CXL.",
+                    category: "linux",
+                    source: "kernel.org",
+                    url: "blog/2022/12/22/kdevops-v6-2-rc1-released.html",
+                    image: "images/2.png",
+                },
+                {
+                    id: 3,
+                    date: "2020-04-01",
+                    title: "COVID19: don't think about tomorrow, it's too small",
+                    excerpt: "A reflection during the early COVID-19 pandemic period.",
+                    category: "philosophy",
+                    source: "blog",
+                    url: "blog/2020/04/01/covid19-tomorrow-is-too-small.html",
+                    image: "images/3.png",
+                },
+                {
+                    id: 4,
+                    date: "2019-08-16",
+                    title: "kdevops: a devops framework for Linux kernel development",
+                    excerpt:
+                        "Announcing kdevops — a framework to simplify Linux kernel setup and testing using Ansible, Vagrant, and Terraform.",
+                    category: "linux",
+                    source: "kernel.org",
+                    url: "blog/2019/08/16/kdevops-a-devops-framework-for-linux-kernel-development.html",
+                    image: "images/4.png",
+                },
+                {
+                    id: 5,
+                    date: "2019-06-18",
+                    title: "Replacing offlineimap with mbsync",
+                    excerpt:
+                        "Documenting the transition from offlineimap to mbsync, with system graphs showing offlineimap's consistent out-of-memory crashes.",
+                    category: "tools",
+                    source: "kernel.org",
+                    url: "blog/2019/06/18/replacing-offlineimap-with-mbsync.html",
+                    image: "images/5.png",
+                },
+                {
+                    id: 6,
+                    date: "2017-11-01",
+                    title: "To be an encrypted ninja or not to be...",
+                    excerpt:
+                        "A proof of concept from SUSE Hackweek and Aaron Swartz day to help encrypt all incoming emails using GPG.",
+                    category: "tools",
+                    source: "blog",
+                    url: "blog/2017/11/01/to-be-encrypted-ninja-or-not-to-be.html",
+                    image: "images/6.png",
+                },
+                {
+                    id: 7,
+                    date: "2016-08-11",
+                    title: "Concerns with Xen PVH / HVMLite boot on Linux x86",
+                    excerpt:
+                        "Streamlining proper upstream support for Xen on x86 Linux, tackling dead code in x86 Linux Xen paravirtualization.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2016/08/11/concerns-with-xen-pvh-boot-on-x86-linux.html",
+                    image: "images/7.png",
+                },
+                {
+                    id: 8,
+                    date: "2016-02-27",
+                    title: "I'm part of Conservancy's GPL Compliance Project for Linux",
+                    excerpt:
+                        "Signed an agreement for the Software Freedom Conservancy to enforce the GPL on my behalf as a Linux copyright holder.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2016/02/27/im-part-of-conservancys-gpl-compliance.html",
+                    image: "images/8.png",
+                },
+                {
+                    id: 9,
+                    date: "2016-02-25",
+                    title: "ZFS, Linux, illumos and the ISC license",
+                    excerpt:
+                        "Whether Canonical including and shipping ZFS as a Linux kernel module might be a GPL violation.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2016/02/25/zfs-linux-and-illumos-and-isc-license.html",
+                    image: "images/9.png",
+                },
+                {
+                    id: 10,
+                    date: "2016-01-29",
+                    title: "Support software freedom now!",
+                    excerpt:
+                        "Bradley Kuhn made an urgent call for supporters of free software to help strengthen both the FSF and Software Freedom Conservancy.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2016/01/29/support-software-freedom-now.html",
+                    image: "images/10.png",
+                },
+                {
+                    id: 11,
+                    date: "2016-01-28",
+                    title: "Why open hardware must succeed",
+                    excerpt:
+                        "Why open hardware is critical beyond just disruptive hipster companies. To the average person it simply sounds like a good idea — it's more than that.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2016/01/28/why-open-hardware-must-succeed.html",
+                    image: "images/11.png",
+                },
+                {
+                    id: 12,
+                    date: "2015-12-22",
+                    title: "Linux asynchronous probe — let\u2019s try this again",
+                    excerpt:
+                        "As of v4.2 the Linux kernel sports asynchronous probe support. How systemd limits the number of devices on a Linux system.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2015/12/22/linux-asynchronous-probe.html",
+                    image: "images/12.png",
+                },
+                {
+                    id: 13,
+                    date: "2015-12-14",
+                    title: "Xen and the x86 Linux zero page",
+                    excerpt:
+                        "Part II of the pv_ops series. On x86 Linux the boot sequence is complicated, with its own dedicated boot protocol and zero page.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2015/12/14/xen-and-x86-linux-zero-page.html",
+                    image: "images/13.png",
+                },
+                {
+                    id: 14,
+                    date: "2015-12-10",
+                    title: "Avoiding dead code: pv_ops is not the silver bullet",
+                    excerpt:
+                        "Part I: Code that should not run should never run — examining dead code concerns in x86 Linux paravirtualization.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2015/12/10/avoiding-dead-code-pvops-not-silver-bullet.html",
+                    image: "images/14.png",
+                },
+                {
+                    id: 15,
+                    date: "2015-04-01",
+                    title: "God complex — why open models will win",
+                    excerpt:
+                        "Engineering and science can never be about religion, they are about trial and error, empirical evidence, precision, and math.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2015/04/01/god-complex-why-open-models-will-win.html",
+                    image: "images/15.png",
+                },
+                {
+                    id: 16,
+                    date: "2015-03-05",
+                    title: "VMware law suit and an Apology to the BSD camp",
+                    excerpt:
+                        "Started hacking on Linux without consideration for software licensing, out of pure joy. Reflecting on the VMware GPL lawsuit.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2015/03/05/vmware-law-suit-and-apology-to-bsd-camp.html",
+                    image: "images/16.png",
+                },
+                {
+                    id: 17,
+                    date: "2014-11-17",
+                    title: "Automating backport kernel integration support",
+                    excerpt:
+                        "Complex tasks are not trivially automated, but exploring how backport kernel integration can be.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2014/11/17/automating-backport-kernel-integration.html",
+                    image: "images/17.png",
+                },
+                {
+                    id: 18,
+                    date: "2014-08-25",
+                    title: "Hacking on systemd with OpenSUSE",
+                    excerpt:
+                        "Had no choice but to hack on systemd and found no documentation on how to do this on OpenSUSE. Replacing /sbin/init isn't simple anymore.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2014/08/25/hacking-on-systemd-with-opensuse.html",
+                    image: "images/18.png",
+                },
+                {
+                    id: 19,
+                    date: "2014-07-25",
+                    title: "Colored diffs with mutt",
+                    excerpt:
+                        "Can't stand reviewing patches with gmail or any GUI client. How to get colored diffs when reviewing patches in mutt.",
+                    category: "tools",
+                    source: "blog",
+                    url: "blog/2014/07/25/colored-diffs-with-mutt.html",
+                    image: "images/19.png",
+                },
+                {
+                    id: 20,
+                    date: "2014-07-17",
+                    title: "Applying patches from mutt onto a git tree easily",
+                    excerpt:
+                        "For project maintainers using git who wish to merge patches easily into a project directly from mutt.",
+                    category: "tools",
+                    source: "blog",
+                    url: "blog/2014/07/17/applying-patches-from-mutt-onto-git.html",
+                    image: "images/20.png",
+                },
+                {
+                    id: 21,
+                    date: "2014-05-27",
+                    title: "Building and booting vanilla Xen on vanilla Linux with systemd",
+                    excerpt:
+                        "If you want to do Xen development you should be working with upstream sources and sending patches upstream ASAP.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2014/05/27/building-and-booting-vanilla-linux-xen-with-systemd.html",
+                    image: "images/21.png",
+                },
+                {
+                    id: 22,
+                    date: "2014-04-08",
+                    title: "Open Research through collaborative development",
+                    excerpt:
+                        "Academia helps shape our lives and economics. How collaborative open development models can improve research.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2014/04/08/open-research-through-collaborative-development.html",
+                    image: "images/22.png",
+                },
+                {
+                    id: 23,
+                    date: "2014-04-07",
+                    title: "Summary of the gains of Xen oxenstored over cxenstored",
+                    excerpt:
+                        "Helping maintain and push forward Xen at SUSE, addressing the huge delta with upstream. Comparing oxenstored vs cxenstored.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2014/04/07/summary-of-gains-of-xen-oxenstored.html",
+                    image: "images/23.png",
+                },
+                {
+                    id: 24,
+                    date: "2014-04-05",
+                    title: "Automatic kernel backporting with Coccinelle",
+                    excerpt:
+                        "Exponential growth applies to software too. Using Coccinelle (SmPL) for automatic kernel backporting.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2014/04/05/automatic-linux-kernel-backporting-with-coccinelle.html",
+                    image: "images/24.png",
+                },
+                {
+                    id: 25,
+                    date: "2014-03-24",
+                    title: "Free Software, Patents, Surveillance and Cosmos",
+                    excerpt:
+                        "A 3-piece entry integrating free software, legal innovation around patents, and surveillance considerations.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2014/03/24/free-software-patents-surveillance-and.html",
+                    image: "images/25.png",
+                },
+                {
+                    id: 26,
+                    date: "2014-03-24",
+                    title: "Cosmic evolution of free software",
+                    excerpt:
+                        "Exploring the relationship between cosmology, singularity and free software, and surveillance.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2014/03/24/cosmic-evolution-of-free-software.html",
+                    image: "images/26.png",
+                },
+                {
+                    id: 27,
+                    date: "2014-03-24",
+                    title: "The Free Software patent paradox",
+                    excerpt:
+                        "The rapid pace of evolution of free software, open source software, and legal evolutions — implications for business models.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2014/03/24/the-free-software-patent-paradox.html",
+                    image: "images/27.png",
+                },
+                {
+                    id: 28,
+                    date: "2014-03-24",
+                    title: "The dangers of free software",
+                    excerpt:
+                        "There are serious dangers with free software and open source software. Some zealots may tell you there is nothing to worry about.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2014/03/24/the-dangers-of-free-software.html",
+                    image: "images/28.png",
+                },
+                {
+                    id: 29,
+                    date: "2014-02-20",
+                    title: "Embracing the Developer Certificate of Origin",
+                    excerpt:
+                        "Streamlining and embracing the DCO in the FOSS community has huge value. The Linux Foundation made the DCO a standalone project.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2014/02/20/developer-certificate-of-origin.html",
+                    image: "images/29.png",
+                },
+                {
+                    id: 30,
+                    date: "2013-11-21",
+                    title: "I quit Qualcomm today! Whoohoo! Joining SUSE",
+                    excerpt:
+                        "After 5 years and 8 months, resigned at Qualcomm Atheros. A terribly hard decision given how much work the upstream Linux team put in.",
+                    category: "philosophy",
+                    source: "blog",
+                    url: "blog/2013/11/21/i-quit-qualcomm-today-whoohoo.html",
+                    image: "images/30.png",
+                },
+                {
+                    id: 31,
+                    date: "2013-08-15",
+                    title: "Evolving capitalism with ethical attributes",
+                    excerpt:
+                        "Capitalism as we know it is broken. Don't have a concrete solution but believe we should help try to evolve it with ethical attributes.",
+                    category: "philosophy",
+                    source: "blog",
+                    url: "blog/2013/08/15/evolving-capitalism-with-ethical.html",
+                    image: "images/31.png",
+                },
+                {
+                    id: 32,
+                    date: "2013-06-29",
+                    title: "Bubble's Law and the Bubble Bang",
+                    excerpt:
+                        "The method of science, as stodgy and grumpy as it may seem, is far more important than the findings of science — Carl Sagan.",
+                    category: "philosophy",
+                    source: "blog",
+                    url: "blog/2013/06/29/bubbles-law-and-bubble-bang.html",
+                    image: "images/32.png",
+                },
+                {
+                    id: 33,
+                    date: "2013-05-11",
+                    title: "Making your e-mail public",
+                    excerpt:
+                        "An idea brewing to make e-mail public. Initial reactions on Twitter and in person about the concept.",
+                    category: "philosophy",
+                    source: "blog",
+                    url: "blog/2013/05/11/making-your-e-mail-public.html",
+                    image: "images/33.png",
+                },
+                {
+                    id: 34,
+                    date: "2013-03-11",
+                    title: "Machine slavery — compat-drivers build box",
+                    excerpt:
+                        "How the compat-drivers project got started, designed to help automatically backport the Linux kernel.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2013/03/11/machine-slavery-compat-drivers-build-box.html",
+                    image: "images/34.png",
+                },
+                {
+                    id: 35,
+                    date: "2013-03-04",
+                    title: "Killing proprietary drivers for all Operating Systems",
+                    excerpt:
+                        "If you've been hacking on Linux, FreeBSD, NetBSD, OpenBSD or any other open OS — what's needed to kill proprietary drivers.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2013/03/04/killing-proprietary-drivers-for-all.html",
+                    image: "images/35.png",
+                },
+                {
+                    id: 36,
+                    date: "2013-03-03",
+                    title: "Climbing reconnaissance at Patagonia",
+                    excerpt:
+                        "Started learning about Patagonia when getting into rock climbing, and started considering new climbing mecas to visit.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2013/03/03/climbing-reconnaissance-at-patagonia.html",
+                    image: "images/36.png",
+                },
+                {
+                    id: 37,
+                    date: "2013-03-03",
+                    title: "City life: Santiago and Buenos Aires",
+                    excerpt:
+                        "Living in San Francisco, couldn't pass up visiting the major cities in Chile and Argentina during the Patagonia trip.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2013/03/03/city-life-santiago-and-buenos-aires.html",
+                    image: "images/37.png",
+                },
+                {
+                    id: 38,
+                    date: "2013-03-03",
+                    title: "Patagonia: Quick glance at its history",
+                    excerpt:
+                        "A monument at the Bariloche Patagonia Civic center, about Julio Argentino Roca and the history of Patagonia.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2013/03/03/patagonia-quick-glance-at-its-history.html",
+                    image: "images/38.png",
+                },
+                {
+                    id: 39,
+                    date: "2013-03-03",
+                    title: "Patagonia: Trail running around Bariloche",
+                    excerpt:
+                        "Bariloche is part of the Parque Nacional Nahuel Huapi. Climbers go there for easier routes than Fitz Roy.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2013/03/03/patagonia-trail-running-around-bariloche.html",
+                    image: "images/39.png",
+                },
+                {
+                    id: 40,
+                    date: "2013-03-03",
+                    title: "Patagonia: Trekking around Fitz Roy",
+                    excerpt:
+                        "Read so much about Fitz Roy and was finally there. You get to Fitz Roy through El Chalten.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2013/03/03/patagonia-trekking-around-fitz-roy.html",
+                    image: "images/40.png",
+                },
+                {
+                    id: 41,
+                    date: "2013-03-03",
+                    title: "Patagonia: Trekking the W — Torres Del Paine",
+                    excerpt: "Knew nothing about Torres Del Paine before the trip. The famous W trek in all its glory.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2013/03/03/patagonia-trekking-w-torres-del-paine.html",
+                    image: "images/41.png",
+                },
+                {
+                    id: 42,
+                    date: "2013-03-03",
+                    title: "Patagonia: Trekking gear",
+                    excerpt:
+                        "Key important gear items for Patagonia trekking. Keeping it short since tons of sites already cover recommendations.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2013/03/03/patagonia-trekking-gear.html",
+                    image: "images/42.png",
+                },
+                {
+                    id: 43,
+                    date: "2013-03-03",
+                    title: "Patagonia: Travel arrangements",
+                    excerpt: "Travel logistics and arrangements for the Patagonia trip.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2013/03/03/patagonia-travel-arrangements.html",
+                    image: "images/43.png",
+                },
+                {
+                    id: 44,
+                    date: "2013-03-03",
+                    title: "Celebrating one year of rock climbing: Yosemite",
+                    excerpt: "Celebrating one year of rock climbing with a trip to Yosemite.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2013/03/03/celebrating-one-year-of-rock-climbing.html",
+                    image: "images/44.png",
+                },
+                {
+                    id: 45,
+                    date: "2012-08-29",
+                    title: "Crashing an Armenian wedding",
+                    excerpt:
+                        "Armenia was a blank page. Didn't even know where it was on the map. Ended up crashing an Armenian wedding.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2012/08/29/crashing-armenian-wedding.html",
+                    image: "images/45.png",
+                },
+                {
+                    id: 46,
+                    date: "2012-08-29",
+                    title: "Revisiting the Caucasus as a kernel hacker",
+                    excerpt:
+                        "Learned a lot about Armenia and the Caucasus but it left wanting to learn more. Intends on visiting again.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2012/08/29/revisiting-caucasus-as-kernel-hacker.html",
+                    image: "images/46.png",
+                },
+                {
+                    id: 47,
+                    date: "2012-08-29",
+                    title: "An Armenian wedding",
+                    excerpt:
+                        "What an experience. Grateful to the family for having invited this Costarican wedding crasher.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2012/08/29/an-armenian-wedding.html",
+                    image: "images/47.png",
+                },
+                {
+                    id: 48,
+                    date: "2012-08-29",
+                    title: "General tourist advice for Armenia",
+                    excerpt: "Yerevan sleeps late, closes late, and parties hard. Practical tips for visiting Armenia.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2012/08/29/general-tourist-advice-for-armenia.html",
+                    image: "images/48.png",
+                },
+                {
+                    id: 49,
+                    date: "2012-08-29",
+                    title: "Running and rock climbing in Armenia",
+                    excerpt:
+                        "The first two nights alone in Armenia reminded him of how much he loved not knowing a single soul in a new place.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2012/08/29/running-and-rock-climbing-in-armenia.html",
+                    image: "images/49.png",
+                },
+                {
+                    id: 50,
+                    date: "2012-08-13",
+                    title: "Automatically backporting the Linux kernel",
+                    excerpt:
+                        "Users should get support for their hardware on any supported kernel. Developers should always prioritize working upstream.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2012/08/13/automatically-backporting-linux-kernel.html",
+                    image: "images/50.png",
+                },
+                {
+                    id: 51,
+                    date: "2012-08-13",
+                    title: "Optimizing backporting collateral evolutions",
+                    excerpt:
+                        "In November 2005 the first paper was published that coined the term collateral evolutions by Yoann Padioleau et al.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2012/08/13/optimizing-backporting-collateral.html",
+                    image: "images/51.png",
+                },
+                {
+                    id: 52,
+                    date: "2012-07-18",
+                    title: "mac80211 contribution graphs up to v3.5-rc7",
+                    excerpt:
+                        "Every now and then asked how much activity goes on in mac80211 development on the Linux kernel.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2012/07/18/mac80211-contribution-graphs-up-to-v35.html",
+                    image: "images/52.png",
+                },
+                {
+                    id: 53,
+                    date: "2012-07-08",
+                    title: "Gay boring, Gay Google and copyleft-next",
+                    excerpt:
+                        "Google announced a global campaign to legalize gay marriage. Discussion of the copyleft-next project.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2012/07/08/gay-boring-gay-google-and-copyleft-next.html",
+                    image: "images/53.png",
+                },
+                {
+                    id: 54,
+                    date: "2012-04-14",
+                    title: "Learning to snowboard and picking gear",
+                    excerpt:
+                        "Started snowboarding around Pi day (3/14) in 2011. First venture was out to Kirkwood in Tahoe.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2012/04/14/learning-to-snowboard-and-picking-gear.html",
+                    image: "images/54.png",
+                },
+                {
+                    id: 55,
+                    date: "2012-04-03",
+                    title: "Localizing the GPL",
+                    excerpt:
+                        "A huge proliferation of FOSS licenses in the community. Each should be considered as a tool with its own capabilities.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2012/04/03/localizing-gpl.html",
+                    image: "images/55.png",
+                },
+                {
+                    id: 56,
+                    date: "2012-03-26",
+                    title: "Trail running in Muir Woods like an ape",
+                    excerpt:
+                        "Every now and then likes to beat his body to pulp with a good workout, take things a step further.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2012/03/26/trail-running-in-muir-woods-like-ape.html",
+                    image: "images/56.png",
+                },
+                {
+                    id: 57,
+                    date: "2012-03-17",
+                    title: "V-scale and YDS conversion chart",
+                    excerpt:
+                        "If you're starting to rock climb, chances are you are at an indoor gym. Explaining grade conversions.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2012/03/17/v-scale-and-yds-conversion-chart.html",
+                    image: "images/57.png",
+                },
+                {
+                    id: 58,
+                    date: "2012-03-16",
+                    title: "What have you done for me lately?",
+                    excerpt:
+                        "Asked for an idea of what Qualcomm Atheros has done on Linux upstream. Wanted stats before contributing more.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2012/03/16/what-have-you-done-for-me-lately.html",
+                    image: "images/58.png",
+                },
+                {
+                    id: 59,
+                    date: "2012-03-16",
+                    title: "Rock climbing infatuation",
+                    excerpt:
+                        "Tried rock climbing for the very first time on August 28, 2011. Two friends had told him about it.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2012/03/16/rock-climbing-infatuation.html",
+                    image: "images/59.png",
+                },
+                {
+                    id: 60,
+                    date: "2012-03-14",
+                    title: "The importance of the GPL",
+                    excerpt:
+                        "The GPLv2 was a masterpiece for its time. It did to software the inverse of the extent to which copyright had been extended.",
+                    category: "opensource",
+                    source: "blog",
+                    url: "blog/2012/03/14/importance-of-gpl.html",
+                    image: "images/60.png",
+                },
+                {
+                    id: 61,
+                    date: "2012-03-13",
+                    title: "Connecting the dots...",
+                    excerpt:
+                        "Hates to reference Steve Jobs but remembers his famous 2005 Stanford Commencement speech about connecting the dots.",
+                    category: "philosophy",
+                    source: "blog",
+                    url: "blog/2012/03/13/connecting-dots.html",
+                    image: "images/61.png",
+                },
+                {
+                    id: 62,
+                    date: "2012-02-27",
+                    title: "GNU things are GNU — Simplicity of GNU Make",
+                    excerpt:
+                        "GNU things are GNU. If you're a hacker you'll understand this is a fun interjection. Exploring GNU Make simplicity.",
+                    category: "tools",
+                    source: "blog",
+                    url: "blog/2012/02/27/gnu-things-are-gnu-simplicity-of-gnu.html",
+                    image: "images/62.png",
+                },
+                {
+                    id: 63,
+                    date: "2012-02-10",
+                    title: "Using iperf with Linux containers",
+                    excerpt:
+                        "At times you may want to hack on a driver and test it on the same machine without requiring a switch or another box.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2012/02/10/using-iperf-with-linux-containers.html",
+                    image: "images/63.png",
+                },
+                {
+                    id: 64,
+                    date: "2012-02-04",
+                    title: "Surfing in the bay area",
+                    excerpt:
+                        "Broke a surf board while learning in Costa Rica. The guy at the shop, Ozzie Hoppe from Adrift Surf Shop, was great.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2012/02/04/surfing-in-bay-area.html",
+                    image: "images/64.png",
+                },
+                {
+                    id: 65,
+                    date: "2012-02-04",
+                    title: "Intro to surfing in Costa Rica",
+                    excerpt:
+                        "Visited home country Costa Rica for a cousin's wedding in Puerto Viejo. First time surfing.",
+                    category: "travel",
+                    source: "blog",
+                    url: "blog/2012/02/04/intro-to-surfing-in-costa-rica.html",
+                    image: "images/65.png",
+                },
+                {
+                    id: 66,
+                    date: "2011-12-30",
+                    title: "A bunch of nothingness",
+                    excerpt:
+                        "Stared at a cuckoo clock that went off every half hour. One cuckoo for one half hour, two for a full hour.",
+                    category: "philosophy",
+                    source: "blog",
+                    url: "blog/2011/12/30/bunch-of-nothingness.html",
+                    image: "images/66.png",
+                },
+                {
+                    id: 67,
+                    date: "2011-12-05",
+                    title: "The bufferbloat alarms go off... again",
+                    excerpt:
+                        "If you haven't heard of bufferbloat and you work for a silicon company making networking hardware — read this.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2011/12/05/bufferbloat-alarms-go-off.html",
+                    image: "images/67.png",
+                },
+                {
+                    id: 68,
+                    date: "2011-11-19",
+                    title: "Homeless person says good morning",
+                    excerpt:
+                        "A homeless person said good morning instead of asking for a quarter or food. Was so pleased with the attitude.",
+                    category: "philosophy",
+                    source: "blog",
+                    url: "blog/2011/11/19/homeless-person-says-good-morning-today.html",
+                    image: "images/68.png",
+                },
+                {
+                    id: 69,
+                    date: "2011-09-24",
+                    title: "Comcast bufferbloat in San Francisco",
+                    excerpt:
+                        "ISP Comcast is suffering massive bufferbloat issues in San Francisco. Sharing netalyzr results.",
+                    category: "linux",
+                    source: "blog",
+                    url: "blog/2011/09/24/comcast-bufferbloat-in-san-francisco-my.html",
+                    image: "images/69.png",
+                },
+                {
+                    id: 70,
+                    date: "2011-09-01",
+                    title: "Educational issues with polynomiography",
+                    excerpt:
+                        "Educational issues related to polynomiography — visualization of polynomial root-finding.",
+                    category: "ai",
+                    source: "blog",
+                    url: "blog/2011/09/01/educational-issues-with-polynomiography.html",
+                    image: "images/70.png",
+                },
+            ]
+
+            var BADGE_MAP = {
+                linux: { cls: "badge-linux", label: "Linux / Kernel" },
+                opensource: {
+                    cls: "badge-opensource",
+                    label: "Open Source",
+                },
+                travel: {
+                    cls: "badge-travel",
+                    label: "Travel / Outdoors",
+                },
+                philosophy: {
+                    cls: "badge-philosophy",
+                    label: "Philosophy",
+                },
+                ai: { cls: "badge-ai", label: "AI / Tech" },
+                tools: { cls: "badge-tools", label: "Tools" },
+                viz: { cls: "badge-viz", label: "Visualization" },
+            }
+
+            // ── Filter bar ──────────────────────────────────────
+            var activeFilter = "all"
+            var filterBar = document.getElementById("filter-bar")
+
+            CATEGORIES.forEach(function (cat) {
+                var btn = document.createElement("button")
+                btn.className = "filter-btn" + (cat.key === "all" ? " active" : "")
+                btn.textContent = cat.label
+                btn.dataset.key = cat.key
+                btn.addEventListener("click", function () {
+                    activeFilter = cat.key
+                    filterBar.querySelectorAll(".filter-btn").forEach(function (b) {
+                        b.classList.toggle("active", b.dataset.key === activeFilter)
+                    })
+                    renderGrid()
+                })
+                filterBar.appendChild(btn)
+            })
+
+            // ── Render card grid ─────────────────────────────────
+            var grid = document.getElementById("card-grid")
+            var noResults = document.getElementById("no-results")
+
+            function formatDate(d) {
+                var parts = d.split("-")
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+                return months[parseInt(parts[1], 10) - 1] + " " + parseInt(parts[2], 10) + ", " + parts[0]
+            }
+
+            function renderGrid() {
+                grid.innerHTML = ""
+                var filtered =
+                    activeFilter === "all"
+                        ? POSTS
+                        : POSTS.filter(function (p) {
+                              return p.category === activeFilter
+                          })
+
+                noResults.style.display = filtered.length === 0 ? "block" : "none"
+
+                var currentYear = null
+
+                filtered.forEach(function (post) {
+                    var year = post.date.substring(0, 4)
+
+                    if (year !== currentYear) {
+                        currentYear = year
+                        var marker = document.createElement("div")
+                        marker.className = "year-marker"
+                        marker.innerHTML = '<div class="year-label">' + year + "</div>"
+                        grid.appendChild(marker)
+                    }
+
+                    var badge = BADGE_MAP[post.category]
+
+                    var card = document.createElement("a")
+                    card.className = "card"
+                    card.href = post.url
+
+                    var imgHtml = post.image
+                        ? '<img class="card-img" src="' +
+                          post.image +
+                          '" alt="' +
+                          post.title.replace(/"/g, "&quot;") +
+                          '" loading="lazy" />'
+                        : '<div class="card-placeholder">' + badge.label.charAt(0) + "</div>"
+
+                    card.innerHTML =
+                        '<div class="card-visual">' +
+                        imgHtml +
+                        "</div>" +
+                        '<div class="card-meta">' +
+                        '<div class="card-meta-row">' +
+                        '<span class="card-date">' +
+                        formatDate(post.date) +
+                        "</span>" +
+                        '<span class="card-badge ' +
+                        badge.cls +
+                        '">' +
+                        badge.label +
+                        "</span>" +
+                        "</div>" +
+                        '<div class="card-title">' +
+                        post.title +
+                        "</div>" +
+                        "</div>" +
+                        '<div class="card-body">' +
+                        '<p class="card-excerpt">' +
+                        post.excerpt +
+                        "</p>" +
+                        '<div class="card-footer">' +
+                        '<span class="card-source">' +
+                        post.source +
+                        "</span>" +
+                        '<span class="card-link">Read &rarr;</span>' +
+                        "</div>" +
+                        "</div>"
+
+                    grid.appendChild(card)
+                })
+
+                observeCards()
+                markLastRow()
+            }
+
+            // ── Mark last-row cards to expand upward ─────────────
+            function markLastRow() {
+                var cards = grid.querySelectorAll(".card")
+                cards.forEach(function (c) {
+                    c.classList.remove("expand-up")
+                })
+                if (cards.length === 0) return
+
+                var lastTop = cards[cards.length - 1].offsetTop
+                for (var i = cards.length - 1; i >= 0; i--) {
+                    if (cards[i].offsetTop === lastTop) {
+                        cards[i].classList.add("expand-up")
+                    } else {
+                        break
+                    }
+                }
+            }
+
+            // ── IntersectionObserver for fade-in ────────────────
+            var observer = null
+
+            function observeCards() {
+                if (observer) observer.disconnect()
+                observer = new IntersectionObserver(
+                    function (entries) {
+                        entries.forEach(function (entry) {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add("visible")
+                                observer.unobserve(entry.target)
+                            }
+                        })
+                    },
+                    { threshold: 0.1 },
+                )
+                document.querySelectorAll(".card").forEach(function (card) {
+                    observer.observe(card)
+                })
+            }
+
+            renderGrid()
+            window.addEventListener("resize", markLastRow)
+
+            // ── Canvas: starfield + shooting stars ───────────────
+            var canvas = document.getElementById("star-canvas")
+            var ctx = canvas.getContext("2d")
+            var W, H, stars, shootingStars
+
+            function resize() {
+                W = canvas.width = window.innerWidth
+                H = canvas.height = window.innerHeight
+                initStars()
+            }
+
+            function initStars() {
+                stars = []
+                var count = Math.floor((W * H) / 8000)
+                for (var i = 0; i < count; i++) {
+                    stars.push({
+                        x: Math.random() * W,
+                        y: Math.random() * H,
+                        r: Math.random() * 1.2 + 0.2,
+                        a: Math.random() * 0.4 + 0.05,
+                        twinkle: Math.random() * Math.PI * 2,
+                        speed: Math.random() * 0.02 + 0.005,
+                    })
+                }
+                shootingStars = []
+            }
+
+            function spawnShootingStar() {
+                if (shootingStars.length >= 3) return
+                if (Math.random() > 0.003) return
+                shootingStars.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H * 0.5,
+                    vx: (Math.random() - 0.3) * 8,
+                    vy: Math.random() * 4 + 2,
+                    life: 1.0,
+                    decay: Math.random() * 0.015 + 0.01,
+                    len: Math.random() * 40 + 20,
+                })
+            }
+
+            function drawStars(time) {
+                stars.forEach(function (s) {
+                    var flicker = Math.sin(time * s.speed + s.twinkle) * 0.3 + 0.7
+                    ctx.beginPath()
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2)
+                    ctx.fillStyle = "rgba(200,210,255," + s.a * flicker + ")"
+                    ctx.fill()
+                })
+            }
+
+            function drawShootingStars() {
+                for (var i = shootingStars.length - 1; i >= 0; i--) {
+                    var ss = shootingStars[i]
+                    ss.x += ss.vx
+                    ss.y += ss.vy
+                    ss.life -= ss.decay
+
+                    if (ss.life <= 0) {
+                        shootingStars.splice(i, 1)
+                        continue
+                    }
+
+                    ctx.beginPath()
+                    ctx.moveTo(ss.x, ss.y)
+                    ctx.lineTo(ss.x - ss.vx * (ss.len / 8), ss.y - ss.vy * (ss.len / 8))
+                    ctx.strokeStyle = "rgba(200,220,255," + ss.life * 0.6 + ")"
+                    ctx.lineWidth = 1.5
+                    ctx.stroke()
+                }
+            }
+
+            function animate(time) {
+                ctx.clearRect(0, 0, W, H)
+                drawStars(time * 0.001)
+                spawnShootingStar()
+                drawShootingStars()
+                requestAnimationFrame(animate)
+            }
+
+            window.addEventListener("resize", resize)
+            resize()
+            requestAnimationFrame(animate)
+        </script>
+    </body>
+</html>

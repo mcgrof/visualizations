@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Localizing the GPL — do-not-panic.com</title>
+        <meta name="theme-color" content="#08080d" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #08080d;
+                color: #d8d8d8;
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Cascadia Code", monospace;
+                line-height: 1.7;
+            }
+            .post-nav,
+            .post-footer {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .post-nav a,
+            .post-footer a {
+                color: #44aaff;
+                text-decoration: none;
+                font-size: 13px;
+            }
+            .post-nav a:hover,
+            .post-footer a:hover {
+                text-decoration: underline;
+            }
+            .post-header {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 40px 20px 20px;
+            }
+            .post-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 13px;
+            }
+            time {
+                color: #666;
+            }
+            .category-badge {
+                font-size: 10px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+            .badge-linux {
+                color: #ff5533;
+                background: rgba(255, 85, 51, 0.1);
+                border: 1px solid rgba(255, 85, 51, 0.2);
+            }
+            .badge-opensource {
+                color: #44bb77;
+                background: rgba(68, 187, 119, 0.1);
+                border: 1px solid rgba(68, 187, 119, 0.2);
+            }
+            .badge-travel {
+                color: #44aaff;
+                background: rgba(68, 170, 255, 0.1);
+                border: 1px solid rgba(68, 170, 255, 0.2);
+            }
+            .badge-philosophy {
+                color: #cc66ff;
+                background: rgba(204, 102, 255, 0.1);
+                border: 1px solid rgba(204, 102, 255, 0.2);
+            }
+            .badge-ai {
+                color: #ffbb44;
+                background: rgba(255, 187, 68, 0.1);
+                border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-tools {
+                color: #ff6699;
+                background: rgba(255, 102, 153, 0.1);
+                border: 1px solid rgba(255, 102, 153, 0.2);
+            }
+            .badge-viz {
+                color: #66ffcc;
+                background: rgba(102, 255, 204, 0.1);
+                border: 1px solid rgba(102, 255, 204, 0.2);
+            }
+            h1 {
+                font-size: clamp(22px, 4vw, 32px);
+                font-weight: 800;
+                line-height: 1.3;
+                color: #eee;
+                margin-bottom: 8px;
+            }
+            .source-link {
+                font-size: 12px;
+                color: #555;
+                text-decoration: none;
+            }
+            .source-link:hover {
+                color: #44aaff;
+            }
+            .post-content {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 20px;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .post-content p {
+                margin-bottom: 16px;
+            }
+            .post-content a {
+                color: #44aaff;
+            }
+            .post-content img {
+                max-width: 100%;
+                border-radius: 6px;
+                margin: 16px 0;
+            }
+            .post-content pre {
+                background: #0f0f18;
+                padding: 16px;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 16px 0;
+                font-size: 13px;
+            }
+            .post-content code {
+                background: #0f0f18;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+            .post-content pre code {
+                background: none;
+                padding: 0;
+            }
+            .post-content blockquote {
+                border-left: 3px solid #44aaff;
+                padding-left: 16px;
+                margin: 16px 0;
+                color: #999;
+            }
+            .post-content h2,
+            .post-content h3,
+            .post-content h4 {
+                margin: 24px 0 12px;
+                color: #ccc;
+            }
+            .post-content ul,
+            .post-content ol {
+                margin: 12px 0;
+                padding-left: 24px;
+            }
+            .post-content li {
+                margin-bottom: 6px;
+            }
+            .post-footer {
+                border-top: 1px solid #1a1a25;
+                margin-top: 40px;
+            }
+            @media (max-width: 640px) {
+                .post-header {
+                    padding: 24px 16px 16px;
+                }
+                .post-content {
+                    padding: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="post-nav"><a href="../../../../index.html">← back to timeline</a></nav>
+        <article>
+            <header class="post-header">
+                <div class="post-meta">
+                    <time datetime="2012-04-03">Apr 3, 2012</time>
+                    <span class="category-badge badge-opensource">Open Source</span>
+                </div>
+                <h1>Localizing the GPL</h1>
+                <a
+                    class="source-link"
+                    href="https://www.do-not-panic.com/2012/04/localizing-gpl.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    original source ↗
+                </a>
+            </header>
+            <div class="post-content">
+                <a
+                    href="http://www.flickr.com/photos/bobby__emm/5556316256/"
+                    title="swiss army knife by bobby__emm, on Flickr"
+                >
+                    <img
+                        alt="swiss army knife"
+                        height="500"
+                        src="http://farm6.staticflickr.com/5269/5556316256_15770fe654.jpg"
+                        width="374"
+                    />
+                </a>
+                <br />
+                <br />
+                Update: read
+                <a href="http://www.do-not-panic.com/2013/03/killing-proprietary-drivers-for-all.html">
+                    killing proprietary drivers for all OSes
+                </a>
+                for a followup
+                <br />
+                <br />
+                We have a huge proliferation of
+                <a href="http://en.wikipedia.org/wiki/Free_and_open_source_software" target="_blank">FOSS</a>
+                licenses in the community. Each one should be considered as a tool with its own set of capabilities and
+                purpose. The
+                <a href="http://en.wikipedia.org/wiki/GNU_General_Public_License" target="_blank">GPL</a>
+                is one of such licenses. I've written about
+                <a href="http://mcgrof.blogspot.com/2012/03/importance-of-gpl.html" target="_blank">
+                    the importance of the GPL before
+                </a>
+                . As an&nbsp;outsider&nbsp;to authoring process of the GPLv3 I now dissect issues I see with the
+                advances of the GPL, the community, and provide some recommendations as&nbsp;a&nbsp;community member.
+                I've noted
+                <a href="http://mcgrof.blogspot.com/2012/03/importance-of-gpl.html" target="_blank">before</a>
+                how even &nbsp;IBM, Red Hat, Novell and Intel did provide a draft edit&nbsp;recommendation&nbsp;of the
+                GPLv3. The big software project to persuade to follow the GPLv3 route was&nbsp;
+                <a href="http://kernel.org/" target="_blank">Linux</a>
+                , the&nbsp;kernel, and likely the GPLv3 got so much attention due to the possibility of Linux moving
+                over. Linux did not follow though -- but one must not forget the fact that the FSF helps spearhead
+                advances in Copyleft and although the sort of stuff they do state may make a few people cringe,
+                specially businesses who are currently banking on an archaic business models, take it for granted that
+                they are innovating philosophically. Its our roles in the community to take such new suggested
+                philosophies, see to it where we can apply the ideas, and help evolve the ideas and create dialogue.
+                <br />
+                <br />
+                <br />
+                <img alt="Caveman" src="http://liquidarchitecture.files.wordpress.com/2007/10/0_61_caveman.jpg" />
+                <br />
+                <br />
+                The GPLv2 is
+                <b>ancient</b>
+                , the Linux kernel is stuck on it, and I frankly do not see the whole project moving away from it any
+                time soon, nor do I have hopes of it. We had the&nbsp;
+                <a href="http://lwn.net/Articles/200422/" target="_blank">
+                    2006&nbsp;Kernel developers' position on GPLv3
+                </a>
+                , signed by 10 kernel developers. While this position only represents the views of 10 developers, this
+                statement is based on an old draft of the GPLv2.
+                <i>Times are changing</i>
+                too, and at least the section that deals with assignment of copyrights as a requirement is not really
+                something that we need, this has been proven by SFLC's work on GPL enforcement through the copyrights of
+                only a few developers. Some statements IMHO still do hold true though, particularly those that deal with
+                not changing the freedoms the users of a project already had. But that doesn't mean copyright holders
+                cannot decide at a later time to choose another license. In fact Linus did this himself when he decided
+                for the first time to actually use the GPLv2.
+                <br />
+                <br />
+                <a
+                    href="http://www.flickr.com/photos/17674930@N07/4143494760/"
+                    title="Mount Budawang Cool Temperate Rainforest by Poytr, on Flickr"
+                >
+                    <img
+                        alt="Mount Budawang Cool Temperate Rainforest"
+                        height="336"
+                        src="http://farm3.staticflickr.com/2670/4143494760_e21a0c80d5.jpg"
+                        width="500"
+                    />
+                </a>
+                <br />
+                <br />
+                A change in licensing of a FOSS project requires a compelling reason to not only address new
+                philosophical ideas but also ensure the project's success and help the ecosystem. The&nbsp;&nbsp;
+                <a href="http://lwn.net/Articles/200422/" target="_blank">
+                    2006&nbsp;Kernel developers' position on GPLv3
+                </a>
+                &nbsp;is trying to ensure that we don't bust the current investments made on the ecosystem, but doing a
+                very poor job at addressing the&nbsp;philosophy. Its not an easy task to do though, after all the FSF
+                deliberates with the community quite a bit before pushing out new licenses, and tackling the philosophy
+                means being actively involved in the process of authorship of the new licenses. Lets not forget that the
+                GPLv3 did have
+                <a href="http://mcgrof.blogspot.com/2012/03/importance-of-gpl.html" target="_blank">
+                    some corporate review
+                </a>
+                as well. I wonder if the GPLv3 might look a bit different today if other new major current stakeholders
+                like Google would be involved in working with the FSF on a new license. What would that look like?
+                <br />
+                <br />
+                <a
+                    href="http://www.flickr.com/photos/fotnmc/6107305190/"
+                    title="Teslas cornering by Falling Outside The Normal Moral Constraints, on Flickr"
+                >
+                    <img
+                        alt="Teslas cornering"
+                        height="333"
+                        src="http://farm7.staticflickr.com/6195/6107305190_1e3e7173f1.jpg"
+                        width="500"
+                    />
+                </a>
+
+                <br />
+                <br />
+                As software philosophy evolves though so does software, software evolves faster. Linux in particular has
+                evolved as the most rapidly evolving software project in the world, with impressive stats from
+                <a href="http://greg%20kh/" target="_blank">Greg KH</a>
+                's
+                <a href="http://kernel-development%20stats/" target="_blank">kernel-development stats</a>
+                as follows:
+                <br />
+                <br />
+                <pre><blockquote>
+3,160 developers
+  439 companies
+
+12,300 lines added
+ 8,800 lines removed
+ 2,300 lines modified
+
+per day for all of 2011
+
+5.77 changes per hour
+
+Kernel releases 2.6.37 &#8211; 3.2.0
+January 2011 &#8211; January 2012
+</blockquote>
+</pre>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    I value the
+                    <b>philosophy</b>
+                    behind the GPL3 and I wish we had a kernel using it and business models in place to embrace it. But
+                    we don't. Even if we wanted to relicense a GPLv2 project to GPLv3 is not trivial and this becomes
+                    increasingly difficult if the project is large with lots of contributors. The Linux kernel in
+                    particular has evolved to a type of project that accepts different types of GPLv2 compatible
+                    licenses on it. It also embraces a technique to allow contributors to ensure that their contribution
+                    are kept under the same license as the original file by the usage of the
+                    <a
+                        href="http://gerrit.googlecode.com/svn-history/r1526/documentation/2.1.2/user-signedoffby.html"
+                        target="_blank"
+                    >
+                        Singed-off-by tag
+                    </a>
+                    &nbsp;on every single commit into the Linux kernel. What this has done is is allow for an ecosystem
+                    of GPLv2 compatible licensed files.
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    <a href="http://www.flickr.com/photos/77107986@N00/316313067/" title="WTF by chasesound, on Flickr">
+                        <img
+                            alt="WTF"
+                            height="500"
+                            src="http://farm1.staticflickr.com/120/316313067_6fee62ec13.jpg"
+                            width="375"
+                        />
+                    </a>
+
+                    <br />
+                    <br />
+                    The Linux kernel is no longer a
+                    <b>GPLv2 only</b>
+                    project. The project
+                    <b>as a whole</b>
+                    is licensed under the GPLv2. Historically there has been a bit of confusion over what exactly can go
+                    into the Linux kernel, even&nbsp;among kernel maintainers.&nbsp;This became evident when
+                    <a href="http://nick%20kossifidis/" target="_blank">Nick Kossifidis</a>
+                    took OpenBSD's ar5k HAL, ported it to Linux, and we started working on getting a replacement for
+                    MadWifi upstream into the Linux kernel. At that time we were under the impression we needed to GPLv2
+                    the content. Theo de Raadt correctly nagged at us that our kernel maintainers should allow GPLv2
+                    compatible files. Rightly so -- this was possible but it required some work and we got the help of
+                    the
+                    <a href="http://www.softwarefreedom.org/" target="_blank">SFLC</a>
+                    to accomplish this. After we got ath5k upstream into the Linux kernel, ath9k followed suit, and it
+                    became the first completely permissively license driver in the Linux kernel. The goal and intent was
+                    simple: keep helping BSDs benefit from the work we made on Linux on the wireless front. I have
+                    helped spearhead a an effort to use permissive licenses in other areas of of Linux, even in
+                    userspace -- examples are
+                    <a href="http://wireless.kernel.org/en/developers/Regulatory/CRDA" target="_blank">CRDA</a>
+                    ,
+                    <a
+                        href="http://wireless.kernel.org/en/developers/Regulatory/#Releases_of_wireless-regdb"
+                        target="_blank"
+                    >
+                        wireless-regdb
+                    </a>
+                    ,
+                    <a href="https://github.com/mcgrof/regsim" target="_blank">
+                        regsim -- a&nbsp;userspace&nbsp;regulatory simulator
+                    </a>
+                    . I even
+                    <a
+                        href="http://git.kernel.org/?p=linux/kernel/git/torvalds/linux.git;a=commitdiff;h=3b77d5ec0c86b8a9594217ff9024b00e4d1c5795"
+                        target="_blank"
+                    >
+                        relicensed the Linux kernel's regulatory core code to the ISC permissive license
+                    </a>
+                    to help share more with the BSDs -- and this wasn't easy... it required getting ACKs from 24 of the
+                    contributors to it, took about 2 months and even had to address the contributions of two deceased
+                    developers to the Linux kernel... I hope it is clear that I've taken to heart the idea of sharing
+                    with the BSDs.
+                    <a href="http://mcgrof.blogspot.com/2012/03/connecting-dots.html" target="_blank">Dot</a>
+                    .
+                </div>
+                <div>
+                    <br />
+                </div>
+                <div>
+                    <a
+                        href="http://www.flickr.com/photos/laughingsquid/33239167/"
+                        title="Tux &amp; The BSD Daemon by Scott Beale, on Flickr"
+                    >
+                        <img
+                            alt="Tux &amp; The BSD Daemon"
+                            height="640"
+                            src="http://farm1.staticflickr.com/22/33239167_31d6ca94fb_z.jpg?zz=1"
+                            width="426"
+                        />
+                    </a>
+                    <br />
+                    <br />
+                    Not to seem contradictory but I still value the GPL. In fact I remember quite a few times, maybe
+                    countless now, where some BSD developers have gotten worked up about how their code is used. If the
+                    GPLv2 is old, guess what, the BSD license is older. In terms of philosophy the only thing innovative
+                    about the permissive&nbsp;
+                    <a href="http://en.wikipedia.org/wiki/ISC_license" target="_blank">ISC</a>
+                    license has is it has been made simple due to the
+                    <a
+                        href="http://en.wikipedia.org/wiki/Berne_Convention_for_the_Protection_of_Literary_and_Artistic_Works"
+                        target="_blank"
+                    >
+                        Berne Convetion
+                    </a>
+                    . The beauty about FOSS though is you have the freedom to work on the projects you want to though
+                    and you get then to express, use, and give freedoms to others in software the way you want to. I
+                    choose to help share as much as I can when it makes sense with the BSD family and even
+                    <a
+                        href="http://www.do-not-panic.com/2013/03/killing-proprietary-drivers-for-all.html"
+                        target="_blank"
+                    >
+                        proprietary drivers (to kill them)
+                    </a>
+                    . I strongly believe it helps with the FOSS ecosystem as a whole.
+                    <br />
+                    <br />
+                    <br />
+                    Areas where sharing makes no sense though I am a big proponent of considering new licensing
+                    techniques though. For example, and to make one last strong statement against
+                    <b>why its hard to consider the GPLv3 for the Linux kernel</b>
+                    , as an experiment I've started
+                    <b>toying</b>
+                    with the idea of relicensing the
+                    <a href="http://mcgrof.github.com/compat/" target="_blank">Linux kernel backporting</a>
+                    project I work on to
+                    <a
+                        href="https://docs.google.com/presentation/d/1axVNEGwKZjnzG1ocdd289WMqPxzJ3qfMv70ghGcnUKc/edit"
+                        target="_blank"
+                    >
+                        automatically backport the Linux kernel
+                    </a>
+                    &nbsp;on to the GPLv3. The most difficult technical issue I found was that GPLv2 files that do not
+                    have clauses in the license of "
+                    <i>GPLv2 or later</i>
+                    " would be incompatible with the GPLv3 content. To address this issue on the Linux kernel would be
+                    seriously hard. Consider the
+                    <a
+                        href="http://git.kernel.org/?p=linux/kernel/git/torvalds/linux.git;a=commitdiff;h=3b77d5ec0c86b8a9594217ff9024b00e4d1c5795"
+                        target="_blank"
+                    >
+                        relicensing effort I went through
+                    </a>
+                    &nbsp;on just making the regulatory core of the Linux kernel to the ISC license. Imagine doing that
+                    for every non "
+                    <i>GPLv2 or later</i>
+                    " file. Technically when backporting though one makes copyrightable changes to software though in
+                    order to make new features / APIs work with older kernels. These changes are copyrightable but I
+                    should not be able to GPLv3 content that is GPL only (ie, not "
+                    <i>GPLv2 or later</i>
+                    "). I didn't even begin to&nbsp;analyze the redistribution&nbsp;implication&nbsp;differences of
+                    embracing the GPLv3, but the licensing incompatible differences alone proved sufficient to disregard
+                    this idea.
+                    <br />
+                    <br />
+                    <a
+                        href="http://www.flickr.com/photos/reybeez/13901063/"
+                        title="Lightsaber Sy by Reybeez, on Flickr"
+                    >
+                        <img
+                            alt="Lightsaber Sy"
+                            height="375"
+                            src="http://farm1.staticflickr.com/11/13901063_a7325a7427.jpg"
+                            width="500"
+                        />
+                    </a>
+
+                    <br />
+                    <br />
+                    The strength of the GPL should by no means undermine fostering our ecosystem, and that is exactly
+                    what Linux kernel developers&nbsp;sought&nbsp;to avoid back when writing the&nbsp;&nbsp;
+                    <a href="http://lwn.net/Articles/200422/" target="_blank">
+                        2006&nbsp;Kernel developers' position on GPLv3
+                    </a>
+                    . I'll take this a step further though and say that the GPL should be treated as
+                    <b>one of our most precious tools</b>
+                    in our licensing toolbox, but, the weight that it carries must be
+                    <b>carefully considered</b>
+                    in light of our FOSS ecosystem. Let me provide one clear example. The
+                    <a href="http://hostap.epitest.fi/hostapd/" target="_blank">hostapd</a>
+                    project is a successful project that both the BSD and Linux communities reap benefits from, its
+                    licensed under a permissive license. It would be&nbsp;detrimental&nbsp;to the community for us to
+                    GPLv2 the project at this point. We stand more to gain than to loose by licensing the project under
+                    the GPLv2. When we could leverage more support from working with the BSD family or if we want to
+                    start bridging other ecosystems and development efforts in them we should consider using a license
+                    that suits those needs best.
+                    <br />
+                    <img
+                        alt="dumb caveman"
+                        src="http://www.computerclipart.com/computer_clipart_images/a_dumb_caveman_holding_a_club_0521-1005-1516-0141_SMU.jpg"
+                    />
+                    <br />
+                    <br />
+                    Drivers development is
+                    <b><u>not rocket science</u></b>
+                    , even if people make it out to be as such. Drivers should be simple, but due to how hardware
+                    development works even if you get all the documentation to a specific piece of hardware chances are
+                    that if you try to write a driver based on it that it will not work correctly. Sure, one could ask
+                    for the errata to hardware as well, but that's not easy to make available for various reasons.
+                    Hardware tends to always have bugs and these bugs are typically addressed through new iterations of
+                    hardware, or addressed through software workarounds in software. It is our capacity in the community
+                    to address hardware issues really fast, our community's diversity, and through random sampling and
+                    reporting that I believe makes FOSS driver development critical for a successful driver
+                    to&nbsp;succeed&nbsp;in the long run. This is best explained by
+                    <a href="http://www.youtube.com/watch?v=K5wCfYujRdE" target="_blank">Tim Harford's God Complex</a>
+                    , when something is so complex at times the best answer typically is not to assume perfect
+                    engineering, but instead expect mistakes and engineer around that. I think the community does a
+                    great job at addressing this type of engineering. When you understand this and learn to feed it
+                    properly, I believe you tend to see projects thrive.
+                    <br />
+                    <br />
+                    <br />
+                    <a
+                        href="http://www.flickr.com/photos/brevortasset/5229572097/"
+                        title="Protect your jewels by Trevor Basset, on Flickr"
+                    >
+                        <img
+                            alt="Protect your jewels"
+                            height="491"
+                            src="http://farm6.staticflickr.com/5168/5229572097_8611596553.jpg"
+                            width="500"
+                        />
+                    </a>
+
+                    <br />
+                    <br />
+                    Given that we stand more to gain by working with different communities together on driver
+                    development and that driver development is not rocket science, we should share more drivers in Linux
+                    with the BSD family and in fact we should see if its possible to even share with other OSes.&nbsp;We
+                    should use permissive licenses for
+                    <b>new</b>
+                    drivers, and only localize the GPL on places in the Linux kernel that we feel are our
+                    <b>jewels</b>
+                    . The GPLv2 does a great job at protecting our assets, but the extent to which it provides
+                    protection to all of our assets
+                    <b>should be considered</b>
+                    . Given that
+                    <b>device drivers are not rocket science</b>
+                    , to help
+                    <b>share more with the BSD family</b>
+                    , and
+                    <b>
+                        <a
+                            href="http://www.do-not-panic.com/2013/03/killing-proprietary-drivers-for-all.html"
+                            target="_blank"
+                        >
+                            other OSes (to kill proprietary drivers)
+                        </a>
+                    </b>
+                    , and help foster a better ecosystem between userspace and kernelspace we should
+                    <b>prioritize permissively licensing device drivers</b>
+                    , and only
+                    <b><u>localize the GPL</u></b>
+                    to areas where we feel we are innovating and differentiating the operating system. An example of a
+                    technology that helps differentiate the Linux kernel from any Operating System is the Linux kernel's
+                    RCU Mechanism. IBM even has patents over this technology and by implementing this in software and
+                    contributing it to the Linux kernel they added software to the Linux kernel with software patents.
+                    The nice thing about this though is that IBM provided a
+                    <i>sort-of</i>
+                    form of an explicit patent grant on it through the&nbsp;Documentation/RCU/RTFP.txt section of the
+                    Linux kernel. In any case, the RCU mechanism is innovation and the documentation over it by its
+                    authors on the Linux kernel make it clear that proprietary Operating Systems cannot use this
+                    software, I guess unless you are willing to pay IBM for licensing these patents. The GPLv2 here was
+                    used strategically by IBM, to protect their own investment on Linux, to protect one of their
+                    <b>jewels</b>
+                    . Companies who invest in FOSS soon realize the value of the GPL, this typically only becomes
+                    evident once you are a major stakeholder in software. The days of using just once license for a
+                    whole piece of software are over, as software and collaborative development grows we should
+                    strategically consider the license and the areas of technology that such licenses are applied to to
+                    help foster our ecosystem.
+                </div>
+            </div>
+        </article>
+        <footer class="post-footer"><a href="../../../../index.html">← back to timeline</a></footer>
+    </body>
+</html>
