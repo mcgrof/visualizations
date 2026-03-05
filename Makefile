@@ -1,6 +1,6 @@
 # Visualization Makefile
 
-.PHONY: serve run stop clean help check-commits fix-commits format check-format venv icons
+.PHONY: serve run stop clean help check-commits fix-commits format check-format venv icons viz viz-convert viz-dry-run
 
 # Default port
 PORT ?= 8000
@@ -165,6 +165,31 @@ icons: venv
 icons-dry-run: venv
 	@$(VENV_PYTHON) gen-infographics.py --dry-run
 
+## viz-convert: Convert any leftover JSX files to standalone HTML
+viz-convert:
+	@found=0; \
+	for jsx in $$(find viz/ -name '*.jsx' 2>/dev/null); do \
+		html=$${jsx%.jsx}.html; \
+		if [ ! -f "$$html" ]; then \
+			found=1; \
+			echo "[CONVERT] $$jsx -> $$html"; \
+			cat "$$jsx" | claude -p "Convert this JSX React component to a standalone self-contained HTML file. No React, no npm, no external JS dependencies. Use vanilla HTML/CSS/JS. Replace React useState with vanilla JS event handlers for tab switching. Convert JSX SVG to plain SVG (camelCase to kebab-case attributes). Include proper <meta> tags (charset, viewport, description from the component, theme-color). Match the dark theme styling. The file must work when opened directly in a browser." > "$$html" && \
+			rm "$$jsx" && \
+			echo "[OK] Converted and removed $$jsx"; \
+		fi; \
+	done; \
+	if [ $$found -eq 0 ]; then echo "[CONVERT] No JSX files to convert"; fi
+
+## viz: Full visualization pipeline (convert, icons, catalog, format)
+viz: viz-convert icons
+	@$(VENV_PYTHON) gen-infographics.py --catalog-only
+	@$(MAKE) format
+	@echo "Done! Catalog updated at viz/catalog.json"
+
+## viz-dry-run: Preview what viz pipeline would do without changes
+viz-dry-run: venv
+	@$(VENV_PYTHON) gen-infographics.py --dry-run
+
 ## help: Show this help message
 help:
 	@echo "Visualization - Demo"
@@ -176,6 +201,11 @@ help:
 	@echo "  make run          Same as serve"
 	@echo "  make stop         Stop the running server"
 	@echo "  make clean        Stop server and clean up files"
+	@echo ""
+	@echo "Visualization Pipeline:"
+	@echo "  make viz             Full pipeline: convert, discover, icons, catalog, format"
+	@echo "  make viz-convert     Convert leftover JSX files to standalone HTML"
+	@echo "  make viz-dry-run     Preview pipeline without changes"
 	@echo ""
 	@echo "Infographics:"
 	@echo "  make icons           Generate infographic images (skips existing)"

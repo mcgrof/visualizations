@@ -1,0 +1,46 @@
+{
+    "base_url": "https://www.do-not-panic.com/visualizations/",
+    "updated": "2026-03-05",
+    "visualizations": [
+        {
+            "id": 72,
+            "title": "PTP: Resolving the Independence Flaw",
+            "description": "Interactive deep dive into Parallel Token Prediction (PTP) \u2014 how normalizing flows fix the independence flaw in multi-token prediction.",
+            "url": "viz/2026/03/04/ptp-viz.html",
+            "date": "2026-03-04",
+            "image": "images/72.png",
+            "papers": [
+                {
+                    "id": "2404.19737",
+                    "type": "arxiv"
+                },
+                {
+                    "id": "2512.20856",
+                    "type": "arxiv"
+                },
+                {
+                    "id": "2512.21323",
+                    "type": "arxiv"
+                }
+            ]
+        },
+        {
+            "id": 71,
+            "title": "Weight Decay \u2260 L2 Regularization",
+            "description": "Interactive visualization explaining why weight decay and L2 regularization diverge with Adam, and how AdamW fixes it.",
+            "url": "viz/2026/03/04/weight-decay.html",
+            "date": "2026-03-04",
+            "image": "images/71.png",
+            "papers": []
+        },
+        {
+            "id": 1,
+            "title": "Musk Projection Reality Check \u2014 Dwarkesh Podcast Feb 2026",
+            "description": "Every major claim from Elon Musk on the Dwarkesh Podcast stress-tested with a 0-100 reality score.",
+            "url": "viz/2026/03/04/musk-dwarkesh-projections.html",
+            "date": "2026-03-04",
+            "image": "images/1.png",
+            "papers": []
+        }
+    ]
+}

@@ -2,17 +2,21 @@
 """Generate infographic images for blog posts using OpenAI gpt-image-1 API.
 
 Auto-discovers viz HTML files under viz/ and registers them in the POSTS
-array in index.html before generating icons.
+array in index.html before generating icons.  Also produces a machine-readable
+catalog (viz/catalog.json) so external tools can look up visualizations by
+paper ID.
 
 Usage:
     python3 gen-infographics.py              # discover + generate all missing images
     python3 gen-infographics.py --dry-run    # preview without modifying anything
     python3 gen-infographics.py --id 5       # generate for a single post
     python3 gen-infographics.py --no-discover  # skip viz auto-discovery
+    python3 gen-infographics.py --catalog-only # regenerate catalog.json only
 """
 
 import argparse
 import base64
+import datetime
 import glob
 import json
 import os
@@ -165,6 +169,91 @@ def discover_viz_files(base_dir):
         )
 
     return discovered
+
+
+CATALOG_BASE_URL = "https://www.do-not-panic.com/visualizations/"
+
+
+def extract_paper_ids(filepath):
+    """Extract arxiv paper IDs from a viz HTML file.
+
+    Looks for explicit <meta name="paper-arxiv" content="..."> tags first,
+    then falls back to scraping arxiv.org/abs/ links from the body.
+    Returns a deduplicated list of {"id": "NNNN.NNNNN", "type": "arxiv"}.
+    """
+    with open(filepath, "r") as f:
+        content = f.read()
+
+    ids = set()
+
+    # Explicit meta tags
+    for m in re.finditer(
+        r'<meta\s+name=["\']paper-arxiv["\']\s+content=["\']([^"\']+)["\']',
+        content,
+    ):
+        ids.add(m.group(1).strip())
+
+    # Also try reversed attribute order (content before name)
+    for m in re.finditer(
+        r'<meta\s+content=["\']([^"\']+)["\']\s+name=["\']paper-arxiv["\']',
+        content,
+    ):
+        ids.add(m.group(1).strip())
+
+    # Auto-extract from arxiv links in the document
+    for m in re.finditer(r"arxiv\.org/abs/(\d{4}\.\d{4,5}(?:v\d+)?)", content):
+        ids.add(m.group(1))
+
+    return [{"id": pid, "type": "arxiv"} for pid in sorted(ids)]
+
+
+def generate_catalog(base_dir, html_path, dry_run=False):
+    """Generate viz/catalog.json with metadata and paper associations.
+
+    Reads the POSTS array from index.html to get assigned IDs and image
+    paths, then scans each viz HTML file for arxiv paper references.
+    """
+    posts = extract_posts_from_html(html_path)
+    viz_posts = [p for p in posts if p.get("source") == "viz"]
+
+    visualizations = []
+    for post in viz_posts:
+        url = post.get("url", "")
+        filepath = os.path.join(base_dir, url)
+
+        papers = []
+        if os.path.isfile(filepath):
+            papers = extract_paper_ids(filepath)
+
+        entry = {
+            "id": post["id"],
+            "title": post.get("title", ""),
+            "description": post.get("excerpt", ""),
+            "url": url,
+            "date": post.get("date", ""),
+            "image": f"images/{post['id']}.png",
+            "papers": papers,
+        }
+        visualizations.append(entry)
+
+    catalog = {
+        "base_url": CATALOG_BASE_URL,
+        "updated": datetime.date.today().isoformat(),
+        "visualizations": visualizations,
+    }
+
+    catalog_path = os.path.join(base_dir, "viz", "catalog.json")
+
+    if dry_run:
+        print(f"\n[CATALOG] Would write {catalog_path}")
+        print(json.dumps(catalog, indent=4))
+        return
+
+    with open(catalog_path, "w") as f:
+        json.dump(catalog, f, indent=4)
+        f.write("\n")
+
+    print(f"[CATALOG] Written {catalog_path} ({len(visualizations)} visualizations)")
 
 
 def format_post_entry(post):
@@ -336,6 +425,11 @@ def main():
         help="Skip auto-discovery of new viz files",
     )
     parser.add_argument(
+        "--catalog-only",
+        action="store_true",
+        help="Regenerate viz/catalog.json without discovery or image generation",
+    )
+    parser.add_argument(
         "--html",
         default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.html"),
         help="Path to index.html (default: ./index.html)",
@@ -346,6 +440,11 @@ def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     output_dir = os.path.join(script_dir, "images")
     os.makedirs(output_dir, exist_ok=True)
+
+    # --- Catalog-only mode: regenerate catalog.json and exit ---
+    if args.catalog_only:
+        generate_catalog(script_dir, args.html, dry_run=args.dry_run)
+        return
 
     # --- Discovery phase: find new viz files and register them ---
     if not args.no_discover:
@@ -408,6 +507,10 @@ def main():
             failed += 1
 
     print(f"\nDone: {success} generated, {skipped} skipped, {failed} failed")
+
+    # --- Catalog generation: always update after discovery ---
+    if not args.no_discover:
+        generate_catalog(script_dir, args.html, dry_run=args.dry_run)
 
 
 if __name__ == "__main__":
