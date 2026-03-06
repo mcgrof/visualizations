@@ -1,6 +1,6 @@
 # Visualization Makefile
 
-.PHONY: serve run stop clean help check-commits fix-commits format check-format venv icons viz viz-convert viz-dry-run
+.PHONY: serve run stop clean help check-commits fix-commits format check-format venv icons viz viz-convert viz-dry-run import
 
 # Default port
 PORT ?= 8000
@@ -202,6 +202,48 @@ viz: viz-convert icons
 viz-dry-run: venv
 	@$(VENV_PYTHON) gen-infographics.py --dry-run
 
+## import: Import a standalone HTML file into the viz catalog
+##   Usage: make import FILE=path/to/visualization.html
+##   Copies to viz/YYYY/MM/DD/ using today's date, discovers, registers, and formats.
+##   If the file is already under viz/, it is registered in place.
+import: venv
+	@if [ -z "$(FILE)" ]; then \
+		echo "Usage: make import FILE=path/to/visualization.html"; \
+		echo ""; \
+		echo "Imports a standalone HTML visualization into the catalog."; \
+		echo "The file is copied to viz/YYYY/MM/DD/ (today's date) unless"; \
+		echo "it already lives under viz/."; \
+		exit 1; \
+	fi
+	@if [ ! -f "$(FILE)" ]; then \
+		echo "Error: $(FILE) not found"; \
+		exit 1; \
+	fi
+	@if ! grep -qi '<title>' "$(FILE)"; then \
+		echo "Error: $(FILE) has no <title> tag — not a valid visualization"; \
+		exit 1; \
+	fi
+	@case "$(FILE)" in \
+		viz/*) \
+			echo "[IMPORT] Registering in place: $(FILE)" ;; \
+		*) \
+			today=$$(date +%Y/%m/%d); \
+			dest="viz/$$today"; \
+			mkdir -p "$$dest"; \
+			slug=$$(basename "$(FILE)" .html | tr ' _' '--' | tr '[:upper:]' '[:lower:]'); \
+			target="$$dest/$$slug.html"; \
+			if [ -f "$$target" ]; then \
+				echo "Error: $$target already exists"; \
+				exit 1; \
+			fi; \
+			cp "$(FILE)" "$$target"; \
+			echo "[IMPORT] Copied to $$target" ;; \
+	esac
+	@$(VENV_PYTHON) gen-infographics.py
+	@$(VENV_PYTHON) gen-infographics.py --catalog-only
+	@$(MAKE) format
+	@echo "Done! Run 'git add' and commit when ready."
+
 ## help: Show this help message
 help:
 	@echo "Visualization - Demo"
@@ -218,9 +260,13 @@ help:
 	@echo "  make viz             Full pipeline: convert, icons, catalog, format, auto-commit"
 	@echo "  make viz-convert     Convert leftover JSX files to standalone HTML"
 	@echo "  make viz-dry-run     Preview pipeline without changes"
+	@echo "  make import FILE=f   Import a standalone HTML viz (e.g. from Claude Code)"
 	@echo ""
 	@echo "  Flow: JSX->HTML -> discover+inject -> icons -> catalog.json -> format -> commit"
 	@echo "  After 'make viz', just run 'git push'."
+	@echo ""
+	@echo "  Import: copy to viz/YYYY/MM/DD/ -> discover -> catalog -> format"
+	@echo "  Files already under viz/ are registered in place."
 	@echo ""
 	@echo "Infographics:"
 	@echo "  make icons           Generate infographic images (skips existing)"
