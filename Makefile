@@ -173,9 +173,20 @@ viz-convert:
 		if [ ! -f "$$html" ]; then \
 			found=1; \
 			echo "[CONVERT] $$jsx -> $$html"; \
-			cat "$$jsx" | claude -p "Convert this JSX React component to a standalone self-contained HTML file. No React, no npm, no external JS dependencies. Use vanilla HTML/CSS/JS. Replace React useState with vanilla JS event handlers for tab switching. Convert JSX SVG to plain SVG (camelCase to kebab-case attributes). Include proper <meta> tags (charset, viewport, description from the component, theme-color). Match the dark theme styling. The file must work when opened directly in a browser." > "$$html" && \
-			rm "$$jsx" && \
-			echo "[OK] Converted and removed $$jsx"; \
+			tmp=$${html}.tmp; \
+			if cat "$$jsx" | claude -p "Convert this JSX React component to a standalone self-contained HTML file. No React, no npm, no external JS dependencies. Use vanilla HTML/CSS/JS. Replace React useState with vanilla JS event handlers for tab switching. Convert JSX SVG to plain SVG (camelCase to kebab-case attributes). Include proper <meta> tags (charset, viewport, description from the component, theme-color). Match the dark theme styling. The file must work when opened directly in a browser." > "$$tmp" 2>/dev/null; then \
+				if grep -qi '<title>' "$$tmp"; then \
+					mv "$$tmp" "$$html"; \
+					rm "$$jsx"; \
+					echo "[OK] Converted and removed $$jsx"; \
+				else \
+					rm -f "$$tmp"; \
+					echo "[FAIL] $$jsx: output is not valid HTML (no <title> found), keeping JSX"; \
+				fi; \
+			else \
+				rm -f "$$tmp"; \
+				echo "[FAIL] $$jsx: claude -p failed, keeping JSX"; \
+			fi; \
 		fi; \
 	done; \
 	if [ $$found -eq 0 ]; then echo "[CONVERT] No JSX files to convert"; fi
