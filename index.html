@@ -19,7 +19,7 @@
             }
 
             body {
-                background-color: #1a1a2e;
+                background-color: #2a2a4e;
                 background-image: url("images/do-not-panic-bg.png");
                 background-repeat: no-repeat;
                 background-position: center top;
@@ -98,13 +98,54 @@
                 position: relative;
                 z-index: 2;
                 display: flex;
-                justify-content: center;
-                gap: 24px;
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
                 padding: 0 20px 40px;
-                flex-wrap: wrap;
             }
 
-            .podcast-banner a {
+            .podcast-banner .hero-link {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                padding: 18px 32px;
+                border-radius: 16px;
+                background: rgba(20, 20, 40, 0.9);
+                border: 2px solid rgba(102, 255, 204, 0.35);
+                text-decoration: none;
+                color: #d8d8d8;
+                box-shadow:
+                    0 0 24px rgba(102, 255, 204, 0.1),
+                    inset 0 0 24px rgba(102, 255, 204, 0.03);
+                transition:
+                    border-color 0.25s,
+                    box-shadow 0.25s,
+                    transform 0.2s;
+            }
+
+            .podcast-banner .hero-link:hover {
+                border-color: rgba(102, 255, 204, 0.6);
+                box-shadow:
+                    0 0 30px rgba(102, 255, 204, 0.2),
+                    0 0 60px rgba(102, 255, 204, 0.08);
+                transform: translateY(-2px);
+            }
+
+            .podcast-banner .hero-link img {
+                width: 72px;
+                height: 72px;
+                border-radius: 12px;
+                object-fit: cover;
+            }
+
+            .podcast-banner .secondary-links {
+                display: flex;
+                gap: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .podcast-banner .secondary-links a {
                 display: flex;
                 align-items: center;
                 gap: 16px;
@@ -120,13 +161,13 @@
                     transform 0.2s;
             }
 
-            .podcast-banner a:hover {
+            .podcast-banner .secondary-links a:hover {
                 border-color: rgba(68, 170, 255, 0.5);
                 box-shadow: 0 0 20px rgba(68, 170, 255, 0.15);
                 transform: translateY(-2px);
             }
 
-            .podcast-banner img {
+            .podcast-banner .secondary-links img {
                 width: 56px;
                 height: 56px;
                 border-radius: 10px;
@@ -143,6 +184,10 @@
                 font-size: 15px;
                 font-weight: 700;
                 color: #eee;
+            }
+
+            .hero-link .link-title {
+                font-size: 17px;
             }
 
             .podcast-banner .link-desc {
@@ -342,10 +387,15 @@
                 background: rgba(204, 102, 255, 0.1);
                 border: 1px solid rgba(204, 102, 255, 0.2);
             }
-            .badge-ai {
+            .badge-math {
                 color: #ffbb44;
                 background: rgba(255, 187, 68, 0.1);
                 border: 1px solid rgba(255, 187, 68, 0.2);
+            }
+            .badge-ai {
+                color: #44ddff;
+                background: rgba(68, 221, 255, 0.1);
+                border: 1px solid rgba(68, 221, 255, 0.2);
             }
             .badge-tools {
                 color: #ff6699;
@@ -545,7 +595,9 @@
 
         <header class="site-header">
             <h1><img src="images/do-not-panic-main-logo.png" alt="do-not-panic.com" class="site-logo" /></h1>
-            <p class="tagline">Linux kernel &middot; open source &middot; travel &middot; philosophy &middot; tools</p>
+            <p class="tagline">
+                AI &middot; Linux kernel &middot; open source &middot; travel &middot; philosophy &middot; tools
+            </p>
             <p class="author">by Luis Chamberlain</p>
             <div class="stats">
                 <div>
@@ -557,27 +609,36 @@
                     years
                 </div>
                 <div>
-                    <span>7</span>
+                    <span>8</span>
                     categories
                 </div>
             </div>
         </header>
 
         <div class="podcast-banner">
-            <a href="https://podcast.do-not-panic.com/" target="_blank" rel="noopener noreferrer">
-                <img src="images/post-transformers-logo.jpg" alt="AI: Post Transformers" />
+            <a href="https://mcgrof.github.io/knlp/" class="hero-link" target="_blank" rel="noopener noreferrer">
+                <img src="images/knlp-logo.png" alt="knlp — Kernel Machine Learning R&D" />
                 <span class="link-text">
-                    <span class="link-title">AI: Post Transformers</span>
-                    <span class="link-desc">AI research reviews podcast</span>
+                    <span class="link-title">knlp — Kernel ML R&D</span>
+                    <span class="link-desc">AI research & development</span>
                 </span>
             </a>
-            <a href="https://podcast.do-not-panic.com/queue.html" target="_blank" rel="noopener noreferrer">
-                <img src="images/paper-queue.png" alt="Paper Queue" />
-                <span class="link-text">
-                    <span class="link-title">Paper Queue</span>
-                    <span class="link-desc">Upcoming papers to review</span>
-                </span>
-            </a>
+            <div class="secondary-links">
+                <a href="https://podcast.do-not-panic.com/" target="_blank" rel="noopener noreferrer">
+                    <img src="images/post-transformers-logo.jpg" alt="AI: Post Transformers" />
+                    <span class="link-text">
+                        <span class="link-title">AI: Post Transformers</span>
+                        <span class="link-desc">AI research reviews podcast</span>
+                    </span>
+                </a>
+                <a href="https://podcast.do-not-panic.com/queue.html" target="_blank" rel="noopener noreferrer">
+                    <img src="images/paper-queue.png" alt="Paper Queue" />
+                    <span class="link-text">
+                        <span class="link-title">Paper Queue</span>
+                        <span class="link-desc">Upcoming papers to review</span>
+                    </span>
+                </a>
+            </div>
         </div>
 
         <nav class="filter-bar" id="filter-bar"></nav>
@@ -590,13 +651,14 @@
         <script>
             var CATEGORIES = [
                 { key: "all", label: "All" },
+                { key: "ai", label: "AI" },
+                { key: "viz", label: "Visualizations" },
                 { key: "linux", label: "Linux / Kernel" },
                 { key: "opensource", label: "Open Source" },
                 { key: "travel", label: "Travel / Outdoors" },
                 { key: "philosophy", label: "Philosophy" },
-                { key: "ai", label: "AI / Tech" },
+                { key: "math", label: "Math" },
                 { key: "tools", label: "Tools" },
-                { key: "viz", label: "Visualizations" },
             ]
 
             var POSTS = [
@@ -1382,7 +1444,7 @@
                     title: "Educational issues with polynomiography",
                     excerpt:
                         "Educational issues related to polynomiography — visualization of polynomial root-finding.",
-                    category: "ai",
+                    category: "math",
                     source: "blog",
                     url: "blog/2011/09/01/educational-issues-with-polynomiography.html",
                     image: "images/70.png",
@@ -1390,6 +1452,8 @@
             ]
 
             var BADGE_MAP = {
+                ai: { cls: "badge-ai", label: "AI" },
+                viz: { cls: "badge-viz", label: "Visualization" },
                 linux: { cls: "badge-linux", label: "Linux / Kernel" },
                 opensource: {
                     cls: "badge-opensource",
@@ -1403,9 +1467,8 @@
                     cls: "badge-philosophy",
                     label: "Philosophy",
                 },
-                ai: { cls: "badge-ai", label: "AI / Tech" },
+                math: { cls: "badge-math", label: "Math" },
                 tools: { cls: "badge-tools", label: "Tools" },
-                viz: { cls: "badge-viz", label: "Visualization" },
             }
 
             // ── Filter bar ──────────────────────────────────────

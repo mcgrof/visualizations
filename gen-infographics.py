@@ -25,21 +25,23 @@ import sys
 
 # Category accent colors for infographic design
 CATEGORY_COLORS = {
+    "ai": "#44ddff",
     "linux": "#ff5533",
     "opensource": "#44bb77",
     "travel": "#44aaff",
     "philosophy": "#cc66ff",
-    "ai": "#ffbb44",
+    "math": "#ffbb44",
     "tools": "#ff6699",
     "viz": "#66ffcc",
 }
 
 CATEGORY_LABELS = {
+    "ai": "AI",
     "linux": "Linux / Kernel",
     "opensource": "Open Source",
     "travel": "Travel / Outdoors",
     "philosophy": "Philosophy",
-    "ai": "AI / Tech",
+    "math": "Math",
     "tools": "Tools",
     "viz": "Visualizations",
 }
