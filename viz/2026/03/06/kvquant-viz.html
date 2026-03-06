@@ -1,0 +1,2885 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Interactive visualization of KVQuant: Towards 10 Million Context Length LLM Inference with KV Cache Quantization (NeurIPS 2024)"
+        />
+        <meta name="theme-color" content="#0a0e17" />
+        <title>KVQuant — KV Cache Quantization Visualization</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+                background: #0a0e17;
+                color: #e0e4eb;
+                min-height: 100vh;
+                padding: 24px 20px;
+            }
+            .container {
+                max-width: 900px;
+                margin: 0 auto;
+            }
+            .subtitle-line {
+                color: #6b7280;
+                font-size: 11px;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                margin-bottom: 8px;
+            }
+            h1 {
+                font-family: Inter, sans-serif;
+                font-weight: 700;
+                font-size: 28px;
+                margin: 0 0 6px 0;
+                background: linear-gradient(135deg, #00ffa3 0%, #b48eff 50%, #ff9f43 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                letter-spacing: -0.5px;
+            }
+            .authors {
+                color: #555d6e;
+                font-size: 11px;
+                margin: 0 0 20px 0;
+            }
+            .paper-desc {
+                color: #8892a4;
+                font-size: 14px;
+                margin: 0 0 6px 0;
+                font-family: Inter, sans-serif;
+            }
+            .pipeline-btn {
+                padding: 6px 14px;
+                border-radius: 6px;
+                border: 1px solid rgba(180, 142, 255, 0.2);
+                background: transparent;
+                color: #b48eff;
+                font-size: 11px;
+                cursor: pointer;
+                font-family: "JetBrains Mono", monospace;
+                margin-bottom: 16px;
+            }
+            .pipeline-btn.active {
+                background: rgba(180, 142, 255, 0.1);
+            }
+            .pipeline-box {
+                padding: 16px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                background: rgba(180, 142, 255, 0.04);
+                border: 1px solid rgba(180, 142, 255, 0.1);
+                display: none;
+            }
+            .pipeline-box.visible {
+                display: block;
+            }
+            .tab-bar {
+                display: flex;
+                gap: 4px;
+                margin-bottom: 24px;
+                flex-wrap: wrap;
+            }
+            .tab-btn {
+                padding: 10px 16px;
+                border-radius: 8px;
+                border: none;
+                cursor: pointer;
+                background: #111827;
+                border-bottom: 2px solid transparent;
+                color: #6b7280;
+                font-family: "JetBrains Mono", monospace;
+                font-size: 12px;
+                font-weight: 500;
+                transition: all 0.2s;
+            }
+            .tab-btn .tab-num {
+                opacity: 0.5;
+                margin-right: 4px;
+            }
+            .content-area {
+                padding: 24px 20px;
+                border-radius: 12px;
+                background: #0d1220;
+                min-height: 400px;
+            }
+            .toggle-btn {
+                padding: 8px 18px;
+                border-radius: 6px;
+                border: none;
+                cursor: pointer;
+                font-family: "JetBrains Mono", monospace;
+                font-size: 12px;
+                font-weight: 600;
+                transition: all 0.2s;
+            }
+            .info-box {
+                padding: 12px 16px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-family: "JetBrains Mono", monospace;
+            }
+            .bottom-summary {
+                margin-top: 20px;
+                padding: 16px 20px;
+                border-radius: 10px;
+                background: linear-gradient(
+                    135deg,
+                    rgba(0, 255, 163, 0.03) 0%,
+                    rgba(180, 142, 255, 0.03) 50%,
+                    rgba(255, 159, 67, 0.03) 100%
+                );
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .desc-text {
+                color: #c8cdd5;
+                font-size: 14px;
+                line-height: 1.7;
+                margin-bottom: 12px;
+            }
+            .desc-text-sm {
+                color: #8892a4;
+                font-size: 13px;
+                line-height: 1.6;
+            }
+            .step-btn {
+                padding: 6px 14px;
+                border-radius: 6px;
+                border: none;
+                cursor: pointer;
+                font-family: "JetBrains Mono", monospace;
+                font-size: 11px;
+                font-weight: 500;
+                transition: all 0.2s;
+            }
+            svg text {
+                user-select: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="subtitle-line">NeurIPS 2024 &middot; UC Berkeley</div>
+            <h1>KVQuant</h1>
+            <p class="paper-desc">Towards 10 Million Context Length LLM Inference with KV Cache Quantization</p>
+            <p class="authors">Hooper, Kim, Mohammadzadeh, Mahoney, Shao, Keutzer, Gholami</p>
+
+            <button class="pipeline-btn" id="pipelineBtn" onclick="togglePipeline()">
+                &#9656; Full pipeline overview
+            </button>
+
+            <div class="pipeline-box" id="pipelineBox"></div>
+
+            <div class="tab-bar" id="tabBar"></div>
+
+            <div class="content-area" id="contentArea"></div>
+
+            <div class="bottom-summary">
+                <div style="color: #8892a4; font-size: 12px; margin-bottom: 8px">
+                    Combined result on LLaMA-7B (Wikitext-2):
+                </div>
+                <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: baseline">
+                    <div>
+                        <span style="color: #00ffa3; font-size: 22px; font-weight: 700">5.75</span>
+                        <span style="color: #6b7280; font-size: 12px; margin-left: 6px">PPL (nuq3-1%)</span>
+                    </div>
+                    <div>
+                        <span style="color: #6b7280; font-size: 12px">vs fp16 baseline</span>
+                        <span style="color: #e0e4eb; font-size: 16px; font-weight: 600; margin-left: 6px">5.68</span>
+                        <span style="color: #00ffa3; font-size: 12px; margin-left: 6px">&Delta; = 0.07</span>
+                    </div>
+                    <div>
+                        <span style="color: #ff9f43; font-size: 16px; font-weight: 600">4.8&times;</span>
+                        <span style="color: #6b7280; font-size: 12px; margin-left: 4px">memory compression</span>
+                    </div>
+                    <div>
+                        <span style="color: #b48eff; font-size: 16px; font-weight: 600">10M</span>
+                        <span style="color: #6b7280; font-size: 12px; margin-left: 4px">context on 8&times;A100</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // ===================== STATE =====================
+            var activeTab = "channels"
+            var showPipeline = false
+
+            // Per-component state
+            var perChannelMode = "per-token"
+            var perChannelHoverCol = null
+            var preRoPEShowRoPE = false
+            var nuqMode = "uniform"
+            var dsMode = "naive"
+            var channelStep = 0
+            var channelHoveredToken = null
+            var channelHoveredChannel = null
+
+            // ===================== TABS =====================
+            var TABS = [
+                {
+                    id: "channels",
+                    label: "What's a Channel?",
+                    num: "0",
+                    color: "#5bc0eb",
+                },
+                {
+                    id: "perchannel",
+                    label: "Per-Channel Keys",
+                    num: "i",
+                    color: "#00ffa3",
+                },
+                {
+                    id: "prerope",
+                    label: "Pre-RoPE Keys",
+                    num: "ii",
+                    color: "#ffd166",
+                },
+                {
+                    id: "nuq",
+                    label: "Non-Uniform Quant",
+                    num: "iii",
+                    color: "#b48eff",
+                },
+                {
+                    id: "densesparse",
+                    label: "Dense+Sparse",
+                    num: "iv",
+                    color: "#ff9f43",
+                },
+            ]
+
+            // ===================== COLOR HELPERS =====================
+            function heatColor(val) {
+                if (val < 0.3) return "hsl(220, 70%, " + (20 + val * 100) + "%)"
+                if (val < 0.6) return "hsl(" + (40 + (0.6 - val) * 200) + ", 80%, " + (40 + val * 30) + "%)"
+                return (
+                    "hsl(" + (10 - (val - 0.6) * 25) + ", " + (80 + val * 20) + "%, " + (45 + (val - 0.6) * 20) + "%)"
+                )
+            }
+
+            // ===================== DATA GENERATION (ONCE) =====================
+
+            // Per-Channel data
+            var pcRows = 16,
+                pcCols = 40
+            var pcData = (function () {
+                var d = []
+                var outliers = [5, 18, 33]
+                for (var r = 0; r < pcRows; r++) {
+                    var row = []
+                    for (var c = 0; c < pcCols; c++) {
+                        var val = (Math.random() - 0.5) * 2
+                        if (outliers.indexOf(c) !== -1) val = (Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 5)
+                        row.push(val)
+                    }
+                    d.push(row)
+                }
+                return d
+            })()
+
+            // Pre-RoPE data
+            var ropeRows = 12,
+                ropeCols = 32
+            var preRoPEData = (function () {
+                var data = []
+                var outlierChannels = [12, 45, 78, 91, 110]
+                for (var r = 0; r < ropeRows; r++) {
+                    var row = []
+                    for (var c = 0; c < ropeCols; c++) {
+                        var val = Math.random() * 0.6 + 0.1
+                        if (outlierChannels.indexOf(c % 128) !== -1) val = 0.7 + Math.random() * 0.3
+                        row.push(val)
+                    }
+                    data.push(row)
+                }
+                return data
+            })()
+
+            var postRoPEData = (function () {
+                var data = []
+                for (var r = 0; r < ropeRows; r++) {
+                    var row = []
+                    for (var c = 0; c < ropeCols; c++) {
+                        var base = Math.random() * 0.5 + 0.1
+                        var posEffect = Math.sin(r * 0.05 + c * 0.3) * 0.3
+                        row.push(Math.min(1, Math.max(0, base + posEffect + Math.random() * 0.2)))
+                    }
+                    data.push(row)
+                }
+                return data
+            })()
+
+            // NUQ distribution data
+            var nuqDistribution = (function () {
+                var bins = 80
+                var d = new Array(bins).fill(0)
+                for (var i = 0; i < 5000; i++) {
+                    var v = (Math.random() + Math.random() + Math.random()) / 3
+                    var idx = Math.floor(v * bins)
+                    if (idx >= 0 && idx < bins) d[idx]++
+                }
+                d[2] += 80
+                d[3] += 40
+                d[bins - 3] += 60
+                d[bins - 2] += 30
+                return d
+            })()
+
+            // Dense-Sparse data
+            var dsCols = 32,
+                dsChannels = 6
+            var dsData = (function () {
+                var d = []
+                for (var ch = 0; ch < dsChannels; ch++) {
+                    var row = []
+                    var baseMag = 0.5 + Math.random() * 2
+                    for (var c = 0; c < dsCols; c++) {
+                        var val = (Math.random() - 0.5) * baseMag
+                        if (Math.random() < 0.04)
+                            val = (Math.random() > 0.5 ? 1 : -1) * baseMag * (3 + Math.random() * 2)
+                        row.push(val)
+                    }
+                    d.push(row)
+                }
+                return d
+            })()
+
+            // DS thresholds
+            var dsAllVals = dsData
+                .flat()
+                .map(Math.abs)
+                .sort(function (a, b) {
+                    return b - a
+                })
+            var dsGlobalThresh = dsAllVals[Math.floor(dsAllVals.length * 0.01)] || 3
+            var dsPerVecThresh = dsData.map(function (row) {
+                var sorted = row.map(Math.abs).sort(function (a, b) {
+                    return b - a
+                })
+                return sorted[Math.max(0, Math.floor(sorted.length * 0.03))] || sorted[0] * 0.9
+            })
+
+            // WhatIsAChannel data
+            var channelTokens = ["The", "cat", "sat", "on", "the", "mat", "and", "slept"]
+            var channelHeadDim = 12
+            var channelLabels = Array.from({ length: channelHeadDim }, function (_, i) {
+                return "d" + i
+            })
+            var channelKeyMatrix = (function () {
+                var outlierChs = [3, 9]
+                return channelTokens.map(function () {
+                    return channelLabels.map(function (_, ci) {
+                        if (outlierChs.indexOf(ci) !== -1) return 4.0 + Math.random() * 6.0
+                        return Math.random() * 1.8 - 0.9
+                    })
+                })
+            })()
+
+            // ===================== SVG HELPERS =====================
+            var SVG_NS = "http://www.w3.org/2000/svg"
+
+            function svgEl(tag, attrs, children) {
+                var el = document.createElementNS(SVG_NS, tag)
+                if (attrs) {
+                    Object.keys(attrs).forEach(function (k) {
+                        if (attrs[k] !== undefined && attrs[k] !== null) el.setAttribute(k, attrs[k])
+                    })
+                }
+                if (children) {
+                    if (!Array.isArray(children)) children = [children]
+                    children.forEach(function (c) {
+                        if (typeof c === "string") el.appendChild(document.createTextNode(c))
+                        else if (c) el.appendChild(c)
+                    })
+                }
+                return el
+            }
+
+            function htmlEl(tag, attrs, children) {
+                var el = document.createElement(tag)
+                if (attrs) {
+                    if (attrs.style && typeof attrs.style === "object") {
+                        Object.keys(attrs.style).forEach(function (k) {
+                            el.style[k] = attrs.style[k]
+                        })
+                        delete attrs.style
+                    }
+                    if (attrs.onclick) {
+                        el.onclick = attrs.onclick
+                        delete attrs.onclick
+                    }
+                    if (attrs.onmouseenter) {
+                        el.onmouseenter = attrs.onmouseenter
+                        delete attrs.onmouseenter
+                    }
+                    if (attrs.onmouseleave) {
+                        el.onmouseleave = attrs.onmouseleave
+                        delete attrs.onmouseleave
+                    }
+                    if (attrs.className) {
+                        el.className = attrs.className
+                        delete attrs.className
+                    }
+                    if (attrs.innerHTML) {
+                        el.innerHTML = attrs.innerHTML
+                        delete attrs.innerHTML
+                    }
+                    Object.keys(attrs).forEach(function (k) {
+                        if (attrs[k] !== undefined && attrs[k] !== null) el.setAttribute(k, attrs[k])
+                    })
+                }
+                if (children) {
+                    if (!Array.isArray(children)) children = [children]
+                    children.forEach(function (c) {
+                        if (typeof c === "string") el.appendChild(document.createTextNode(c))
+                        else if (c) el.appendChild(c)
+                    })
+                }
+                return el
+            }
+
+            // ===================== MINI HEATMAP =====================
+            function renderMiniHeatmap(data, width, height, label, highlightAxis, highlightIdx) {
+                if (!data || !data.length) return document.createComment("")
+                width = width || 280
+                height = height || 140
+                var rows = data.length
+                var cols = data[0].length
+                var cellW = width / cols
+                var cellH = height / rows
+
+                var container = htmlEl("div", {
+                    style: {
+                        display: "inline-block",
+                        margin: "0 6px",
+                    },
+                })
+                var svg = svgEl("svg", {
+                    width: width,
+                    height: height + 28,
+                    viewBox: "0 0 " + width + " " + (height + 28),
+                })
+                svg.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: width / 2,
+                            y: 12,
+                            "text-anchor": "middle",
+                            fill: "#b0b8c8",
+                            "font-size": "11",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        label,
+                    ),
+                )
+                var g = svgEl("g", {
+                    transform: "translate(0, 18)",
+                })
+                for (var ri = 0; ri < rows; ri++) {
+                    for (var ci = 0; ci < cols; ci++) {
+                        var val = data[ri][ci]
+                        var opacity = 1
+                        if (highlightAxis === "col" && highlightIdx !== undefined && ci !== highlightIdx) opacity = 0.25
+                        if (highlightAxis === "row" && highlightIdx !== undefined && ri !== highlightIdx) opacity = 0.25
+                        g.appendChild(
+                            svgEl("rect", {
+                                x: ci * cellW,
+                                y: ri * cellH,
+                                width: cellW + 0.5,
+                                height: cellH + 0.5,
+                                fill: heatColor(val),
+                                opacity: opacity,
+                            }),
+                        )
+                    }
+                }
+                if (highlightAxis === "col" && highlightIdx !== undefined) {
+                    g.appendChild(
+                        svgEl("rect", {
+                            x: highlightIdx * cellW - 1,
+                            y: 0,
+                            width: cellW + 2,
+                            height: height,
+                            fill: "none",
+                            stroke: "#00ffa3",
+                            "stroke-width": "1.5",
+                            rx: "1",
+                        }),
+                    )
+                }
+                if (highlightAxis === "row" && highlightIdx !== undefined) {
+                    g.appendChild(
+                        svgEl("rect", {
+                            x: 0,
+                            y: highlightIdx * cellH - 1,
+                            width: width,
+                            height: cellH + 2,
+                            fill: "none",
+                            stroke: "#00ffa3",
+                            "stroke-width": "1.5",
+                            rx: "1",
+                        }),
+                    )
+                }
+                svg.appendChild(g)
+                svg.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: width / 2,
+                            y: height + 27,
+                            "text-anchor": "middle",
+                            fill: "#6b7280",
+                            "font-size": "9",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "channels \u2192",
+                    ),
+                )
+                var rotText = svgEl(
+                    "text",
+                    {
+                        x: -2,
+                        y: height / 2 + 18,
+                        "text-anchor": "middle",
+                        fill: "#6b7280",
+                        "font-size": "9",
+                        "font-family": "'JetBrains Mono', monospace",
+                        transform: "rotate(-90, -2, " + (height / 2 + 18) + ")",
+                    },
+                    "tokens \u2192",
+                )
+                svg.appendChild(rotText)
+                container.appendChild(svg)
+                return container
+            }
+
+            // ===================== PIPELINE RENDER =====================
+            function renderPipeline() {
+                var box = document.getElementById("pipelineBox")
+                var btn = document.getElementById("pipelineBtn")
+                if (showPipeline) {
+                    box.classList.add("visible")
+                    btn.classList.add("active")
+                    btn.innerHTML = "&#9662; Full pipeline overview"
+                } else {
+                    box.classList.remove("visible")
+                    btn.classList.remove("active")
+                    btn.innerHTML = "&#9656; Full pipeline overview"
+                    return
+                }
+                box.innerHTML = ""
+                var svg = svgEl("svg", {
+                    width: "100%",
+                    viewBox: "0 0 800 90",
+                })
+                var items = [
+                    {
+                        x: 0,
+                        line1: "int3",
+                        line2: "Baseline",
+                        ppl: "10.87",
+                        color: "#555",
+                    },
+                    {
+                        x: 160,
+                        line1: "(i) Per-Channel",
+                        line2: "Key Quant",
+                        ppl: "7.05",
+                        color: "#00ffa3",
+                    },
+                    {
+                        x: 330,
+                        line1: "(ii) Pre-RoPE",
+                        line2: "Key Quant",
+                        ppl: "6.23",
+                        color: "#ffd166",
+                    },
+                    {
+                        x: 500,
+                        line1: "(iii) Non-Uniform",
+                        line2: "nuq3",
+                        ppl: "5.94",
+                        color: "#b48eff",
+                    },
+                    {
+                        x: 660,
+                        line1: "(iv) 1% Outliers",
+                        line2: "Dense+Sparse",
+                        ppl: "5.75",
+                        color: "#ff9f43",
+                    },
+                ]
+                var defs = svgEl("defs")
+                var marker = svgEl("marker", {
+                    id: "pipeArrow",
+                    viewBox: "0 0 10 10",
+                    refX: 8,
+                    refY: 5,
+                    markerWidth: 5,
+                    markerHeight: 5,
+                    orient: "auto",
+                })
+                marker.appendChild(
+                    svgEl("path", {
+                        d: "M 0 0 L 10 5 L 0 10 z",
+                        fill: "#555",
+                    }),
+                )
+                defs.appendChild(marker)
+                svg.appendChild(defs)
+
+                items.forEach(function (item, i) {
+                    var g = svgEl("g")
+                    g.appendChild(
+                        svgEl("rect", {
+                            x: item.x,
+                            y: 10,
+                            width: 140,
+                            height: 50,
+                            rx: 6,
+                            fill: "rgba(20,25,40,0.8)",
+                            stroke: item.color,
+                            "stroke-width": 1.5,
+                        }),
+                    )
+                    var t1 = svgEl("text", {
+                        x: item.x + 70,
+                        y: 30,
+                        "text-anchor": "middle",
+                        fill: "#c8cdd5",
+                        "font-size": "9",
+                        "font-family": "'JetBrains Mono', monospace",
+                    })
+                    var tspan1 = svgEl("tspan", { x: item.x + 70 }, item.line1)
+                    var tspan2 = svgEl("tspan", { x: item.x + 70, dy: 13 }, item.line2)
+                    t1.appendChild(tspan1)
+                    t1.appendChild(tspan2)
+                    g.appendChild(t1)
+
+                    g.appendChild(
+                        svgEl(
+                            "text",
+                            {
+                                x: item.x + 70,
+                                y: 74,
+                                "text-anchor": "middle",
+                                fill: item.color,
+                                "font-size": "11",
+                                "font-weight": "600",
+                                "font-family": "'JetBrains Mono', monospace",
+                            },
+                            "PPL: " + item.ppl,
+                        ),
+                    )
+
+                    if (i > 0) {
+                        g.appendChild(
+                            svgEl("line", {
+                                x1: item.x - 20,
+                                y1: 35,
+                                x2: item.x,
+                                y2: 35,
+                                stroke: "#555",
+                                "stroke-width": 1,
+                                "marker-end": "url(#pipeArrow)",
+                            }),
+                        )
+                    }
+                    svg.appendChild(g)
+                })
+                svg.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: 40,
+                            y: 88,
+                            fill: "#555d6e",
+                            "font-size": "9",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "fp16 baseline: 5.68 PPL | LLaMA-7B on Wikitext-2",
+                    ),
+                )
+                box.appendChild(svg)
+            }
+
+            function togglePipeline() {
+                showPipeline = !showPipeline
+                renderPipeline()
+            }
+
+            // ===================== TAB BAR =====================
+            function renderTabBar() {
+                var bar = document.getElementById("tabBar")
+                bar.innerHTML = ""
+                TABS.forEach(function (tab) {
+                    var btn = htmlEl("button", {
+                        className: "tab-btn",
+                        onclick: function () {
+                            activeTab = tab.id
+                            renderTabBar()
+                            renderContent()
+                        },
+                    })
+                    if (activeTab === tab.id) {
+                        btn.style.background = tab.color + "15"
+                        btn.style.borderBottom = "2px solid " + tab.color
+                        btn.style.color = tab.color
+                    }
+                    var numSpan = htmlEl("span", { className: "tab-num" }, "(" + tab.num + ")")
+                    btn.appendChild(numSpan)
+                    btn.appendChild(document.createTextNode(" " + tab.label))
+                    bar.appendChild(btn)
+                })
+
+                // Update content area border color
+                var area = document.getElementById("contentArea")
+                var currentTab = TABS.find(function (t) {
+                    return t.id === activeTab
+                })
+                if (currentTab) {
+                    area.style.border = "1px solid " + currentTab.color + "15"
+                }
+            }
+
+            // ===================== CONTENT RENDER =====================
+            function renderContent() {
+                var area = document.getElementById("contentArea")
+                area.innerHTML = ""
+                switch (activeTab) {
+                    case "channels":
+                        renderWhatIsAChannel(area)
+                        break
+                    case "perchannel":
+                        renderPerChannel(area)
+                        break
+                    case "prerope":
+                        renderPreRoPE(area)
+                        break
+                    case "nuq":
+                        renderNonUniform(area)
+                        break
+                    case "densesparse":
+                        renderDenseSparse(area)
+                        break
+                }
+            }
+
+            // ===================== PER-CHANNEL VIZ =====================
+            function quantize(val, min, max, bits) {
+                bits = bits || 3
+                var levels = 1 << bits
+                var step = (max - min) / levels
+                if (step === 0) return val
+                var idx = Math.round((val - min) / step)
+                return min + Math.max(0, Math.min(levels - 1, idx)) * step
+            }
+
+            function pcGetQuantizedData() {
+                if (perChannelMode === "per-token") {
+                    return pcData.map(function (row) {
+                        var mn = Math.min.apply(null, row)
+                        var mx = Math.max.apply(null, row)
+                        return row.map(function (v) {
+                            return quantize(v, mn, mx)
+                        })
+                    })
+                } else {
+                    var qd = pcData.map(function (r) {
+                        return r.slice()
+                    })
+                    for (var c = 0; c < pcCols; c++) {
+                        var colVals = pcData.map(function (r) {
+                            return r[c]
+                        })
+                        var mn = Math.min.apply(null, colVals)
+                        var mx = Math.max.apply(null, colVals)
+                        for (var r = 0; r < pcRows; r++) {
+                            qd[r][c] = quantize(pcData[r][c], mn, mx)
+                        }
+                    }
+                    return qd
+                }
+            }
+
+            function pcGetErrors() {
+                var qd = pcGetQuantizedData()
+                return pcData.map(function (row, ri) {
+                    return row.map(function (v, ci) {
+                        return Math.abs(v - qd[ri][ci])
+                    })
+                })
+            }
+
+            function renderPerChannel(area) {
+                var cellW = 14,
+                    cellH = 14
+
+                // Description
+                var desc = htmlEl("div", {
+                    style: { marginBottom: "16px" },
+                    innerHTML:
+                        '<p style="color:#c8cdd5;font-size:14px;line-height:1.7;margin-bottom:12px">' +
+                        'Keys have <span style="color:#ff6b6b;font-weight:600">outlier channels</span> \u2014 specific dimensions where magnitudes are consistently ' +
+                        "much larger across all tokens. Standard <em>per-token</em> quantization forces these huge values to share a scale with " +
+                        'small values in the same row, destroying precision. <strong style="color:#00ffa3">Per-channel</strong> quantization ' +
+                        "groups values along the channel dimension instead, so outlier channels get their own scale factor.</p>",
+                })
+                area.appendChild(desc)
+
+                // Buttons
+                var btnRow = htmlEl("div", {
+                    style: {
+                        display: "flex",
+                        gap: "8px",
+                        marginBottom: "16px",
+                    },
+                })
+                var btnPT = htmlEl(
+                    "button",
+                    {
+                        className: "toggle-btn",
+                        onclick: function () {
+                            perChannelMode = "per-token"
+                            renderContent()
+                        },
+                        style: {
+                            background: perChannelMode === "per-token" ? "#ff6b6b" : "#1e2433",
+                            color: perChannelMode === "per-token" ? "#0a0e17" : "#8892a4",
+                        },
+                    },
+                    "Per-Token (standard)",
+                )
+                var btnPC = htmlEl(
+                    "button",
+                    {
+                        className: "toggle-btn",
+                        onclick: function () {
+                            perChannelMode = "per-channel"
+                            renderContent()
+                        },
+                        style: {
+                            background: perChannelMode === "per-channel" ? "#00ffa3" : "#1e2433",
+                            color: perChannelMode === "per-channel" ? "#0a0e17" : "#8892a4",
+                        },
+                    },
+                    "Per-Channel (KVQuant)",
+                )
+                btnRow.appendChild(btnPT)
+                btnRow.appendChild(btnPC)
+                area.appendChild(btnRow)
+
+                var flexRow = htmlEl("div", {
+                    style: {
+                        display: "flex",
+                        gap: "24px",
+                        flexWrap: "wrap",
+                    },
+                })
+
+                // Original data
+                var origDiv = htmlEl("div")
+                origDiv.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            style: {
+                                color: "#8892a4",
+                                fontSize: "11px",
+                                marginBottom: "4px",
+                                fontFamily: "'JetBrains Mono', monospace",
+                            },
+                        },
+                        "Original Key Matrix (magnitudes)",
+                    ),
+                )
+                var origSvg = svgEl("svg", {
+                    width: pcCols * cellW + 2,
+                    height: pcRows * cellH + 2,
+                })
+                for (var ri = 0; ri < pcRows; ri++) {
+                    for (var ci = 0; ci < pcCols; ci++) {
+                        var absV = Math.abs(pcData[ri][ci]) / 8
+                        origSvg.appendChild(
+                            svgEl("rect", {
+                                x: ci * cellW,
+                                y: ri * cellH,
+                                width: cellW - 1,
+                                height: cellH - 1,
+                                fill: heatColor(Math.min(1, absV)),
+                                rx: "1",
+                            }),
+                        )
+                    }
+                }
+                // Grouping overlays
+                if (perChannelMode === "per-token") {
+                    for (var ri = 0; ri < pcRows; ri++) {
+                        origSvg.appendChild(
+                            svgEl("rect", {
+                                x: 0,
+                                y: ri * cellH,
+                                width: pcCols * cellW - 1,
+                                height: cellH - 1,
+                                fill: "none",
+                                stroke: ri % 2 === 0 ? "rgba(255,107,107,0.4)" : "rgba(255,107,107,0.2)",
+                                "stroke-width": "1",
+                                rx: "1",
+                            }),
+                        )
+                    }
+                } else {
+                    for (var ci = 0; ci < pcCols; ci++) {
+                        origSvg.appendChild(
+                            svgEl("rect", {
+                                x: ci * cellW,
+                                y: 0,
+                                width: cellW - 1,
+                                height: pcRows * cellH - 1,
+                                fill: "none",
+                                stroke: ci % 2 === 0 ? "rgba(0,255,163,0.4)" : "rgba(0,255,163,0.2)",
+                                "stroke-width": "1",
+                                rx: "1",
+                            }),
+                        )
+                    }
+                }
+                origDiv.appendChild(origSvg)
+                origDiv.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            style: {
+                                color: "#6b7280",
+                                fontSize: "10px",
+                                marginTop: "2px",
+                                fontFamily: "'JetBrains Mono', monospace",
+                            },
+                        },
+                        perChannelMode === "per-token"
+                            ? "\u2190 scale shared across row (per-token)"
+                            : "\u2190 scale shared down column (per-channel)",
+                    ),
+                )
+                flexRow.appendChild(origDiv)
+
+                // Error heatmap
+                var errors = pcGetErrors()
+                var maxErr = Math.max.apply(
+                    null,
+                    errors.map(function (r) {
+                        return Math.max.apply(null, r)
+                    }),
+                )
+                var errDiv = htmlEl("div")
+                errDiv.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            style: {
+                                color: "#8892a4",
+                                fontSize: "11px",
+                                marginBottom: "4px",
+                                fontFamily: "'JetBrains Mono', monospace",
+                            },
+                        },
+                        "Quantization Error (3-bit) \u2014 " +
+                            (perChannelMode === "per-token" ? "high at outlier cols" : "distributed evenly"),
+                    ),
+                )
+                var errSvg = svgEl("svg", {
+                    width: pcCols * cellW + 2,
+                    height: pcRows * cellH + 2,
+                })
+                for (var ri = 0; ri < pcRows; ri++) {
+                    for (var ci = 0; ci < pcCols; ci++) {
+                        var e = errors[ri][ci]
+                        var enorm = e / (maxErr || 1)
+                        errSvg.appendChild(
+                            svgEl("rect", {
+                                x: ci * cellW,
+                                y: ri * cellH,
+                                width: cellW - 1,
+                                height: cellH - 1,
+                                fill: "hsl(" + Math.max(0, 200 - enorm * 200) + ", 80%, " + (30 + enorm * 40) + "%)",
+                                rx: "1",
+                            }),
+                        )
+                    }
+                }
+                errDiv.appendChild(errSvg)
+                var legendRow = htmlEl("div", {
+                    style: {
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginTop: "4px",
+                    },
+                })
+                legendRow.appendChild(
+                    htmlEl(
+                        "span",
+                        {
+                            style: {
+                                color: "#4a8",
+                                fontSize: "10px",
+                            },
+                        },
+                        "Low error",
+                    ),
+                )
+                legendRow.appendChild(
+                    htmlEl(
+                        "span",
+                        {
+                            style: {
+                                color: "#ff6b6b",
+                                fontSize: "10px",
+                            },
+                        },
+                        "High error",
+                    ),
+                )
+                errDiv.appendChild(legendRow)
+                flexRow.appendChild(errDiv)
+                area.appendChild(flexRow)
+
+                // Info box
+                var isPC = perChannelMode === "per-channel"
+                var infoBox = htmlEl(
+                    "div",
+                    {
+                        className: "info-box",
+                        style: {
+                            marginTop: "16px",
+                            background: isPC ? "rgba(0,255,163,0.06)" : "rgba(255,107,107,0.06)",
+                            border: "1px solid " + (isPC ? "rgba(0,255,163,0.15)" : "rgba(255,107,107,0.15)"),
+                        },
+                    },
+                    [
+                        htmlEl(
+                            "span",
+                            {
+                                style: {
+                                    color: isPC ? "#00ffa3" : "#ff6b6b",
+                                },
+                            },
+                            isPC
+                                ? "\u2713 Per-channel: each column gets its own scale. Outlier channels use a wide range, normal channels use a tight range. 3.82 PPL improvement on LLaMA-7B."
+                                : "\u26A0 Per-token: outlier channels (cols 5, 18, 33) force the entire row to use a huge range, crushing precision for the ~37 other well-behaved channels.",
+                        ),
+                    ],
+                )
+                area.appendChild(infoBox)
+            }
+
+            // ===================== PRE-ROPE VIZ =====================
+            function renderPreRoPE(area) {
+                // Description
+                var desc = htmlEl("div", {
+                    style: { marginBottom: "16px" },
+                    innerHTML:
+                        '<p style="color:#c8cdd5;font-size:14px;line-height:1.7;margin-bottom:8px">' +
+                        '<strong style="color:#ffd166">RoPE</strong> (Rotary Positional Embedding) applies position-dependent rotations ' +
+                        "that <em>mix pairs of channels</em>. Before RoPE, outlier channels are clean and consistent \u2014 perfect for per-channel " +
+                        "quantization. After RoPE, the rotation smears outlier magnitudes across paired channels, making the distribution messy " +
+                        "and hard to quantize.</p>" +
+                        '<p style="color:#8892a4;font-size:13px;line-height:1.6">' +
+                        "KVQuant stores Keys <em>before</em> RoPE and applies the rotation on-the-fly after dequantization during attention computation.</p>",
+                })
+                area.appendChild(desc)
+
+                // RoPE rotation diagram
+                var diagramBox = htmlEl("div", {
+                    style: {
+                        background: "rgba(255,209,102,0.04)",
+                        borderRadius: "12px",
+                        padding: "20px",
+                        marginBottom: "20px",
+                        border: "1px solid rgba(255,209,102,0.12)",
+                    },
+                })
+                diagramBox.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            style: {
+                                color: "#ffd166",
+                                fontSize: "12px",
+                                fontFamily: "'JetBrains Mono', monospace",
+                                marginBottom: "12px",
+                            },
+                        },
+                        "RoPE rotation on a channel pair (d_i, d_{i+d/2})",
+                    ),
+                )
+                var ropeSvg = svgEl("svg", {
+                    width: 520,
+                    height: 120,
+                    viewBox: "0 0 520 120",
+                })
+                // Defs for arrow
+                var defs = svgEl("defs")
+                var marker = svgEl("marker", {
+                    id: "arrowY",
+                    viewBox: "0 0 10 10",
+                    refX: 8,
+                    refY: 5,
+                    markerWidth: 6,
+                    markerHeight: 6,
+                    orient: "auto-start-reverse",
+                })
+                marker.appendChild(
+                    svgEl("path", {
+                        d: "M 0 0 L 10 5 L 0 10 z",
+                        fill: "#ffd166",
+                    }),
+                )
+                defs.appendChild(marker)
+                ropeSvg.appendChild(defs)
+
+                // Pre-RoPE side
+                ropeSvg.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: 60,
+                            y: 16,
+                            "text-anchor": "middle",
+                            fill: "#8892a4",
+                            "font-size": "10",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "Pre-RoPE",
+                    ),
+                )
+                ropeSvg.appendChild(
+                    svgEl("rect", {
+                        x: 10,
+                        y: 24,
+                        width: 100,
+                        height: 32,
+                        rx: 4,
+                        fill: "rgba(0,255,163,0.12)",
+                        stroke: "#00ffa3",
+                        "stroke-width": 1,
+                    }),
+                )
+                ropeSvg.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: 60,
+                            y: 44,
+                            "text-anchor": "middle",
+                            fill: "#00ffa3",
+                            "font-size": "11",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "d_i = 8.2",
+                    ),
+                )
+                ropeSvg.appendChild(
+                    svgEl("rect", {
+                        x: 10,
+                        y: 62,
+                        width: 100,
+                        height: 32,
+                        rx: 4,
+                        fill: "rgba(100,140,255,0.12)",
+                        stroke: "#7c9cff",
+                        "stroke-width": 1,
+                    }),
+                )
+                ropeSvg.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: 60,
+                            y: 82,
+                            "text-anchor": "middle",
+                            fill: "#7c9cff",
+                            "font-size": "11",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "d_{i+d/2} = 0.3",
+                    ),
+                )
+
+                // Arrow
+                var arrowG = svgEl("g", {
+                    transform: "translate(140, 50)",
+                })
+                arrowG.appendChild(
+                    svgEl("line", {
+                        x1: 0,
+                        y1: 0,
+                        x2: 80,
+                        y2: 0,
+                        stroke: "#ffd166",
+                        "stroke-width": 2,
+                        "marker-end": "url(#arrowY)",
+                    }),
+                )
+                arrowG.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: 40,
+                            y: -10,
+                            "text-anchor": "middle",
+                            fill: "#ffd166",
+                            "font-size": "10",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "R(\u03B8, pos_n)",
+                    ),
+                )
+                arrowG.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: 40,
+                            y: 16,
+                            "text-anchor": "middle",
+                            fill: "#8892a4",
+                            "font-size": "9",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "rotate by n\u03B8_i",
+                    ),
+                )
+                ropeSvg.appendChild(arrowG)
+
+                // Post-RoPE side
+                ropeSvg.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: 310,
+                            y: 16,
+                            "text-anchor": "middle",
+                            fill: "#8892a4",
+                            "font-size": "10",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "Post-RoPE (pos=50)",
+                    ),
+                )
+                ropeSvg.appendChild(
+                    svgEl("rect", {
+                        x: 250,
+                        y: 24,
+                        width: 120,
+                        height: 32,
+                        rx: 4,
+                        fill: "rgba(255,107,107,0.12)",
+                        stroke: "#ff6b6b",
+                        "stroke-width": 1,
+                    }),
+                )
+                ropeSvg.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: 310,
+                            y: 44,
+                            "text-anchor": "middle",
+                            fill: "#ff6b6b",
+                            "font-size": "11",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "d_i' = 6.1",
+                    ),
+                )
+                ropeSvg.appendChild(
+                    svgEl("rect", {
+                        x: 250,
+                        y: 62,
+                        width: 120,
+                        height: 32,
+                        rx: 4,
+                        fill: "rgba(255,107,107,0.12)",
+                        stroke: "#ff6b6b",
+                        "stroke-width": 1,
+                    }),
+                )
+                ropeSvg.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: 310,
+                            y: 82,
+                            "text-anchor": "middle",
+                            fill: "#ff6b6b",
+                            "font-size": "11",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "d_{i+d/2}' = 5.4",
+                    ),
+                )
+                ropeSvg.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: 310,
+                            y: 108,
+                            "text-anchor": "middle",
+                            fill: "#ff6b6b",
+                            "font-size": "9",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "\u26A0 outlier leaked into paired channel!",
+                    ),
+                )
+
+                diagramBox.appendChild(ropeSvg)
+                area.appendChild(diagramBox)
+
+                // Toggle buttons
+                var btnRow = htmlEl("div", {
+                    style: {
+                        display: "flex",
+                        gap: "8px",
+                        marginBottom: "16px",
+                    },
+                })
+                btnRow.appendChild(
+                    htmlEl(
+                        "button",
+                        {
+                            className: "toggle-btn",
+                            onclick: function () {
+                                preRoPEShowRoPE = false
+                                renderContent()
+                            },
+                            style: {
+                                background: !preRoPEShowRoPE ? "#00ffa3" : "#1e2433",
+                                color: !preRoPEShowRoPE ? "#0a0e17" : "#8892a4",
+                            },
+                        },
+                        "Pre-RoPE (KVQuant)",
+                    ),
+                )
+                btnRow.appendChild(
+                    htmlEl(
+                        "button",
+                        {
+                            className: "toggle-btn",
+                            onclick: function () {
+                                preRoPEShowRoPE = true
+                                renderContent()
+                            },
+                            style: {
+                                background: preRoPEShowRoPE ? "#ff6b6b" : "#1e2433",
+                                color: preRoPEShowRoPE ? "#0a0e17" : "#8892a4",
+                            },
+                        },
+                        "Post-RoPE (standard)",
+                    ),
+                )
+                area.appendChild(btnRow)
+
+                // Mini heatmaps
+                var heatRow = htmlEl("div", {
+                    style: {
+                        display: "flex",
+                        gap: "20px",
+                        flexWrap: "wrap",
+                    },
+                })
+                heatRow.appendChild(
+                    renderMiniHeatmap(
+                        preRoPEData,
+                        320,
+                        120,
+                        "Keys Pre-RoPE",
+                        !preRoPEShowRoPE ? "col" : undefined,
+                        !preRoPEShowRoPE ? 12 : undefined,
+                    ),
+                )
+                heatRow.appendChild(
+                    renderMiniHeatmap(
+                        postRoPEData,
+                        320,
+                        120,
+                        "Keys Post-RoPE",
+                        preRoPEShowRoPE ? "col" : undefined,
+                        preRoPEShowRoPE ? 12 : undefined,
+                    ),
+                )
+                area.appendChild(heatRow)
+
+                // Info box
+                var isPre = !preRoPEShowRoPE
+                area.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            className: "info-box",
+                            style: {
+                                marginTop: "16px",
+                                background: isPre ? "rgba(0,255,163,0.06)" : "rgba(255,107,107,0.06)",
+                                border: "1px solid " + (isPre ? "rgba(0,255,163,0.15)" : "rgba(255,107,107,0.15)"),
+                            },
+                        },
+                        [
+                            htmlEl(
+                                "span",
+                                {
+                                    style: {
+                                        color: isPre ? "#00ffa3" : "#ff6b6b",
+                                    },
+                                },
+                                isPre
+                                    ? "\u2713 Pre-RoPE: clean outlier channels with consistent magnitudes \u2192 ideal for per-channel quantization. +0.82 PPL improvement."
+                                    : "\u26A0 Post-RoPE: rotation mixes channel pairs position-dependently. Outlier magnitude is smeared \u2192 inconsistent per-channel stats.",
+                            ),
+                        ],
+                    ),
+                )
+            }
+
+            // ===================== NON-UNIFORM VIZ =====================
+            function renderNonUniform(area) {
+                var maxCount = Math.max.apply(null, nuqDistribution)
+                var bits = 3
+                var levels = 1 << bits
+                var uniformSignposts = Array.from({ length: levels }, function (_, i) {
+                    return (i / (levels - 1)) * 80
+                })
+                var nuqSignposts = [2, 22, 32, 38, 42, 48, 58, 78]
+                var signposts = nuqMode === "uniform" ? uniformSignposts : nuqSignposts
+                var barW = 6
+                var chartW = 80 * barW + 40
+                var chartH = 160
+
+                // Description
+                area.appendChild(
+                    htmlEl("div", {
+                        style: { marginBottom: "16px" },
+                        innerHTML:
+                            '<p style="color:#c8cdd5;font-size:14px;line-height:1.7;margin-bottom:8px">' +
+                            'With only <strong style="color:#b48eff">8 quantization levels</strong> (3-bit), where you place those levels matters a lot. ' +
+                            'Uniform quantization spaces them evenly \u2014 wasting levels in sparse tail regions. KVQuant derives <strong style="color:#b48eff">sensitivity-weighted ' +
+                            "non-uniform signposts</strong> offline via k-means on calibration data, using the Fisher Information Matrix to weight by " +
+                            "how much each region affects the loss.</p>",
+                    }),
+                )
+
+                // Buttons
+                var btnRow = htmlEl("div", {
+                    style: {
+                        display: "flex",
+                        gap: "8px",
+                        marginBottom: "16px",
+                    },
+                })
+                btnRow.appendChild(
+                    htmlEl(
+                        "button",
+                        {
+                            className: "toggle-btn",
+                            onclick: function () {
+                                nuqMode = "uniform"
+                                renderContent()
+                            },
+                            style: {
+                                background: nuqMode === "uniform" ? "#ff6b6b" : "#1e2433",
+                                color: nuqMode === "uniform" ? "#0a0e17" : "#8892a4",
+                            },
+                        },
+                        "Uniform (int3)",
+                    ),
+                )
+                btnRow.appendChild(
+                    htmlEl(
+                        "button",
+                        {
+                            className: "toggle-btn",
+                            onclick: function () {
+                                nuqMode = "nuq"
+                                renderContent()
+                            },
+                            style: {
+                                background: nuqMode === "nuq" ? "#b48eff" : "#1e2433",
+                                color: nuqMode === "nuq" ? "#0a0e17" : "#8892a4",
+                            },
+                        },
+                        "nuq3 (KVQuant)",
+                    ),
+                )
+                area.appendChild(btnRow)
+
+                // Chart SVG
+                var svg = svgEl("svg", {
+                    width: chartW,
+                    height: chartH + 60,
+                    viewBox: "0 0 " + chartW + " " + (chartH + 60),
+                })
+                // Bars
+                for (var i = 0; i < nuqDistribution.length; i++) {
+                    var count = nuqDistribution[i]
+                    var h = (count / maxCount) * (chartH - 20)
+                    var minDist = Infinity
+                    signposts.forEach(function (s) {
+                        minDist = Math.min(minDist, Math.abs(i - s))
+                    })
+                    var closeness = Math.max(0, 1 - minDist / 12)
+                    var barColor =
+                        nuqMode === "uniform"
+                            ? "hsl(0, " + (40 + closeness * 40) + "%, " + (25 + closeness * 25) + "%)"
+                            : "hsl(265, " + (40 + closeness * 50) + "%, " + (25 + closeness * 35) + "%)"
+                    svg.appendChild(
+                        svgEl("rect", {
+                            x: 20 + i * barW,
+                            y: chartH - h,
+                            width: barW - 1,
+                            height: h,
+                            fill: barColor,
+                            rx: 1,
+                            opacity: 0.8,
+                        }),
+                    )
+                }
+                // Signpost lines
+                signposts.forEach(function (s, i) {
+                    var g = svgEl("g")
+                    g.appendChild(
+                        svgEl("line", {
+                            x1: 20 + s * barW + barW / 2,
+                            y1: 0,
+                            x2: 20 + s * barW + barW / 2,
+                            y2: chartH + 5,
+                            stroke: nuqMode === "uniform" ? "#ff6b6b" : "#b48eff",
+                            "stroke-width": 2,
+                            "stroke-dasharray": nuqMode === "uniform" ? "4,3" : "none",
+                            opacity: 0.9,
+                        }),
+                    )
+                    g.appendChild(
+                        svgEl("circle", {
+                            cx: 20 + s * barW + barW / 2,
+                            cy: chartH + 12,
+                            r: 4,
+                            fill: nuqMode === "uniform" ? "#ff6b6b" : "#b48eff",
+                        }),
+                    )
+                    g.appendChild(
+                        svgEl(
+                            "text",
+                            {
+                                x: 20 + s * barW + barW / 2,
+                                y: chartH + 28,
+                                "text-anchor": "middle",
+                                fill: nuqMode === "uniform" ? "#ff6b6b" : "#b48eff",
+                                "font-size": "8",
+                                "font-family": "'JetBrains Mono', monospace",
+                            },
+                            "" + i,
+                        ),
+                    )
+                    svg.appendChild(g)
+                })
+                // Labels
+                svg.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: chartW / 2,
+                            y: chartH + 50,
+                            "text-anchor": "middle",
+                            fill: "#6b7280",
+                            "font-size": "10",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "activation value range \u2192 | \u25CF = quantization signpost",
+                    ),
+                )
+                var countLabel = svgEl(
+                    "text",
+                    {
+                        x: 8,
+                        y: 12,
+                        fill: "#6b7280",
+                        "font-size": "9",
+                        "font-family": "'JetBrains Mono', monospace",
+                        transform: "rotate(-90, 8, 80)",
+                    },
+                    "count",
+                )
+                svg.appendChild(countLabel)
+                area.appendChild(svg)
+
+                // Info box
+                var isNUQ = nuqMode === "nuq"
+                area.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            className: "info-box",
+                            style: {
+                                marginTop: "12px",
+                                background: isNUQ ? "rgba(180,142,255,0.06)" : "rgba(255,107,107,0.06)",
+                                border: "1px solid " + (isNUQ ? "rgba(180,142,255,0.15)" : "rgba(255,107,107,0.15)"),
+                            },
+                        },
+                        [
+                            htmlEl(
+                                "span",
+                                {
+                                    style: {
+                                        color: isNUQ ? "#b48eff" : "#ff6b6b",
+                                    },
+                                },
+                                isNUQ
+                                    ? "\u2713 nuq3: signposts cluster where the distribution is dense AND where the model is most sensitive (Fisher-weighted). +0.29 PPL over uniform."
+                                    : "\u26A0 Uniform: signposts evenly spaced. Levels 0-1 and 6-7 wasted in sparse tails while the dense center is under-represented.",
+                            ),
+                        ],
+                    ),
+                )
+
+                // Fisher weighting explanation (only in nuq mode)
+                if (isNUQ) {
+                    var fisherBox = htmlEl("div", {
+                        style: {
+                            marginTop: "12px",
+                            padding: "10px 14px",
+                            borderRadius: "8px",
+                            background: "rgba(180,142,255,0.03)",
+                            border: "1px solid rgba(180,142,255,0.08)",
+                        },
+                    })
+                    fisherBox.appendChild(
+                        htmlEl(
+                            "div",
+                            {
+                                style: {
+                                    color: "#b48eff",
+                                    fontSize: "11px",
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    marginBottom: "6px",
+                                },
+                            },
+                            "Objective (Eq. 1 from paper):",
+                        ),
+                    )
+                    fisherBox.appendChild(
+                        htmlEl(
+                            "div",
+                            {
+                                style: {
+                                    color: "#c8cdd5",
+                                    fontSize: "13px",
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    lineHeight: "1.8",
+                                },
+                            },
+                            "Q*(A) \u2248 argmin_Q \u03A3 F_ii |A_i - Q(A_i)|\u00B2",
+                        ),
+                    )
+                    fisherBox.appendChild(
+                        htmlEl(
+                            "div",
+                            {
+                                style: {
+                                    color: "#8892a4",
+                                    fontSize: "11px",
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    marginTop: "4px",
+                                },
+                            },
+                            "F_ii = diagonal Fisher info \u2192 weights by how much quantizing that element affects the loss",
+                        ),
+                    )
+                    area.appendChild(fisherBox)
+                }
+            }
+
+            // ===================== DENSE-SPARSE VIZ =====================
+            function renderDenseSparse(area) {
+                var cellW = 18,
+                    cellH = 28
+
+                function isOutlier(ch, ci) {
+                    var absV = Math.abs(dsData[ch][ci])
+                    if (dsMode === "naive") return absV >= dsGlobalThresh
+                    return absV >= dsPerVecThresh[ch]
+                }
+
+                // Description
+                area.appendChild(
+                    htmlEl("div", {
+                        style: { marginBottom: "16px" },
+                        innerHTML:
+                            '<p style="color:#c8cdd5;font-size:14px;line-height:1.7;margin-bottom:8px">' +
+                            'Even after per-channel quantization, a few <span style="color:#ff9f43;font-weight:600">extreme outlier values</span> in ' +
+                            "each vector blow up the dynamic range. Dense-and-sparse quantization isolates these outliers into a separate sparse matrix " +
+                            "(CSR/CSC) at full precision. The remaining values fit in a much tighter range \u2192 much better 3-bit representation.</p>" +
+                            '<p style="color:#8892a4;font-size:13px;line-height:1.6">' +
+                            '<strong style="color:#ff9f43">Key insight:</strong> Different channels have different average magnitudes. A value that\'s ' +
+                            'an "outlier" in one channel might be normal in another. Per-vector thresholds catch the <em>actual</em> range-skewing values in each vector.</p>',
+                    }),
+                )
+
+                // Buttons
+                var btnRow = htmlEl("div", {
+                    style: {
+                        display: "flex",
+                        gap: "8px",
+                        marginBottom: "16px",
+                    },
+                })
+                btnRow.appendChild(
+                    htmlEl(
+                        "button",
+                        {
+                            className: "toggle-btn",
+                            onclick: function () {
+                                dsMode = "naive"
+                                renderContent()
+                            },
+                            style: {
+                                background: dsMode === "naive" ? "#ff6b6b" : "#1e2433",
+                                color: dsMode === "naive" ? "#0a0e17" : "#8892a4",
+                            },
+                        },
+                        "Global Threshold",
+                    ),
+                )
+                btnRow.appendChild(
+                    htmlEl(
+                        "button",
+                        {
+                            className: "toggle-btn",
+                            onclick: function () {
+                                dsMode = "per-vector"
+                                renderContent()
+                            },
+                            style: {
+                                background: dsMode === "per-vector" ? "#ff9f43" : "#1e2433",
+                                color: dsMode === "per-vector" ? "#0a0e17" : "#8892a4",
+                            },
+                        },
+                        "Per-Vector Threshold (KVQuant)",
+                    ),
+                )
+                area.appendChild(btnRow)
+
+                // Cell grid SVG
+                var svgContainer = htmlEl("div", {
+                    style: { overflowX: "auto" },
+                })
+                var svg = svgEl("svg", {
+                    width: dsCols * cellW + 120,
+                    height: dsChannels * (cellH + 12) + 50,
+                })
+                for (var ch = 0; ch < dsChannels; ch++) {
+                    var row = dsData[ch]
+                    var maxAbs = Math.max.apply(null, row.map(Math.abs))
+                    var rowG = svgEl("g", {
+                        transform: "translate(0, " + ch * (cellH + 12) + ")",
+                    })
+                    rowG.appendChild(
+                        svgEl(
+                            "text",
+                            {
+                                x: 0,
+                                y: cellH / 2 + 4,
+                                fill: "#6b7280",
+                                "font-size": "10",
+                                "font-family": "'JetBrains Mono', monospace",
+                            },
+                            "ch" + ch,
+                        ),
+                    )
+                    rowG.appendChild(
+                        svgEl(
+                            "text",
+                            {
+                                x: dsCols * cellW + 25,
+                                y: cellH / 2 + 4,
+                                fill: dsMode === "per-vector" ? "#ff9f43" : "#8892a4",
+                                "font-size": "9",
+                                "font-family": "'JetBrains Mono', monospace",
+                            },
+                            "\u03C4=" +
+                                (dsMode === "per-vector" ? dsPerVecThresh[ch].toFixed(1) : dsGlobalThresh.toFixed(1)),
+                        ),
+                    )
+                    for (var ci = 0; ci < dsCols; ci++) {
+                        var val = row[ci]
+                        var absV = Math.abs(val)
+                        var norm = absV / (maxAbs || 1)
+                        var outlier = isOutlier(ch, ci)
+                        var cellG = svgEl("g")
+                        cellG.appendChild(
+                            svgEl("rect", {
+                                x: 20 + ci * cellW,
+                                y: 0,
+                                width: cellW - 2,
+                                height: cellH,
+                                rx: 3,
+                                fill: outlier
+                                    ? "rgba(255,159,67,0.25)"
+                                    : "hsla(210, 60%, " + (20 + norm * 30) + "%, 0.8)",
+                                stroke: outlier ? "#ff9f43" : "rgba(100,140,200,0.2)",
+                                "stroke-width": outlier ? 2 : 0.5,
+                            }),
+                        )
+                        if (outlier) {
+                            cellG.appendChild(
+                                svgEl(
+                                    "text",
+                                    {
+                                        x: 20 + ci * cellW + cellW / 2 - 1,
+                                        y: cellH / 2 + 1,
+                                        "text-anchor": "middle",
+                                        "dominant-baseline": "middle",
+                                        fill: "#ff9f43",
+                                        "font-size": "8",
+                                        "font-weight": "bold",
+                                        "font-family": "'JetBrains Mono', monospace",
+                                    },
+                                    "\u2605",
+                                ),
+                            )
+                        }
+                        rowG.appendChild(cellG)
+                    }
+                    svg.appendChild(rowG)
+                }
+                svg.appendChild(
+                    svgEl(
+                        "text",
+                        {
+                            x: 20 + (dsCols * cellW) / 2,
+                            y: dsChannels * (cellH + 12) + 15,
+                            "text-anchor": "middle",
+                            fill: "#6b7280",
+                            "font-size": "10",
+                            "font-family": "'JetBrains Mono', monospace",
+                        },
+                        "tokens \u2192  |  \u2605 = outlier isolated to sparse matrix (fp16)",
+                    ),
+                )
+                svgContainer.appendChild(svg)
+                area.appendChild(svgContainer)
+
+                // Dense + Sparse decomposition diagram
+                var decompBox = htmlEl("div", {
+                    style: {
+                        marginTop: "16px",
+                        padding: "16px",
+                        borderRadius: "10px",
+                        background: "rgba(255,159,67,0.04)",
+                        border: "1px solid rgba(255,159,67,0.1)",
+                    },
+                })
+                var decompFlex = htmlEl("div", {
+                    style: {
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        flexWrap: "wrap",
+                    },
+                })
+                decompFlex.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            style: {
+                                padding: "8px 14px",
+                                borderRadius: "6px",
+                                background: "rgba(100,140,200,0.15)",
+                                border: "1px solid rgba(100,140,200,0.3)",
+                                color: "#7c9cff",
+                                fontSize: "12px",
+                                fontFamily: "'JetBrains Mono', monospace",
+                            },
+                        },
+                        "Full Matrix",
+                    ),
+                )
+                decompFlex.appendChild(
+                    htmlEl(
+                        "span",
+                        {
+                            style: {
+                                color: "#6b7280",
+                                fontSize: "18px",
+                            },
+                        },
+                        "=",
+                    ),
+                )
+                var denseBox = htmlEl(
+                    "div",
+                    {
+                        style: {
+                            padding: "8px 14px",
+                            borderRadius: "6px",
+                            background: "rgba(0,255,163,0.1)",
+                            border: "1px solid rgba(0,255,163,0.2)",
+                            color: "#00ffa3",
+                            fontSize: "12px",
+                            fontFamily: "'JetBrains Mono', monospace",
+                        },
+                    },
+                    "Dense (nuq3)",
+                )
+                denseBox.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            style: {
+                                color: "#8892a4",
+                                fontSize: "9px",
+                                marginTop: "2px",
+                            },
+                        },
+                        "99% of values, tight range",
+                    ),
+                )
+                decompFlex.appendChild(denseBox)
+                decompFlex.appendChild(
+                    htmlEl(
+                        "span",
+                        {
+                            style: {
+                                color: "#6b7280",
+                                fontSize: "18px",
+                            },
+                        },
+                        "+",
+                    ),
+                )
+                var sparseBox = htmlEl(
+                    "div",
+                    {
+                        style: {
+                            padding: "8px 14px",
+                            borderRadius: "6px",
+                            background: "rgba(255,159,67,0.1)",
+                            border: "1px solid rgba(255,159,67,0.2)",
+                            color: "#ff9f43",
+                            fontSize: "12px",
+                            fontFamily: "'JetBrains Mono', monospace",
+                        },
+                    },
+                    "Sparse (fp16)",
+                )
+                sparseBox.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            style: {
+                                color: "#8892a4",
+                                fontSize: "9px",
+                                marginTop: "2px",
+                            },
+                        },
+                        "1% outliers, CSR/CSC",
+                    ),
+                )
+                decompFlex.appendChild(sparseBox)
+                decompBox.appendChild(decompFlex)
+                area.appendChild(decompBox)
+
+                // Info box
+                var isPV = dsMode === "per-vector"
+                area.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            className: "info-box",
+                            style: {
+                                marginTop: "12px",
+                                background: isPV ? "rgba(255,159,67,0.06)" : "rgba(255,107,107,0.06)",
+                                border: "1px solid " + (isPV ? "rgba(255,159,67,0.15)" : "rgba(255,107,107,0.15)"),
+                            },
+                        },
+                        [
+                            htmlEl(
+                                "span",
+                                {
+                                    style: {
+                                        color: isPV ? "#ff9f43" : "#ff6b6b",
+                                    },
+                                },
+                                isPV
+                                    ? "\u2713 Per-vector: each channel/token gets its own \u03C4. Catches the actual range-skewing values per quantization group. +0.19 PPL with just 1% outliers."
+                                    : "\u26A0 Global threshold: a value=3.0 is an outlier in ch0 (avg=0.5) but normal in ch4 (avg=2.8). Misses real outliers, wastes sparse budget.",
+                            ),
+                        ],
+                    ),
+                )
+            }
+
+            // ===================== WHAT IS A CHANNEL VIZ =====================
+            function renderWhatIsAChannel(area) {
+                var tokens = channelTokens
+                var headDim = channelHeadDim
+                var labels = channelLabels
+                var keyMatrix = channelKeyMatrix
+                var step = channelStep
+
+                var cellW = 52,
+                    cellH = 32,
+                    labelW = 60,
+                    labelH = 48
+                var matrixW = labelW + headDim * cellW
+                var matrixH = labelH + tokens.length * cellH
+
+                function valColor(v) {
+                    var absV = Math.abs(v)
+                    if (absV > 3) return "hsl(10, 80%, " + (35 + Math.min(absV / 10, 1) * 25) + "%)"
+                    if (absV > 1.5) return "hsl(35, 70%, " + (30 + (absV / 3) * 20) + "%)"
+                    return "hsl(210, 50%, " + (22 + absV * 15) + "%)"
+                }
+
+                var stepDescriptions = [
+                    {
+                        title: "Step 1: Tokens become Key vectors",
+                        text: "Each input token passes through the Key projection (W_K) to produce a Key vector. This vector has 'd' dimensions \u2014 the head dimension. For LLaMA-7B, d=128 per attention head.",
+                        color: "#5bc0eb",
+                    },
+                    {
+                        title: "Step 2: Stack into the Key cache matrix",
+                        text: "As tokens are generated, their Key vectors are cached. Stacked together they form the Key cache: rows = tokens (sequence length), columns = dimensions. Each column is what we call a 'channel'.",
+                        color: "#5bc0eb",
+                    },
+                    {
+                        title: "Step 3: What exactly is a channel?",
+                        text: "A channel is one column \u2014 a single dimension sliced across ALL tokens. It represents one specific learned feature that every token produces a value for. Hover over column headers to isolate individual channels.",
+                        color: "#00ffa3",
+                    },
+                    {
+                        title: "Step 4: Outlier channels",
+                        text: "Certain channels (d3 and d9 here) consistently produce values 5-20\u00D7 larger than the rest. These 'outlier channels' are the central problem KVQuant addresses. This pattern is consistent across all tokens.",
+                        color: "#ff6b6b",
+                    },
+                ]
+                var currentStep = stepDescriptions[step]
+
+                // Step description box
+                var stepBox = htmlEl("div", {
+                    style: {
+                        marginBottom: "20px",
+                        padding: "14px 18px",
+                        borderRadius: "10px",
+                        background: currentStep.color + "08",
+                        border: "1px solid " + currentStep.color + "25",
+                    },
+                })
+                stepBox.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            style: {
+                                color: currentStep.color,
+                                fontSize: "13px",
+                                fontWeight: "600",
+                                marginBottom: "6px",
+                                fontFamily: "'JetBrains Mono', monospace",
+                            },
+                        },
+                        currentStep.title,
+                    ),
+                )
+                stepBox.appendChild(
+                    htmlEl(
+                        "p",
+                        {
+                            style: {
+                                color: "#c8cdd5",
+                                fontSize: "13px",
+                                lineHeight: "1.7",
+                                margin: "0",
+                                fontFamily: "Inter, sans-serif",
+                            },
+                        },
+                        currentStep.text,
+                    ),
+                )
+                area.appendChild(stepBox)
+
+                // Step buttons
+                var stepBtnRow = htmlEl("div", {
+                    style: {
+                        display: "flex",
+                        gap: "6px",
+                        marginBottom: "20px",
+                    },
+                })
+                stepDescriptions.forEach(function (s, i) {
+                    stepBtnRow.appendChild(
+                        htmlEl(
+                            "button",
+                            {
+                                className: "step-btn",
+                                onclick: function () {
+                                    channelStep = i
+                                    channelHoveredChannel = null
+                                    channelHoveredToken = null
+                                    renderContent()
+                                },
+                                style: {
+                                    background: step === i ? s.color + "20" : "#1e2433",
+                                    color: step === i ? s.color : "#555d6e",
+                                },
+                            },
+                            "" + (i + 1),
+                        ),
+                    )
+                })
+                area.appendChild(stepBtnRow)
+
+                // Main content container with overflow
+                var scrollDiv = htmlEl("div", {
+                    style: {
+                        overflowX: "auto",
+                        paddingBottom: "8px",
+                    },
+                })
+
+                // Step 0: token to key vector diagram
+                if (step === 0) {
+                    var svg = svgEl("svg", {
+                        width: 700,
+                        height: 280,
+                        viewBox: "0 0 700 280",
+                    })
+                    svg.appendChild(
+                        svgEl(
+                            "text",
+                            {
+                                x: 10,
+                                y: 20,
+                                fill: "#6b7280",
+                                "font-size": "10",
+                                "font-family": "'JetBrains Mono', monospace",
+                            },
+                            "Input tokens",
+                        ),
+                    )
+                    tokens.forEach(function (tok, i) {
+                        var g = svgEl("g", {
+                            transform: "translate(" + (10 + i * 82) + ", 30)",
+                        })
+                        g.appendChild(
+                            svgEl("rect", {
+                                width: 72,
+                                height: 30,
+                                rx: 6,
+                                fill: "#1a2236",
+                                stroke: "#5bc0eb",
+                                "stroke-width": 1,
+                            }),
+                        )
+                        g.appendChild(
+                            svgEl(
+                                "text",
+                                {
+                                    x: 36,
+                                    y: 20,
+                                    "text-anchor": "middle",
+                                    fill: "#5bc0eb",
+                                    "font-size": "12",
+                                    "font-weight": "500",
+                                    "font-family": "'JetBrains Mono', monospace",
+                                },
+                                tok,
+                            ),
+                        )
+                        svg.appendChild(g)
+                    })
+                    svg.appendChild(
+                        svgEl(
+                            "text",
+                            {
+                                x: 310,
+                                y: 82,
+                                "text-anchor": "middle",
+                                fill: "#ffd166",
+                                "font-size": "11",
+                                "font-family": "'JetBrains Mono', monospace",
+                            },
+                            "\u00D7 W_K (key projection)",
+                        ),
+                    )
+                    tokens.forEach(function (_, i) {
+                        svg.appendChild(
+                            svgEl("line", {
+                                x1: 46 + i * 82,
+                                y1: 62,
+                                x2: 46 + i * 82,
+                                y2: 100,
+                                stroke: "#5bc0eb33",
+                                "stroke-width": 1,
+                            }),
+                        )
+                    })
+                    svg.appendChild(
+                        svgEl(
+                            "text",
+                            {
+                                x: 10,
+                                y: 112,
+                                fill: "#6b7280",
+                                "font-size": "10",
+                                "font-family": "'JetBrains Mono', monospace",
+                            },
+                            "Key vectors (each has d dimensions)",
+                        ),
+                    )
+                    tokens.forEach(function (_, ti) {
+                        var vecG = svgEl("g", {
+                            transform: "translate(" + (10 + ti * 82) + ", 120)",
+                        })
+                        vecG.appendChild(
+                            svgEl("rect", {
+                                width: 72,
+                                height: 130,
+                                rx: 4,
+                                fill: "#0d1220",
+                                stroke: "#5bc0eb44",
+                                "stroke-width": 1,
+                            }),
+                        )
+                        ;[0, 1, 2, 3, 4].forEach(function (di) {
+                            var val = keyMatrix[ti][di]
+                            var isOut = di === 3
+                            var dimG = svgEl("g", {
+                                transform: "translate(4, " + (8 + di * 24) + ")",
+                            })
+                            dimG.appendChild(
+                                svgEl(
+                                    "text",
+                                    {
+                                        x: 0,
+                                        y: 10,
+                                        fill: "#555d6e",
+                                        "font-size": "8",
+                                        "font-family": "'JetBrains Mono', monospace",
+                                    },
+                                    "d" + di + ":",
+                                ),
+                            )
+                            dimG.appendChild(
+                                svgEl(
+                                    "text",
+                                    {
+                                        x: 24,
+                                        y: 10,
+                                        fill: isOut ? "#ff6b6b" : "#8892a4",
+                                        "font-size": "10",
+                                        "font-weight": isOut ? "600" : "400",
+                                        "font-family": "'JetBrains Mono', monospace",
+                                    },
+                                    val.toFixed(1),
+                                ),
+                            )
+                            vecG.appendChild(dimG)
+                        })
+                        vecG.appendChild(
+                            svgEl(
+                                "text",
+                                {
+                                    x: 36,
+                                    y: 128,
+                                    "text-anchor": "middle",
+                                    fill: "#555d6e",
+                                    "font-size": "8",
+                                    "font-family": "'JetBrains Mono', monospace",
+                                },
+                                "...d" + (headDim - 1),
+                            ),
+                        )
+                        svg.appendChild(vecG)
+                    })
+                    svg.appendChild(
+                        svgEl(
+                            "text",
+                            {
+                                x: 350,
+                                y: 272,
+                                "text-anchor": "middle",
+                                fill: "#555d6e",
+                                "font-size": "10",
+                                "font-family": "'JetBrains Mono', monospace",
+                            },
+                            "Each token \u2192 one Key vector of d=" + headDim + " numbers (real models: d=128)",
+                        ),
+                    )
+                    scrollDiv.appendChild(svg)
+                }
+
+                // Steps 1-3: matrix view
+                if (step >= 1) {
+                    var matDiv = htmlEl("div")
+                    var svgW = Math.max(matrixW + 100, 700)
+                    var svgH = matrixH + (step === 3 ? 70 : 30)
+                    var svg = svgEl("svg", {
+                        width: svgW,
+                        height: svgH,
+                        viewBox: "0 0 " + svgW + " " + svgH,
+                    })
+
+                    // Column headers
+                    labels.forEach(function (ch, ci) {
+                        var isOutlier = ci === 3 || ci === 9
+                        var isHovered = channelHoveredChannel === ci
+                        var highlightOutliers = step === 3
+                        var hdrG = svgEl("g", {
+                            style: step >= 2 ? "cursor:pointer" : "cursor:default",
+                        })
+                        hdrG.appendChild(
+                            svgEl("rect", {
+                                x: labelW + ci * cellW,
+                                y: 0,
+                                width: cellW,
+                                height: labelH - 4,
+                                rx: 4,
+                                fill: isHovered
+                                    ? "#00ffa320"
+                                    : highlightOutliers && isOutlier
+                                      ? "#ff6b6b15"
+                                      : "transparent",
+                            }),
+                        )
+                        hdrG.appendChild(
+                            svgEl(
+                                "text",
+                                {
+                                    x: labelW + ci * cellW + cellW / 2,
+                                    y: 20,
+                                    "text-anchor": "middle",
+                                    fill: isHovered
+                                        ? "#00ffa3"
+                                        : highlightOutliers && isOutlier
+                                          ? "#ff6b6b"
+                                          : "#6b7280",
+                                    "font-size": "11",
+                                    "font-weight": isHovered || (highlightOutliers && isOutlier) ? "700" : "400",
+                                    "font-family": "'JetBrains Mono', monospace",
+                                },
+                                ch,
+                            ),
+                        )
+                        if (step >= 2) {
+                            hdrG.appendChild(
+                                svgEl(
+                                    "text",
+                                    {
+                                        x: labelW + ci * cellW + cellW / 2,
+                                        y: 36,
+                                        "text-anchor": "middle",
+                                        fill: isHovered
+                                            ? "#00ffa3"
+                                            : highlightOutliers && isOutlier
+                                              ? "#ff6b6b99"
+                                              : "#555d6e",
+                                        "font-size": "8",
+                                        "font-family": "'JetBrains Mono', monospace",
+                                    },
+                                    "ch" + ci,
+                                ),
+                            )
+                        }
+                        if (step >= 2) {
+                            hdrG.onmouseenter = (function (idx) {
+                                return function () {
+                                    channelHoveredChannel = idx
+                                    renderContent()
+                                }
+                            })(ci)
+                            hdrG.onmouseleave = function () {
+                                channelHoveredChannel = null
+                                renderContent()
+                            }
+                        }
+                        svg.appendChild(hdrG)
+                    })
+
+                    // Channel axis label
+                    if (step >= 2) {
+                        svg.appendChild(
+                            svgEl("line", {
+                                x1: labelW,
+                                y1: labelH - 6,
+                                x2: labelW + headDim * cellW,
+                                y2: labelH - 6,
+                                stroke: "#00ffa340",
+                                "stroke-width": 1,
+                            }),
+                        )
+                        svg.appendChild(
+                            svgEl(
+                                "text",
+                                {
+                                    x: labelW + headDim * cellW + 8,
+                                    y: 24,
+                                    fill: "#00ffa3",
+                                    "font-size": "10",
+                                    "font-family": "'JetBrains Mono', monospace",
+                                },
+                                "\u2190 channels",
+                            ),
+                        )
+                        svg.appendChild(
+                            svgEl(
+                                "text",
+                                {
+                                    x: labelW + headDim * cellW + 8,
+                                    y: 38,
+                                    fill: "#00ffa366",
+                                    "font-size": "9",
+                                    "font-family": "'JetBrains Mono', monospace",
+                                },
+                                "(dimensions)",
+                            ),
+                        )
+                    }
+
+                    // Row labels
+                    tokens.forEach(function (tok, ti) {
+                        var rowLabel = svgEl(
+                            "text",
+                            {
+                                x: labelW - 8,
+                                y: labelH + ti * cellH + cellH / 2 + 4,
+                                "text-anchor": "end",
+                                fill: channelHoveredToken === ti ? "#5bc0eb" : "#6b7280",
+                                "font-size": "11",
+                                "font-weight": channelHoveredToken === ti ? "600" : "400",
+                                "font-family": "'JetBrains Mono', monospace",
+                                style: "cursor:pointer",
+                            },
+                            tok,
+                        )
+                        rowLabel.onmouseenter = (function (idx) {
+                            return function () {
+                                channelHoveredToken = idx
+                                renderContent()
+                            }
+                        })(ti)
+                        rowLabel.onmouseleave = function () {
+                            channelHoveredToken = null
+                            renderContent()
+                        }
+                        svg.appendChild(rowLabel)
+                    })
+
+                    // Tokens axis label
+                    var tokAxisLabel = svgEl(
+                        "text",
+                        {
+                            x: 8,
+                            y: labelH + (tokens.length * cellH) / 2,
+                            fill: "#5bc0eb",
+                            "font-size": "10",
+                            "font-family": "'JetBrains Mono', monospace",
+                            transform: "rotate(-90, 8, " + (labelH + (tokens.length * cellH) / 2) + ")",
+                            "text-anchor": "middle",
+                        },
+                        "tokens \u2193",
+                    )
+                    svg.appendChild(tokAxisLabel)
+
+                    // Matrix cells
+                    keyMatrix.forEach(function (row, ti) {
+                        row.forEach(function (val, ci) {
+                            var isOutlier = ci === 3 || ci === 9
+                            var isColHovered = channelHoveredChannel === ci
+                            var highlightOutliers = step === 3
+                            var opacity = 1
+                            if (step >= 2 && channelHoveredChannel !== null && channelHoveredChannel !== ci)
+                                opacity = 0.15
+                            if (step >= 2 && channelHoveredToken !== null && channelHoveredToken !== ti)
+                                opacity = Math.min(opacity, 0.35)
+
+                            var cellG = svgEl("g")
+                            var rect = svgEl("rect", {
+                                x: labelW + ci * cellW + 1,
+                                y: labelH + ti * cellH + 1,
+                                width: cellW - 2,
+                                height: cellH - 2,
+                                rx: 3,
+                                fill: valColor(val),
+                                opacity: opacity,
+                                stroke: isColHovered
+                                    ? "#00ffa3"
+                                    : highlightOutliers && isOutlier
+                                      ? "#ff6b6b88"
+                                      : "transparent",
+                                "stroke-width": isColHovered ? 1.5 : 1,
+                                style: step >= 2 ? "cursor:pointer" : "cursor:default",
+                            })
+                            rect.onmouseenter = (function (c, t) {
+                                return function () {
+                                    if (step >= 2) channelHoveredChannel = c
+                                    channelHoveredToken = t
+                                    renderContent()
+                                }
+                            })(ci, ti)
+                            rect.onmouseleave = function () {
+                                channelHoveredChannel = null
+                                channelHoveredToken = null
+                                renderContent()
+                            }
+                            cellG.appendChild(rect)
+
+                            cellG.appendChild(
+                                svgEl(
+                                    "text",
+                                    {
+                                        x: labelW + ci * cellW + cellW / 2,
+                                        y: labelH + ti * cellH + cellH / 2 + 4,
+                                        "text-anchor": "middle",
+                                        fill:
+                                            highlightOutliers && isOutlier
+                                                ? "#ffb0b0"
+                                                : isColHovered
+                                                  ? "#e0e4eb"
+                                                  : "#8892a4",
+                                        "font-size": "9",
+                                        "font-weight": highlightOutliers && isOutlier ? "600" : "400",
+                                        "font-family": "'JetBrains Mono', monospace",
+                                        opacity: opacity,
+                                        "pointer-events": "none",
+                                    },
+                                    val.toFixed(1),
+                                ),
+                            )
+                            svg.appendChild(cellG)
+                        })
+                    })
+
+                    // Outlier arrows for step 3
+                    if (step === 3) {
+                        ;[3, 9].forEach(function (ci) {
+                            svg.appendChild(
+                                svgEl("line", {
+                                    x1: labelW + ci * cellW + cellW / 2,
+                                    y1: labelH + tokens.length * cellH + 4,
+                                    x2: labelW + ci * cellW + cellW / 2,
+                                    y2: labelH + tokens.length * cellH + 22,
+                                    stroke: "#ff6b6b",
+                                    "stroke-width": 1.5,
+                                }),
+                            )
+                            svg.appendChild(
+                                svgEl(
+                                    "text",
+                                    {
+                                        x: labelW + ci * cellW + cellW / 2,
+                                        y: labelH + tokens.length * cellH + 36,
+                                        "text-anchor": "middle",
+                                        fill: "#ff6b6b",
+                                        "font-size": "9",
+                                        "font-weight": "600",
+                                        "font-family": "'JetBrains Mono', monospace",
+                                    },
+                                    "outlier!",
+                                ),
+                            )
+                        })
+                    }
+
+                    // Bottom label
+                    var bottomText = ""
+                    if (step === 1)
+                        bottomText = "Key cache = rows of token vectors stacked. Shape: [seq_len \u00D7 head_dim]"
+                    if (step === 2)
+                        bottomText =
+                            "Hover columns to highlight a channel \u2014 one feature dimension across all tokens"
+                    if (step === 3)
+                        bottomText =
+                            "Channels d3 and d9 have magnitudes 5-20\u00D7 larger \u2014 consistent across tokens"
+                    svg.appendChild(
+                        svgEl(
+                            "text",
+                            {
+                                x: labelW,
+                                y: matrixH + (step === 3 ? 58 : 20),
+                                fill: "#555d6e",
+                                "font-size": "10",
+                                "font-family": "'JetBrains Mono', monospace",
+                            },
+                            bottomText,
+                        ),
+                    )
+
+                    matDiv.appendChild(svg)
+
+                    // Hover info (step >= 2)
+                    if (step >= 2 && channelHoveredChannel !== null) {
+                        var hoverInfo = htmlEl("div", {
+                            style: {
+                                marginTop: "8px",
+                                padding: "8px 14px",
+                                borderRadius: "6px",
+                                background: "#00ffa310",
+                                border: "1px solid #00ffa320",
+                                display: "inline-block",
+                            },
+                        })
+                        var chVals = keyMatrix
+                            .map(function (r) {
+                                return r[channelHoveredChannel].toFixed(1)
+                            })
+                            .join(", ")
+                        hoverInfo.appendChild(
+                            htmlEl(
+                                "span",
+                                {
+                                    style: {
+                                        color: "#00ffa3",
+                                        fontSize: "12px",
+                                        fontFamily: "'JetBrains Mono', monospace",
+                                    },
+                                },
+                                "Channel d" + channelHoveredChannel + ": [" + chVals + "]",
+                            ),
+                        )
+                        hoverInfo.appendChild(
+                            htmlEl(
+                                "span",
+                                {
+                                    style: {
+                                        color: "#6b7280",
+                                        fontSize: "11px",
+                                        marginLeft: "8px",
+                                    },
+                                },
+                                channelHoveredChannel === 3 || channelHoveredChannel === 9
+                                    ? "\u2190 outlier channel!"
+                                    : "\u2190 normal range",
+                            ),
+                        )
+                        matDiv.appendChild(hoverInfo)
+                    }
+
+                    // Quantization problem (step 3)
+                    if (step === 3) {
+                        var probBox = htmlEl("div", {
+                            style: {
+                                marginTop: "16px",
+                                padding: "14px 18px",
+                                borderRadius: "10px",
+                                background: "rgba(255,107,107,0.04)",
+                                border: "1px solid rgba(255,107,107,0.12)",
+                            },
+                        })
+                        probBox.appendChild(
+                            htmlEl("div", {
+                                style: {
+                                    color: "#e0e4eb",
+                                    fontSize: "13px",
+                                    lineHeight: "1.8",
+                                    fontFamily: "Inter, sans-serif",
+                                },
+                                innerHTML:
+                                    '<strong style="color:#ff6b6b">The quantization problem:</strong> If you quantize a <em>row</em> (one token\'s full vector), ' +
+                                    "the scale must cover both the tiny values (-0.9 to 0.9) AND the huge outlier channels (4 to 10). " +
+                                    "With only 8 levels (3-bit), almost all resolution gets wasted on the outlier range. " +
+                                    "But if you quantize a <em>column</em> (one channel across all tokens), outlier channels get their own scale, " +
+                                    "and normal channels keep full precision in their tight range.",
+                            }),
+                        )
+                        var compRow = htmlEl("div", {
+                            style: {
+                                marginTop: "12px",
+                                display: "flex",
+                                gap: "16px",
+                                flexWrap: "wrap",
+                            },
+                        })
+                        var ptBox = htmlEl("div", {
+                            style: {
+                                padding: "8px 14px",
+                                borderRadius: "6px",
+                                background: "#ff6b6b12",
+                                border: "1px solid #ff6b6b25",
+                            },
+                        })
+                        ptBox.appendChild(
+                            htmlEl(
+                                "div",
+                                {
+                                    style: {
+                                        color: "#ff6b6b",
+                                        fontSize: "11px",
+                                        fontFamily: "'JetBrains Mono', monospace",
+                                    },
+                                },
+                                "Per-token (row)",
+                            ),
+                        )
+                        ptBox.appendChild(
+                            htmlEl(
+                                "div",
+                                {
+                                    style: {
+                                        color: "#8892a4",
+                                        fontSize: "10px",
+                                        fontFamily: "'JetBrains Mono', monospace",
+                                        marginTop: "2px",
+                                    },
+                                },
+                                "scale covers [-0.9 ... 9.5] \u2192 step\u22481.5",
+                            ),
+                        )
+                        compRow.appendChild(ptBox)
+                        var pcBox = htmlEl("div", {
+                            style: {
+                                padding: "8px 14px",
+                                borderRadius: "6px",
+                                background: "#00ffa312",
+                                border: "1px solid #00ffa325",
+                            },
+                        })
+                        pcBox.appendChild(
+                            htmlEl(
+                                "div",
+                                {
+                                    style: {
+                                        color: "#00ffa3",
+                                        fontSize: "11px",
+                                        fontFamily: "'JetBrains Mono', monospace",
+                                    },
+                                },
+                                "Per-channel (column)",
+                            ),
+                        )
+                        pcBox.appendChild(
+                            htmlEl(
+                                "div",
+                                {
+                                    style: {
+                                        color: "#8892a4",
+                                        fontSize: "10px",
+                                        fontFamily: "'JetBrains Mono', monospace",
+                                        marginTop: "2px",
+                                    },
+                                },
+                                "normal ch: [-0.9 ... 0.9] \u2192 step\u22480.26",
+                            ),
+                        )
+                        pcBox.appendChild(
+                            htmlEl(
+                                "div",
+                                {
+                                    style: {
+                                        color: "#8892a4",
+                                        fontSize: "10px",
+                                        fontFamily: "'JetBrains Mono', monospace",
+                                    },
+                                },
+                                "outlier ch: [4.0 ... 9.5] \u2192 step\u22480.79",
+                            ),
+                        )
+                        compRow.appendChild(pcBox)
+                        probBox.appendChild(compRow)
+                        matDiv.appendChild(probBox)
+                    }
+
+                    scrollDiv.appendChild(matDiv)
+                }
+
+                area.appendChild(scrollDiv)
+
+                // KV cache memory formula
+                var memBox = htmlEl("div", {
+                    style: {
+                        marginTop: "20px",
+                        padding: "14px 18px",
+                        borderRadius: "10px",
+                        background: "rgba(91,192,235,0.04)",
+                        border: "1px solid rgba(91,192,235,0.1)",
+                    },
+                })
+                memBox.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            style: {
+                                color: "#5bc0eb",
+                                fontSize: "11px",
+                                fontFamily: "'JetBrains Mono', monospace",
+                                marginBottom: "8px",
+                            },
+                        },
+                        "KV Cache Memory",
+                    ),
+                )
+                memBox.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            style: {
+                                color: "#c8cdd5",
+                                fontSize: "13px",
+                                fontFamily: "'JetBrains Mono', monospace",
+                                lineHeight: "2",
+                            },
+                        },
+                        "size = 2 \u00D7 n_layers \u00D7 n_heads \u00D7 d_head \u00D7 bytes \u00D7 batch \u00D7 seq_len",
+                    ),
+                )
+                memBox.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            style: {
+                                color: "#8892a4",
+                                fontSize: "11px",
+                                fontFamily: "'JetBrains Mono', monospace",
+                                marginTop: "4px",
+                            },
+                        },
+                        "LLaMA-7B @ 128K tokens: 2 \u00D7 32 \u00D7 32 \u00D7 128 \u00D7 2B \u00D7 1 \u00D7 131072 = 64 GB (!!)",
+                    ),
+                )
+                memBox.appendChild(
+                    htmlEl(
+                        "div",
+                        {
+                            style: {
+                                color: "#555d6e",
+                                fontSize: "10px",
+                                fontFamily: "'JetBrains Mono', monospace",
+                                marginTop: "4px",
+                            },
+                        },
+                        "Grows linearly with seq_len \u2014 quantizing fp16 to 3-bit yields 4.8\u00D7 compression",
+                    ),
+                )
+                area.appendChild(memBox)
+            }
+
+            // ===================== INIT =====================
+            function init() {
+                renderPipeline()
+                renderTabBar()
+                renderContent()
+            }
+
+            init()
+        </script>
+    </body>
+</html>

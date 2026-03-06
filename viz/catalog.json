@@ -3,6 +3,15 @@
     "updated": "2026-03-06",
     "visualizations": [
         {
+            "id": 74,
+            "title": "KVQuant: KV Cache Quantization for Long-Context LLMs",
+            "description": "Interactive visualization of KVQuant techniques \u2014 per-channel key quantization, pre-RoPE storage, non-uniform quantization, and dense-and-sparse decomposition.",
+            "url": "viz/2026/03/06/kvquant-viz.html",
+            "date": "2026-03-06",
+            "image": "images/74.png",
+            "papers": []
+        },
+        {
             "id": 73,
             "title": "FlashAttention-4: Algorithm & Kernel Co-Design",
             "description": "Interactive deep dive into FlashAttention-4 \u2014 how Blackwell",
