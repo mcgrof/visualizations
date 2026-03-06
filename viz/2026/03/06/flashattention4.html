@@ -1,0 +1,1377 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="FlashAttention-4: Algorithm & Kernel Pipelining Co-Design for Asymmetric Hardware Scaling"
+        />
+        <meta name="theme-color" content="#080c14" />
+        <title>FlashAttention-4 — Algorithm & Kernel Co-Design</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #080c14;
+                font-family: "Syne", sans-serif;
+                color: #c9d8ec;
+                min-height: 100vh;
+                padding: 0 0 60px;
+            }
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #0d1421;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #1e2d45;
+                border-radius: 3px;
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(8px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .mono {
+                font-family: "JetBrains Mono", monospace;
+            }
+
+            /* Header */
+            .page-header {
+                padding: 32px 32px 24px;
+                border-bottom: 1px solid #1e2d45;
+                background: linear-gradient(180deg, #0d1421 0%, #080c14 100%);
+                position: relative;
+                overflow: hidden;
+            }
+            .page-header .bg-glow {
+                position: absolute;
+                inset: 0;
+                background-image:
+                    radial-gradient(ellipse at 20% 50%, rgba(0, 212, 255, 0.03) 0%, transparent 60%),
+                    radial-gradient(ellipse at 80% 20%, rgba(168, 85, 247, 0.03) 0%, transparent 50%);
+            }
+            .page-header .inner {
+                position: relative;
+                z-index: 1;
+            }
+            .page-header .arxiv {
+                font-size: 11px;
+                color: #00d4ff;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                margin-bottom: 8px;
+            }
+            .page-header h1 {
+                font-size: clamp(22px, 4vw, 40px);
+                font-weight: 800;
+                color: #fff;
+                line-height: 1.1;
+                margin-bottom: 10px;
+            }
+            .page-header h1 .subtitle {
+                color: #00d4ff;
+                display: block;
+                font-size: clamp(14px, 2.5vw, 22px);
+                font-weight: 400;
+                margin-top: 4px;
+            }
+            .page-header .desc {
+                font-size: 13px;
+                color: #5a7090;
+                max-width: 600px;
+            }
+
+            /* Nav */
+            .nav-bar {
+                display: flex;
+                gap: 4px;
+                padding: 12px 32px;
+                border-bottom: 1px solid #1e2d45;
+                background: #0d1421;
+                flex-wrap: wrap;
+            }
+            .nav-btn {
+                background: transparent;
+                border: 1px solid transparent;
+                border-radius: 6px;
+                color: #5a7090;
+                padding: 6px 16px;
+                cursor: pointer;
+                font-family: "Syne", sans-serif;
+                font-size: 13px;
+                font-weight: 400;
+                transition: all 0.2s;
+            }
+            .nav-btn.active {
+                background: rgba(0, 212, 255, 0.13);
+                border-color: #00d4ff;
+                color: #00d4ff;
+                font-weight: 700;
+            }
+
+            /* Content */
+            .content {
+                padding: 32px;
+                max-width: 900px;
+                margin: 0 auto;
+            }
+            .section {
+                animation: fadeIn 0.3s ease;
+            }
+            .section h2 {
+                font-size: 22px;
+                font-weight: 800;
+                color: #fff;
+                margin-bottom: 6px;
+            }
+            .section .intro {
+                font-size: 14px;
+                color: #5a7090;
+                margin-bottom: 24px;
+                line-height: 1.7;
+            }
+
+            /* Version cards grid */
+            .version-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 16px;
+                margin-bottom: 32px;
+            }
+
+            /* Stat grid */
+            .stat-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 12px;
+                margin-bottom: 24px;
+            }
+
+            /* Two-col grid */
+            .two-col {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+
+            /* Pipeline stage row */
+            .pipe-header,
+            .pipe-row {
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 4px;
+            }
+            .pipe-row {
+                margin-bottom: 8px;
+            }
+            .pipe-cell {
+                height: 28px;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 10px;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+
+            /* Warp cards */
+            .warp-grid {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                margin-bottom: 24px;
+            }
+            .warp-card {
+                flex: 1 1 140px;
+                border-radius: 8px;
+                padding: 12px 14px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            /* Technique tabs */
+            .tech-tabs {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                margin-bottom: 24px;
+            }
+            .tech-tab {
+                border-radius: 6px;
+                padding: 6px 14px;
+                cursor: pointer;
+                font-family: "Syne", sans-serif;
+                font-size: 12px;
+                font-weight: 400;
+            }
+
+            /* Bars */
+            .bar-outer {
+                background: #0d1421;
+                border-radius: 6px;
+                overflow: hidden;
+                height: 28px;
+                border: 1px solid #1e2d45;
+            }
+            .bar-inner {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                padding-left: 10px;
+                font-size: 12px;
+                font-weight: bold;
+                transition: width 1s ease;
+            }
+
+            @media (max-width: 640px) {
+                .page-header {
+                    padding: 20px 16px 16px;
+                }
+                .nav-bar {
+                    padding: 10px 16px;
+                }
+                .content {
+                    padding: 20px 16px;
+                }
+                .two-col {
+                    grid-template-columns: 1fr;
+                }
+                .pipe-header,
+                .pipe-row {
+                    font-size: 8px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header class="page-header">
+            <div class="bg-glow"></div>
+            <div class="inner">
+                <div class="arxiv mono">arXiv:2603.05451 — Zadouri et al.</div>
+                <h1>
+                    FlashAttention-4
+                    <span class="subtitle">
+                        Algorithm &amp; Kernel Pipelining Co-Design for Asymmetric Hardware Scaling
+                    </span>
+                </h1>
+                <div class="desc">
+                    Blackwell (B200) doubled tensor core throughput but left exp units and shared memory bandwidth in
+                    the dust. FA4 redesigns everything to attack these new bottlenecks.
+                </div>
+            </div>
+        </header>
+
+        <nav class="nav-bar" id="nav-bar"></nav>
+        <div class="content" id="content"></div>
+
+        <script>
+            /* ── Palette ──────────────────────────────────────── */
+            var P = {
+                bg: "#080c14",
+                surface: "#0d1421",
+                panel: "#111827",
+                border: "#1e2d45",
+                accent: "#00d4ff",
+                accentDim: "#0099bb",
+                green: "#00ff88",
+                orange: "#ff8c42",
+                red: "#ff4d6d",
+                purple: "#a855f7",
+                yellow: "#fbbf24",
+                muted: "#4a6080",
+                text: "#c9d8ec",
+                textDim: "#5a7090",
+            }
+
+            /* ── Data ─────────────────────────────────────────── */
+            var versions = [
+                {
+                    ver: "FA1",
+                    year: "2022",
+                    hw: "A100",
+                    color: P.muted,
+                    tagline: "IO-Aware Attention",
+                    points: [
+                        "Tiling: never materialize full N\u00b2 attention matrix",
+                        "Online softmax via running max/sum",
+                        "HBM reads/writes \u2192 O(N) memory complexity",
+                        "3\u20134\u00d7 fewer HBM ops vs standard attention",
+                    ],
+                },
+                {
+                    ver: "FA2",
+                    year: "2023",
+                    hw: "A100/H100",
+                    color: P.purple,
+                    tagline: "Better Parallelism",
+                    points: [
+                        "Reduced non-matmul FLOPs in forward pass",
+                        "Sequence-length parallelism for long contexts",
+                        "Improved work partitioning across warps",
+                        "~2\u00d7 speedup over FA1 in practice",
+                    ],
+                },
+                {
+                    ver: "FA3",
+                    year: "2024",
+                    hw: "H100 (Hopper)",
+                    color: P.orange,
+                    tagline: "Async + Warp Specialization",
+                    points: [
+                        "Producer/consumer warp split (TMA loads)",
+                        "WGMMA asynchronous matrix-multiply",
+                        "Ping-pong softmax/GEMM overlap (2 warpgroups)",
+                        "FP8 low-precision with incoherent processing",
+                    ],
+                },
+                {
+                    ver: "FA4",
+                    year: "2025",
+                    hw: "B200 (Blackwell)",
+                    color: P.accent,
+                    tagline: "Algorithm + Kernel Co-Design",
+                    points: [
+                        "Tensor Memory (TMEM) for accumulator storage",
+                        "5-warp specialization pipeline (fully async)",
+                        "Software-emulated exp on FMA units",
+                        "Conditional softmax rescaling + 2-CTA MMA",
+                    ],
+                },
+            ]
+
+            var rooflineBase = [
+                { label: "MMA\n(QK\u1d40)", cycles: 512, color: P.green, type: "compute" },
+                { label: "MMA\n(PV)", cycles: 512, color: P.green, type: "compute" },
+                { label: "Softmax\n(exp)", cycles: 1024, color: P.red, type: "bottleneck" },
+                { label: "SMEM\nTraffic", cycles: 1536, color: P.orange, type: "bottleneck" },
+            ]
+            var rooflineFA4 = [
+                { label: "MMA\n(QK\u1d40)", cycles: 512, color: P.green, type: "compute" },
+                { label: "MMA\n(PV)", cycles: 512, color: P.green, type: "compute" },
+                { label: "Softmax\n(exp)", cycles: 480, color: P.yellow, type: "overlap", note: "Overlapped!" },
+                { label: "SMEM\nTraffic", cycles: 600, color: P.accentDim, type: "reduced", note: "TMEM!" },
+            ]
+
+            var warps = [
+                {
+                    id: "load",
+                    label: "Load Warp",
+                    color: P.purple,
+                    icon: "\u2b07",
+                    desc: "TMA-driven async loads of Q, K, V tiles from global memory \u2192 shared memory. Never blocks MMA.",
+                },
+                {
+                    id: "mma",
+                    label: "MMA Warp",
+                    color: P.green,
+                    icon: "\u2297",
+                    desc: "tcgen05.mma (5th-gen tensor cores). Computes QK\u1d40 \u2192 S tiles and PV \u2192 O tiles fully asynchronously. Accumulates in TMEM.",
+                },
+                {
+                    id: "softmax",
+                    label: "Softmax Warps \u00d72",
+                    color: P.red,
+                    icon: "\u03c3",
+                    desc: "Per-tile softmax using software-emulated exp on FMA units (not SFUs). Runs while MMA is computing the next tile.",
+                },
+                {
+                    id: "correction",
+                    label: "Correction Warp",
+                    color: P.yellow,
+                    icon: "\u21bb",
+                    desc: "Rescales previously accumulated O tiles when the running max changes. Runs conditionally \u2014 skipped when max doesn\u2019t change.",
+                },
+                {
+                    id: "store",
+                    label: "Store Warp",
+                    color: P.accentDim,
+                    icon: "\u2b06",
+                    desc: "Writes final normalized output tiles back to HBM. Fully decoupled from compute pipeline.",
+                },
+            ]
+
+            var techniques = [
+                {
+                    id: "pipeline",
+                    title: "\u2460 Redesigned Async Pipeline",
+                    color: P.accent,
+                    summary:
+                        "Two Q tiles (Q^H and Q^L), each 128 tokens, processed in ping-pong. Fully async tcgen05.mma accumulates into TMEM while CUDA cores handle softmax.",
+                    detail: [
+                        "FA3's WGMMA was async but accumulators lived in registers \u2014 register pressure throttled parallelism.",
+                        "FA4 uses tcgen05.mma (Blackwell Gen-5 tensor cores) \u2014 fully asynchronous, accumulators in TMEM.",
+                        "A warp can fire off an MMA and immediately move on \u2014 the hardware notifies completion via a barrier.",
+                        "Two query tiles H and L alternate: while softmax runs for tile j, MMA is already running for tile j+1.",
+                        "Five specialized warp roles: Load \u2192 MMA \u2192 Softmax \u2192 Correction \u2192 Store. Zero idle time on tensor cores.",
+                    ],
+                },
+                {
+                    id: "softmax",
+                    title: "\u2461 Software-Emulated Exp + Conditional Rescaling",
+                    color: P.red,
+                    summary:
+                        "SFU (MUFU.EX2) units didn't scale with Blackwell tensor cores. FA4 distributes exp computation across abundant FMA units using polynomial approximation.",
+                    detail: [
+                        "On B200: softmax exp takes ~1024 cycles; each MMA only ~512. The exp unit is now the critical path.",
+                        "Hardware SFUs are scarce (few per SM). When thousands of threads need exp(), they queue up.",
+                        "FA4 software-emulates 2^x via polynomial FMA approximation \u2014 trades accuracy margin for parallelism.",
+                        "Online softmax normally rescales O every iteration when running max changes. FA4 skips rescaling when max doesn't change (conditional rescaling) \u2014 often saves 30-50% of correction operations.",
+                        "A dedicated Correction warpgroup handles rescaling, removed from the critical MMA path.",
+                    ],
+                },
+                {
+                    id: "tmem",
+                    title: "\u2462 Tensor Memory + 2-CTA MMA (Backward Pass)",
+                    color: P.yellow,
+                    summary:
+                        "Backward pass recomputes S and P in transposed tile layout, stores P\u1d40 and dS\u1d40 directly in TMEM in operand-A layout ready for dV and dK MMAs \u2014 zero transposition overhead.",
+                    detail: [
+                        "Backward pass needs dQ, dK, dV. Naively requires reading S and P from shared memory multiple times.",
+                        "FA4 backward recomputes S and P in transposed tile orientation so the intermediate IS already S\u1d40 / P\u1d40.",
+                        "P\u1d40 can be stored directly in TMEM in the exact operand-A layout consumed by dV's MMA \u2014 no layout transform.",
+                        "TMEM can't hold all 5 accumulators (S, P, dP, dS, dQ) simultaneously, so FA4 reuses TMEM columns across stages.",
+                        "2-CTA MMA mode (new in Blackwell): two CTAs collaborate on one large GEMM, halving atomic add reductions for dK and dV.",
+                    ],
+                },
+                {
+                    id: "scheduler",
+                    title: "\u2463 New Tile Scheduler",
+                    color: P.purple,
+                    summary:
+                        "Causal masking and variable-length sequences create severe load imbalance. FA4's tile scheduler dynamically assigns work to SMs to keep all 148 SMs busy.",
+                    detail: [
+                        "Causal attention: early tiles have more valid tokens than late tiles (lower-triangular mask).",
+                        "With a static schedule, some SMs finish early and idle while others crunch through dense tiles.",
+                        "FA4's tile scheduler is persistent-kernel style \u2014 SMs pull work from a queue rather than being statically assigned.",
+                        "Handles variable-length sequences (packing multiple short sequences into one batch) natively.",
+                        "Combined with GQA (grouped-query attention) packing, allows KV heads to be broadcast across Q heads efficiently.",
+                    ],
+                },
+            ]
+
+            var memoryLayers = [
+                {
+                    label: "HBM (Global)",
+                    size: "80 GB",
+                    bw: "3.35 TB/s",
+                    color: P.muted,
+                    detail: "Q, K, V inputs + output O",
+                },
+                {
+                    label: "Shared Memory (SMEM)",
+                    size: "256 KB/SM",
+                    bw: "~30 TB/s",
+                    color: P.orange,
+                    detail: "K/V tiles staged by TMA loads",
+                },
+                {
+                    label: "Tensor Memory (TMEM) \u2190 NEW",
+                    size: "256 KB/SM",
+                    bw: "~100 TB/s",
+                    color: P.accent,
+                    detail: "S, P, O accumulators \u2014 wired to tensor cores. Blackwell-only!",
+                },
+                {
+                    label: "Registers",
+                    size: "256 KB/SM",
+                    bw: "fastest",
+                    color: P.green,
+                    detail: "Softmax running max/sum, loop vars",
+                },
+            ]
+
+            var perfBars = [
+                { label: "FA3 (H100)", val: 60, color: P.orange, note: "Hopper baseline" },
+                { label: "cuDNN (B200)", val: 75, color: P.muted, note: "NVIDIA closed-source" },
+                { label: "FA4 (B200)", val: 91, color: P.accent, note: "~20% over cuDNN" },
+            ]
+
+            var SECTIONS = ["Overview", "Problem", "Pipeline", "Techniques", "Results"]
+
+            /* ── State ────────────────────────────────────────── */
+            var activeSection = 0
+            var showFA4Roofline = false
+            var activeTech = 0
+            var activeWarp = null
+            var pipeTick = 0
+            var pipeRunning = true
+            var pipeInterval = null
+
+            /* ── Helpers ──────────────────────────────────────── */
+            function esc(s) {
+                return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+            }
+
+            /* ── Nav ──────────────────────────────────────────── */
+            function renderNav() {
+                var nav = document.getElementById("nav-bar")
+                nav.innerHTML = SECTIONS.map(function (s, i) {
+                    return (
+                        '<button class="nav-btn' +
+                        (activeSection === i ? " active" : "") +
+                        '" onclick="setSection(' +
+                        i +
+                        ')">' +
+                        s +
+                        "</button>"
+                    )
+                }).join("")
+            }
+
+            function setSection(i) {
+                activeSection = i
+                renderNav()
+                renderContent()
+            }
+
+            /* ── Render Content ───────────────────────────────── */
+            function renderContent() {
+                var el = document.getElementById("content")
+                if (activeSection === 0) el.innerHTML = renderOverview()
+                else if (activeSection === 1) el.innerHTML = renderProblem()
+                else if (activeSection === 2) el.innerHTML = renderPipeline()
+                else if (activeSection === 3) el.innerHTML = renderTechniques()
+                else if (activeSection === 4) el.innerHTML = renderResults()
+                if (activeSection === 2) startPipeline()
+                else stopPipeline()
+            }
+
+            /* ── Section 0: Overview ──────────────────────────── */
+            function renderOverview() {
+                var cards = versions
+                    .map(function (v) {
+                        var pts = v.points
+                            .map(function (p) {
+                                return (
+                                    '<li style="font-size:11px;color:' +
+                                    P.textDim +
+                                    ';margin-bottom:4px;padding-left:12px;position:relative">' +
+                                    '<span style="position:absolute;left:0;color:' +
+                                    v.color +
+                                    '">\u203a</span>' +
+                                    esc(p) +
+                                    "</li>"
+                                )
+                            })
+                            .join("")
+                        return (
+                            '<div style="background:' +
+                            P.surface +
+                            ";border:1px solid " +
+                            v.color +
+                            "44;border-top:3px solid " +
+                            v.color +
+                            ';border-radius:8px;padding:16px">' +
+                            '<div style="display:flex;justify-content:space-between;margin-bottom:8px">' +
+                            '<span style="font-size:18px;font-weight:800;color:' +
+                            v.color +
+                            '">' +
+                            v.ver +
+                            "</span>" +
+                            '<span class="mono" style="font-size:11px;color:' +
+                            P.textDim +
+                            '">' +
+                            v.year +
+                            "</span></div>" +
+                            '<div style="font-size:11px;color:' +
+                            v.color +
+                            ';margin-bottom:6px;font-weight:600">' +
+                            v.hw +
+                            "</div>" +
+                            '<div style="font-size:12px;color:' +
+                            P.text +
+                            ';margin-bottom:10px;font-style:italic">' +
+                            v.tagline +
+                            "</div>" +
+                            '<ul style="list-style:none;padding:0">' +
+                            pts +
+                            "</ul></div>"
+                        )
+                    })
+                    .join("")
+
+                return (
+                    '<div class="section">' +
+                    "<h2>The Big Picture</h2>" +
+                    '<p class="intro">FlashAttention-4 is the fourth generation of the IO-aware fused attention kernel family, ' +
+                    "purpose-built for NVIDIA Blackwell GPUs (B200, GB200). It\u2019s not just an update \u2014 it\u2019s a " +
+                    "ground-up co-design of the algorithm and kernel to handle a fundamentally shifted bottleneck profile.</p>" +
+                    '<div class="version-grid">' +
+                    cards +
+                    "</div>" +
+                    '<div style="padding:20px;background:' +
+                    P.surface +
+                    ";border:1px solid " +
+                    P.border +
+                    ";border-radius:8px;font-size:13px;color:" +
+                    P.textDim +
+                    ';line-height:1.7">' +
+                    '<span style="color:' +
+                    P.accent +
+                    ';font-weight:700">Core insight:</span> ' +
+                    "Attention = two GEMMs (QK\u1d40 and PV) with softmax in between. Every FA version has found new ways " +
+                    "to hide the non-GEMM work inside the GEMM\u2019s execution time. FA4 does this more aggressively than ever " +
+                    "by exploiting TMEM (new in Blackwell) and distributing exp computation onto underutilized FMA units.</div></div>"
+                )
+            }
+
+            /* ── Section 1: Problem ───────────────────────────── */
+            function renderRoofline(showFA4) {
+                var maxCycles = 1600
+                var data = showFA4 ? rooflineFA4 : rooflineBase
+                var legend =
+                    '<div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">' +
+                    '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:' +
+                    P.green +
+                    '"><div style="width:12px;height:12px;background:' +
+                    P.green +
+                    ';border-radius:2px"></div> Compute (MMA)</div>' +
+                    '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:' +
+                    P.red +
+                    '"><div style="width:12px;height:12px;background:' +
+                    P.red +
+                    ';border-radius:2px"></div> Bottleneck</div>'
+                if (showFA4) {
+                    legend +=
+                        '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:' +
+                        P.yellow +
+                        '"><div style="width:12px;height:12px;background:' +
+                        P.yellow +
+                        ';border-radius:2px"></div> Overlapped</div>' +
+                        '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:' +
+                        P.accentDim +
+                        '"><div style="width:12px;height:12px;background:' +
+                        P.accentDim +
+                        ';border-radius:2px"></div> TMEM-Reduced</div>'
+                }
+                legend += "</div>"
+
+                var bars = data
+                    .map(function (d) {
+                        var h = (d.cycles / maxCycles) * 160
+                        var isBot = d.type === "bottleneck"
+                        var hatch = isBot
+                            ? '<div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 4px,' +
+                              P.red +
+                              "22 4px," +
+                              P.red +
+                              '22 8px)"></div>'
+                            : ""
+                        var noteHtml = d.note
+                            ? '<div style="font-size:10px;color:' +
+                              d.color +
+                              ";background:" +
+                              d.color +
+                              '22;border-radius:4px;padding:2px 6px">' +
+                              d.note +
+                              "</div>"
+                            : ""
+                        return (
+                            '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px">' +
+                            '<div style="font-size:11px;color:' +
+                            d.color +
+                            ';font-weight:bold">' +
+                            d.cycles +
+                            "c</div>" +
+                            noteHtml +
+                            '<div style="width:100%;height:' +
+                            h +
+                            "px;background:" +
+                            d.color +
+                            (isBot ? "55" : "33") +
+                            ";border:2px solid " +
+                            d.color +
+                            (isBot ? "" : "88") +
+                            ';border-radius:4px 4px 0 0;position:relative;overflow:hidden">' +
+                            hatch +
+                            "</div>" +
+                            '<div style="font-size:10px;color:' +
+                            P.textDim +
+                            ';text-align:center;white-space:pre-line;line-height:1.4">' +
+                            d.label +
+                            "</div></div>"
+                        )
+                    })
+                    .join("")
+
+                var footer = showFA4
+                    ? "\u2713 FA4 hides softmax latency behind MMA and uses TMEM to slash shared memory traffic"
+                    : "\u26a0 On B200: tensor cores 2\u00d7 faster than Hopper, but exp units & SMEM bandwidth did NOT scale \u2014 now the bottleneck"
+
+                return (
+                    '<div class="mono">' +
+                    legend +
+                    '<div style="display:flex;gap:16px;align-items:flex-end;height:180px">' +
+                    bars +
+                    "</div>" +
+                    '<div style="margin-top:12px;padding:8px 12px;background:' +
+                    P.surface +
+                    ";border-radius:6px;border:1px solid " +
+                    P.border +
+                    ";font-size:11px;color:" +
+                    P.textDim +
+                    '">' +
+                    footer +
+                    "</div></div>"
+                )
+            }
+
+            function renderProblem() {
+                var specRows = [
+                    {
+                        label: "Tensor Core FLOPS",
+                        hopper: "1\u00d7",
+                        blackwell: "2\u00d7",
+                        color: P.green,
+                        note: "Doubled again",
+                    },
+                    {
+                        label: "SMEM Bandwidth",
+                        hopper: "1\u00d7",
+                        blackwell: "~1.5\u00d7",
+                        color: P.orange,
+                        note: "Modest gain",
+                    },
+                    {
+                        label: "Exp Unit (MUFU.EX2)",
+                        hopper: "1\u00d7",
+                        blackwell: "~1\u00d7",
+                        color: P.red,
+                        note: "Did NOT scale",
+                    },
+                    {
+                        label: "HBM Bandwidth",
+                        hopper: "3.35 TB/s",
+                        blackwell: "8 TB/s",
+                        color: P.purple,
+                        note: "2.4\u00d7 (HBM3e)",
+                    },
+                ]
+                var specHtml = specRows
+                    .map(function (r) {
+                        return (
+                            '<div style="background:' +
+                            P.surface +
+                            ";border:1px solid " +
+                            r.color +
+                            '44;border-radius:8px;padding:14px">' +
+                            '<div style="font-size:12px;color:' +
+                            P.textDim +
+                            ';margin-bottom:6px">' +
+                            r.label +
+                            "</div>" +
+                            '<div style="display:flex;justify-content:space-between;font-size:13px">' +
+                            '<span style="color:' +
+                            P.muted +
+                            '">H100: ' +
+                            r.hopper +
+                            "</span>" +
+                            '<span style="color:' +
+                            r.color +
+                            ';font-weight:700">B200: ' +
+                            r.blackwell +
+                            "</span></div>" +
+                            '<div class="mono" style="font-size:11px;color:' +
+                            r.color +
+                            ';margin-top:6px">' +
+                            r.note +
+                            "</div></div>"
+                        )
+                    })
+                    .join("")
+
+                var toggleLabel = showFA4Roofline ? "\u2190 Show B200 Bottlenecks" : "Show FA4 Fixes \u2192"
+
+                return (
+                    '<div class="section">' +
+                    "<h2>The Problem: Asymmetric Scaling</h2>" +
+                    '<p class="intro">NVIDIA Blackwell doubled tensor core FLOPS (again) but left the exponential units and shared memory ' +
+                    "bandwidth roughly unchanged. This demolished the assumptions FA3 was built on.</p>" +
+                    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px">' +
+                    specHtml +
+                    "</div>" +
+                    '<div style="margin-bottom:16px">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
+                    '<h3 style="font-size:16px;color:#fff">Roofline Analysis (M=N=256, d=128)</h3>' +
+                    '<button class="mono" onclick="toggleRoofline()" style="background:' +
+                    (showFA4Roofline ? P.accent + "22" : P.surface) +
+                    ";border:1px solid " +
+                    (showFA4Roofline ? P.accent : P.border) +
+                    ";border-radius:6px;color:" +
+                    (showFA4Roofline ? P.accent : P.textDim) +
+                    ';padding:5px 14px;cursor:pointer;font-size:11px">' +
+                    toggleLabel +
+                    "</button></div>" +
+                    '<div style="background:' +
+                    P.surface +
+                    ";border:1px solid " +
+                    P.border +
+                    ';border-radius:8px;padding:20px">' +
+                    renderRoofline(showFA4Roofline) +
+                    "</div></div>" +
+                    '<div style="padding:14px 18px;background:' +
+                    P.red +
+                    "11;border:1px solid " +
+                    P.red +
+                    "44;border-radius:8px;font-size:13px;color:" +
+                    P.text +
+                    ';line-height:1.7">' +
+                    '<span style="color:' +
+                    P.red +
+                    ';font-weight:700">The brutal math:</span> ' +
+                    "With M=N=256, d=128: MMA takes ~512 cycles per matmul. Softmax exp takes ~1024 cycles. " +
+                    "Shared memory traffic: ~1536 cycles. Tensor cores sit idle more than half the time in a naive kernel. " +
+                    "FA4 was built to fix exactly this.</div></div>"
+                )
+            }
+
+            function toggleRoofline() {
+                showFA4Roofline = !showFA4Roofline
+                renderContent()
+            }
+
+            /* ── Section 2: Pipeline ──────────────────────────── */
+            var pipeStages = ["Load K/V", "MMA QK\u1d40", "Softmax", "MMA PV", "Correct O", "Store O"]
+            var pipeStageColors = [P.purple, P.green, P.red, P.green, P.yellow, P.accentDim]
+            var pipeTiles = [
+                { name: "Q^H tile 0", color: P.accent },
+                { name: "Q^L tile 0", color: P.orange },
+                { name: "Q^H tile 1", color: P.accent },
+                { name: "Q^L tile 1", color: P.orange },
+            ]
+
+            function getPipeStage(tileIdx) {
+                var offset = tileIdx * 2
+                var adjusted = pipeTick - offset
+                if (adjusted < 0 || adjusted >= pipeStages.length) return -1
+                return adjusted
+            }
+
+            function renderPipelineDiagram() {
+                var el = document.getElementById("pipe-diagram")
+                if (!el) return
+
+                var headerCells = pipeStages
+                    .map(function (s, si) {
+                        return (
+                            '<div style="background:' +
+                            P.surface +
+                            ";border:1px solid " +
+                            P.border +
+                            ";border-radius:6px;padding:6px 4px;text-align:center;font-size:10px;color:" +
+                            P.textDim +
+                            '">' +
+                            s +
+                            "</div>"
+                        )
+                    })
+                    .join("")
+
+                var rows = pipeTiles
+                    .map(function (tile, ti) {
+                        var stage = getPipeStage(ti)
+                        var cells = pipeStages
+                            .map(function (_, si) {
+                                var active = stage === si
+                                return (
+                                    '<div class="pipe-cell" style="background:' +
+                                    (active ? tile.color + "44" : "transparent") +
+                                    ";border:1px solid " +
+                                    (active ? tile.color : P.border + "44") +
+                                    ";color:" +
+                                    (active ? tile.color : "transparent") +
+                                    '">' +
+                                    (active ? tile.name : "\u00b7") +
+                                    "</div>"
+                                )
+                            })
+                            .join("")
+                        return '<div class="pipe-row">' + cells + "</div>"
+                    })
+                    .join("")
+
+                el.innerHTML =
+                    '<div class="pipe-header" style="margin-bottom:12px">' +
+                    headerCells +
+                    "</div>" +
+                    rows +
+                    '<div style="display:flex;gap:16px;margin-top:16px;align-items:center">' +
+                    '<button class="mono" id="pipe-toggle" onclick="togglePipeline()" style="background:' +
+                    (pipeRunning ? P.accent + "22" : P.surface) +
+                    ";border:1px solid " +
+                    (pipeRunning ? P.accent : P.border) +
+                    ";border-radius:6px;color:" +
+                    (pipeRunning ? P.accent : P.textDim) +
+                    ';padding:6px 16px;cursor:pointer;font-size:12px">' +
+                    (pipeRunning ? "\u23f8 Pause" : "\u25b6 Play") +
+                    "</button>" +
+                    '<div class="mono" style="font-size:11px;color:' +
+                    P.textDim +
+                    '">Tick ' +
+                    pipeTick +
+                    "/15 \u2014 Q^H & Q^L tiles interleave in ping-pong fashion, keeping tensor cores busy</div></div>"
+            }
+
+            function startPipeline() {
+                stopPipeline()
+                if (pipeRunning) {
+                    pipeInterval = setInterval(function () {
+                        pipeTick = (pipeTick + 1) % 16
+                        renderPipelineDiagram()
+                    }, 500)
+                }
+            }
+
+            function stopPipeline() {
+                if (pipeInterval) {
+                    clearInterval(pipeInterval)
+                    pipeInterval = null
+                }
+            }
+
+            function togglePipeline() {
+                pipeRunning = !pipeRunning
+                if (pipeRunning) startPipeline()
+                else stopPipeline()
+                renderPipelineDiagram()
+            }
+
+            function renderPipeline() {
+                var stageTags = pipeStages
+                    .map(function (s, i) {
+                        return (
+                            '<div style="background:' +
+                            pipeStageColors[i] +
+                            "22;border:1px solid " +
+                            pipeStageColors[i] +
+                            "66;border-radius:6px;padding:4px 10px;font-size:11px;color:" +
+                            pipeStageColors[i] +
+                            '">' +
+                            s +
+                            "</div>"
+                        )
+                    })
+                    .join("")
+
+                var warpCards = warps
+                    .map(function (w, i) {
+                        var expanded = activeWarp === i
+                        var descHtml = expanded
+                            ? '<div style="font-size:11px;color:' +
+                              P.textDim +
+                              ';margin-top:8px;line-height:1.6;animation:fadeIn 0.2s ease">' +
+                              esc(w.desc) +
+                              "</div>"
+                            : ""
+                        return (
+                            '<div class="warp-card" onclick="toggleWarp(' +
+                            i +
+                            ')" style="background:' +
+                            (expanded ? w.color + "22" : P.surface) +
+                            ";border:1px solid " +
+                            (expanded ? w.color : P.border) +
+                            '">' +
+                            '<div style="font-size:20px;margin-bottom:6px">' +
+                            w.icon +
+                            "</div>" +
+                            '<div style="font-size:12px;color:' +
+                            w.color +
+                            ';font-weight:700;margin-bottom:3px">' +
+                            w.label +
+                            "</div>" +
+                            descHtml +
+                            "</div>"
+                        )
+                    })
+                    .join("")
+
+                var fa3Items = [
+                    "2 warpgroups alternate softmax/GEMM",
+                    "Accumulators in registers",
+                    "Register pressure \u2192 serial schedule",
+                    "Async WGMMA but sync softmax",
+                ]
+                var fa4Items = [
+                    "5 specialized warp roles",
+                    "tcgen05.mma \u2192 accumulate in TMEM",
+                    "Multiple MMAs in flight simultaneously",
+                    "Softmax on CUDA cores, not SFUs",
+                ]
+
+                function makeList(items, color) {
+                    return items
+                        .map(function (t) {
+                            return (
+                                '<li style="font-size:12px;color:' +
+                                P.textDim +
+                                ';margin-bottom:5px;padding-left:14px;position:relative">' +
+                                '<span style="position:absolute;left:0;color:' +
+                                color +
+                                '">\u203a</span>' +
+                                t +
+                                "</li>"
+                            )
+                        })
+                        .join("")
+                }
+
+                return (
+                    '<div class="section">' +
+                    "<h2>The FA4 Pipeline</h2>" +
+                    '<p class="intro">FA4 uses 5 warp specializations operating concurrently, plus a ping-pong Q tile schedule ' +
+                    "to keep the tensor cores continuously fed.</p>" +
+                    '<div class="warp-grid">' +
+                    warpCards +
+                    "</div>" +
+                    '<div class="mono" style="font-size:11px;color:' +
+                    P.textDim +
+                    ';margin-bottom:24px">\u2191 Click any warp to expand details</div>' +
+                    '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">' +
+                    stageTags +
+                    "</div>" +
+                    '<h3 style="font-size:16px;color:#fff;margin-bottom:12px">Ping-Pong Pipeline Simulation</h3>' +
+                    '<div id="pipe-diagram" style="background:' +
+                    P.surface +
+                    ";border:1px solid " +
+                    P.border +
+                    ';border-radius:8px;padding:20px;margin-bottom:20px"></div>' +
+                    '<div class="two-col">' +
+                    '<div style="background:' +
+                    P.surface +
+                    ";border:1px solid " +
+                    P.orange +
+                    '44;border-radius:8px;padding:16px">' +
+                    '<h4 style="font-size:14px;color:' +
+                    P.orange +
+                    ';margin-bottom:8px">FA3: WGMMA Ping-Pong</h4>' +
+                    '<ul style="list-style:none;padding:0">' +
+                    makeList(fa3Items, P.orange) +
+                    "</ul></div>" +
+                    '<div style="background:' +
+                    P.surface +
+                    ";border:1px solid " +
+                    P.accent +
+                    '44;border-radius:8px;padding:16px">' +
+                    '<h4 style="font-size:14px;color:' +
+                    P.accent +
+                    ';margin-bottom:8px">FA4: 5-Stage Full Async</h4>' +
+                    '<ul style="list-style:none;padding:0">' +
+                    makeList(fa4Items, P.accent) +
+                    "</ul></div></div></div>"
+                )
+            }
+
+            function toggleWarp(i) {
+                activeWarp = activeWarp === i ? null : i
+                renderContent()
+            }
+
+            /* ── Section 3: Techniques ────────────────────────── */
+            function renderTechniques() {
+                var tabs = techniques
+                    .map(function (t, i) {
+                        var active = activeTech === i
+                        return (
+                            '<button class="tech-tab" onclick="setTech(' +
+                            i +
+                            ')" style="background:' +
+                            (active ? t.color + "22" : P.surface) +
+                            ";border:1px solid " +
+                            (active ? t.color : P.border) +
+                            ";color:" +
+                            (active ? t.color : P.textDim) +
+                            ";font-weight:" +
+                            (active ? "700" : "400") +
+                            '">' +
+                            esc(t.title.split(" ")[0]) +
+                            "</button>"
+                        )
+                    })
+                    .join("")
+
+                var t = techniques[activeTech]
+                var details = t.detail
+                    .map(function (d, i) {
+                        return (
+                            '<div style="display:flex;gap:12px;margin-bottom:12px;padding:10px 14px;background:' +
+                            P.bg +
+                            ";border-radius:6px;border:1px solid " +
+                            P.border +
+                            '">' +
+                            '<span class="mono" style="color:' +
+                            t.color +
+                            ';font-weight:700;font-size:12px;flex-shrink:0">' +
+                            String(i + 1).padStart(2, "0") +
+                            "</span>" +
+                            '<span style="font-size:13px;color:' +
+                            P.textDim +
+                            ';line-height:1.65">' +
+                            esc(d) +
+                            "</span></div>"
+                        )
+                    })
+                    .join("")
+
+                var memCards = memoryLayers
+                    .map(function (l) {
+                        return (
+                            '<div style="padding:12px 16px;background:' +
+                            P.surface +
+                            ";border:1px solid " +
+                            l.color +
+                            "66;border-left:4px solid " +
+                            l.color +
+                            ';border-radius:6px;display:flex;gap:16px;align-items:center">' +
+                            '<div style="flex:1"><div style="font-size:13px;color:' +
+                            l.color +
+                            ';font-weight:bold;margin-bottom:3px">' +
+                            l.label +
+                            "</div>" +
+                            '<div style="font-size:11px;color:' +
+                            P.textDim +
+                            '">' +
+                            l.detail +
+                            "</div></div>" +
+                            '<div style="text-align:right;font-size:11px"><div style="color:' +
+                            P.text +
+                            '">' +
+                            l.size +
+                            "</div>" +
+                            '<div style="color:' +
+                            P.muted +
+                            '">' +
+                            l.bw +
+                            "</div></div></div>"
+                        )
+                    })
+                    .join("")
+
+                return (
+                    '<div class="section">' +
+                    "<h2>Key Techniques</h2>" +
+                    '<p class="intro">Four interlocking innovations address the shifted bottleneck profile. None works alone \u2014 they reinforce each other.</p>' +
+                    '<div class="tech-tabs">' +
+                    tabs +
+                    "</div>" +
+                    '<div style="animation:fadeIn 0.25s ease">' +
+                    '<div style="background:' +
+                    P.surface +
+                    ";border:1px solid " +
+                    t.color +
+                    "55;border-top:3px solid " +
+                    t.color +
+                    ';border-radius:8px;padding:20px;margin-bottom:16px">' +
+                    '<h3 style="font-size:18px;color:' +
+                    t.color +
+                    ';font-weight:800;margin-bottom:10px">' +
+                    esc(t.title) +
+                    "</h3>" +
+                    '<p style="font-size:14px;color:' +
+                    P.text +
+                    ';line-height:1.7;margin-bottom:16px">' +
+                    esc(t.summary) +
+                    "</p>" +
+                    '<div style="border-top:1px solid ' +
+                    P.border +
+                    ';padding-top:14px">' +
+                    details +
+                    "</div></div></div>" +
+                    '<h3 style="font-size:16px;color:#fff;margin-bottom:12px;margin-top:24px">Memory Hierarchy in FA4</h3>' +
+                    '<div style="background:' +
+                    P.surface +
+                    ";border:1px solid " +
+                    P.border +
+                    ';border-radius:8px;padding:20px">' +
+                    '<div class="mono" style="display:flex;flex-direction:column;gap:8px">' +
+                    memCards +
+                    '<div style="font-size:11px;color:' +
+                    P.textDim +
+                    ";margin-top:4px;padding:8px 12px;background:" +
+                    P.surface +
+                    ";border-radius:6px;border:1px solid " +
+                    P.border +
+                    '">\ud83d\udca1 TMEM is the killer feature: FA3 kept accumulators in registers \u2192 register pressure \u2192 serial schedule. ' +
+                    "FA4 dumps them in TMEM \u2192 multiple MMAs in flight simultaneously.</div></div></div></div>"
+                )
+            }
+
+            function setTech(i) {
+                activeTech = i
+                renderContent()
+            }
+
+            /* ── Section 4: Results ───────────────────────────── */
+            function renderResults() {
+                var bars = perfBars
+                    .map(function (b) {
+                        return (
+                            '<div style="margin-bottom:16px">' +
+                            '<div style="display:flex;justify-content:space-between;margin-bottom:6px">' +
+                            '<span style="font-size:13px;color:' +
+                            b.color +
+                            ';font-weight:bold">' +
+                            b.label +
+                            "</span>" +
+                            '<span style="font-size:12px;color:' +
+                            P.textDim +
+                            '">' +
+                            b.note +
+                            "</span></div>" +
+                            '<div class="bar-outer"><div class="bar-inner" style="width:' +
+                            b.val +
+                            "%;background:linear-gradient(90deg," +
+                            b.color +
+                            "66," +
+                            b.color +
+                            "33);border-right:2px solid " +
+                            b.color +
+                            ";color:" +
+                            b.color +
+                            '">' +
+                            b.val +
+                            "%</div></div></div>"
+                        )
+                    })
+                    .join("")
+
+                var stats = [
+                    { stat: "~20%", label: "Faster than cuDNN on B200", color: P.accent },
+                    { stat: "5", label: "Specialized warp roles", color: P.green },
+                    { stat: "256KB", label: "TMEM per SM (Blackwell)", color: P.yellow },
+                    { stat: "2\u00d7", label: "Atomic reductions cut by 2-CTA MMA", color: P.purple },
+                ]
+                var statCards = stats
+                    .map(function (s) {
+                        return (
+                            '<div style="background:' +
+                            P.surface +
+                            ";border:1px solid " +
+                            s.color +
+                            '44;border-radius:8px;padding:16px 20px;text-align:center">' +
+                            '<div style="font-size:32px;font-weight:800;color:' +
+                            s.color +
+                            ';margin-bottom:6px">' +
+                            s.stat +
+                            "</div>" +
+                            '<div style="font-size:12px;color:' +
+                            P.textDim +
+                            '">' +
+                            s.label +
+                            "</div></div>"
+                        )
+                    })
+                    .join("")
+
+                var openItems = [
+                    "Full CUDA/CuTe DSL implementation",
+                    "Forward + backward pass kernels",
+                    "FP8, FP16, BF16 precision support",
+                    "Variable-length sequence support",
+                    "FlexAttention integration (PyTorch)",
+                ]
+                var openHtml = openItems
+                    .map(function (t) {
+                        return (
+                            '<div style="font-size:12px;color:' +
+                            P.textDim +
+                            ';margin-bottom:5px;display:flex;gap:8px">' +
+                            '<span style="color:' +
+                            P.green +
+                            '">\u2713</span>' +
+                            t +
+                            "</div>"
+                        )
+                    })
+                    .join("")
+
+                return (
+                    '<div class="section">' +
+                    "<h2>Results &amp; Impact</h2>" +
+                    '<p class="intro">FA4 beats NVIDIA\u2019s own closed-source cuDNN attention kernels on their own hardware.</p>' +
+                    '<div class="mono" style="background:' +
+                    P.surface +
+                    ";border:1px solid " +
+                    P.border +
+                    ';border-radius:8px;padding:20px;margin-bottom:24px">' +
+                    '<div style="margin-bottom:16px;font-size:12px;color:' +
+                    P.textDim +
+                    '">% of theoretical peak MFU (model FLOP utilization) \u2014 forward pass, BF16</div>' +
+                    bars +
+                    '<div style="padding:10px 14px;background:' +
+                    P.accent +
+                    "11;border:1px solid " +
+                    P.accent +
+                    "44;border-radius:8px;font-size:12px;color:" +
+                    P.text +
+                    ';margin-top:8px">' +
+                    "FA4 also beats cuBLAS 13.0 on a standalone A@B+C GEMM on Blackwell \u2014 the TMEM-based accumulation + async epilogue overlap is generically useful, not just for attention." +
+                    "</div></div>" +
+                    '<div class="stat-grid">' +
+                    statCards +
+                    "</div>" +
+                    '<div class="two-col">' +
+                    '<div style="background:' +
+                    P.surface +
+                    ";border:1px solid " +
+                    P.border +
+                    ';border-radius:8px;padding:16px">' +
+                    '<h4 style="font-size:14px;color:' +
+                    P.accent +
+                    ';margin-bottom:10px">\ud83d\udd13 What\u2019s Open Source</h4>' +
+                    openHtml +
+                    "</div>" +
+                    '<div style="background:' +
+                    P.surface +
+                    ";border:1px solid " +
+                    P.border +
+                    ';border-radius:8px;padding:16px">' +
+                    '<h4 style="font-size:14px;color:' +
+                    P.orange +
+                    ';margin-bottom:10px">\u26a0 ROCm / AMD Caveat</h4>' +
+                    '<p style="font-size:12px;color:' +
+                    P.textDim +
+                    ';line-height:1.7">' +
+                    "FA4 is written in CUTLASS CuTe Python DSL \u2014 ~10\u00d7 harder to port to ROCm HIP than vanilla CUDA C++. " +
+                    "TMEM is a Blackwell-only feature with no AMD equivalent yet. " +
+                    "AMD MI300X users are stuck on FA2/FA3-era kernels for now.</p></div></div>" +
+                    '<div style="margin-top:20px;padding:16px 20px;background:' +
+                    P.surface +
+                    ";border:1px solid " +
+                    P.accent +
+                    "33;border-radius:8px;font-size:13px;color:" +
+                    P.textDim +
+                    ';line-height:1.8">' +
+                    '<span style="color:' +
+                    P.accent +
+                    ';font-weight:700">Why this matters for LLM inference:</span> ' +
+                    "Attention is the bottleneck in long-context workloads. FA4 directly reduces time-per-token on B200 systems " +
+                    "like GB200 NVLink racks. Combined with quantization (FP8/FP4) and speculative decoding, this is a meaningful " +
+                    "multiplier on inference throughput per dollar \u2014 right when the industry is scaling toward million-token contexts.</div></div>"
+                )
+            }
+
+            /* ── Init ─────────────────────────────────────────── */
+            renderNav()
+            renderContent()
+        </script>
+    </body>
+</html>

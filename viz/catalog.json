@@ -3,6 +3,20 @@
     "updated": "2026-03-06",
     "visualizations": [
         {
+            "id": 73,
+            "title": "FlashAttention-4: Algorithm & Kernel Co-Design",
+            "description": "Interactive deep dive into FlashAttention-4 \u2014 how Blackwell's TMEM, 5-warp pipelining, and software-emulated exp attack asymmetric hardware scaling.",
+            "url": "viz/2026/03/06/flashattention4.html",
+            "date": "2026-03-06",
+            "image": "images/73.png",
+            "papers": [
+                {
+                    "id": "2603.05451",
+                    "type": "arxiv"
+                }
+            ]
+        },
+        {
             "id": 72,
             "title": "PTP: Resolving the Independence Flaw",
             "description": "Interactive deep dive into Parallel Token Prediction (PTP) \u2014 how normalizing flows fix the independence flaw in multi-token prediction.",
