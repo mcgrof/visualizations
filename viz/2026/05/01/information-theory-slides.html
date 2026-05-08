@@ -167,6 +167,28 @@
             footer a:hover {
                 color: var(--text);
             }
+
+            /* ── Confluence embed: full-bleed dark background ── */
+            /* Painted halo via box-shadow + clip-path lets the dark
+               background extend past the host page's content column
+               out to the viewport edges. No effect on the standalone
+               page (body already paints var(--bg), so the halo is
+               dark-on-dark and invisible). */
+            .topnav,
+            .hero,
+            .hero-tag,
+            .actions,
+            footer {
+                background: var(--bg);
+            }
+            .topnav,
+            .hero,
+            .slides-frame,
+            .actions,
+            footer {
+                box-shadow: 0 0 0 100vmax var(--bg);
+                clip-path: inset(0 -100vmax);
+            }
         </style>
     </head>
     <body>

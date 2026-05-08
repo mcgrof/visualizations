@@ -638,6 +638,24 @@
                     grid-template-columns: 1fr !important;
                 }
             }
+
+            /* ── Confluence embed: full-bleed dark background ── */
+            /* Painted halo via box-shadow + clip-path lets the dark
+               background extend past the host page's content column
+               out to the viewport edges. No effect on the standalone
+               page (body already paints var(--bg), so the halo is
+               dark-on-dark and invisible). */
+            .hero,
+            .hero-tag,
+            .content {
+                background: var(--bg);
+            }
+            .hero,
+            .tabs,
+            .content {
+                box-shadow: 0 0 0 100vmax var(--bg);
+                clip-path: inset(0 -100vmax);
+            }
         </style>
     </head>
     <body>
