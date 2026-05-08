@@ -2401,56 +2401,23 @@
                         loss number — is a handful of numpy calls.
                     </p>
 
-                    <div class="code-box">
-                        <span class="c"># Initial state</span>
-                        <span class="n">w</span>
-                        =
-                        <span class="v">0.0</span>
-                        <span class="n">b</span>
-                        =
-                        <span class="v">0.0</span>
+                    <pre class="code-box">
+<span class="c"># Initial state</span>
+<span class="n">w</span> = <span class="v">0.0</span>
+<span class="n">b</span> = <span class="v">0.0</span>
 
-                        <span class="n">X</span>
-                        = np.array([
-                        <span class="v">1</span>
-                        ,
-                        <span class="v">2</span>
-                        ,
-                        <span class="v">3</span>
-                        ,
-                        <span class="v">4</span>
-                        ,
-                        <span class="v">5</span>
-                        ])
-                        <span class="n">y</span>
-                        = np.array([
-                        <span class="v">4</span>
-                        ,
-                        <span class="v">7</span>
-                        ,
-                        <span class="v">10</span>
-                        ,
-                        <span class="v">13</span>
-                        ,
-                        <span class="v">16</span>
-                        ])
-                        <span class="c"># true values</span>
-                    </div>
+<span class="n">X</span> = np.array([<span class="v">1</span>, <span class="v">2</span>, <span class="v">3</span>, <span class="v">4</span>, <span class="v">5</span>])
+<span class="n">y</span> = np.array([<span class="v">4</span>, <span class="v">7</span>, <span class="v">10</span>, <span class="v">13</span>, <span class="v">16</span>])  <span class="c"># true values</span>
+</pre>
 
                     <p>Five training examples. We know what the right answer looks like. Now the forward pass:</p>
 
-                    <div class="code-box">
-                        <span class="c"># Forward pass with w=0, b=0</span>
-                        <span class="n">y_pred</span>
-                        =
-                        <span class="n">w</span>
-                        *
-                        <span class="n">X</span>
-                        +
-                        <span class="n">b</span>
-                        <span class="c"># y_pred = 0 * [1, 2, 3, 4, 5] + 0</span>
-                        <span class="c"># y_pred = [0, 0, 0, 0, 0]</span>
-                    </div>
+                    <pre class="code-box">
+<span class="c"># Forward pass with w=0, b=0</span>
+<span class="n">y_pred</span> = <span class="n">w</span> * <span class="n">X</span> + <span class="n">b</span>
+<span class="c"># y_pred = 0 * [1, 2, 3, 4, 5] + 0</span>
+<span class="c"># y_pred = [0, 0, 0, 0, 0]</span>
+</pre>
 
                     <p>
                         Every prediction is zero. Predictably bad — we haven't trained anything yet. But the
@@ -2478,16 +2445,12 @@
                             Signed, so we know which direction we're off by.
                         </div>
                     </div>
-                    <div class="code-box">
-                        <span class="c"># Error (prediction - truth)</span>
-                        <span class="n">error</span>
-                        =
-                        <span class="n">y_pred</span>
-                        -
-                        <span class="n">y</span>
-                        <span class="c"># error = [0-4, 0-7, 0-10, 0-13, 0-16]</span>
-                        <span class="c"># error = [-4, -7, -10, -13, -16]</span>
-                    </div>
+                    <pre class="code-box">
+<span class="c"># Error (prediction - truth)</span>
+<span class="n">error</span> = <span class="n">y_pred</span> - <span class="n">y</span>
+<span class="c"># error = [0-4, 0-7, 0-10, 0-13, 0-16]</span>
+<span class="c"># error = [-4, -7, -10, -13, -16]</span>
+</pre>
 
                     <div class="step-row">
                         <div class="step-num">2</div>
@@ -2497,15 +2460,11 @@
                             penalizes big misses more than small ones.
                         </div>
                     </div>
-                    <div class="code-box">
-                        <span class="c"># Square it (makes everything positive, penalizes big errors more)</span>
-                        <span class="n">squared_error</span>
-                        =
-                        <span class="n">error</span>
-                        **
-                        <span class="v">2</span>
-                        <span class="c"># squared_error = [16, 49, 100, 169, 256]</span>
-                    </div>
+                    <pre class="code-box">
+<span class="c"># Square it (makes everything positive, penalizes big errors more)</span>
+<span class="n">squared_error</span> = <span class="n">error</span> ** <span class="v">2</span>
+<span class="c"># squared_error = [16, 49, 100, 169, 256]</span>
+</pre>
 
                     <div class="step-row">
                         <div class="step-num">3</div>
@@ -2516,19 +2475,13 @@
                             — the workhorse regression loss.
                         </div>
                     </div>
-                    <div class="code-box">
-                        <span class="c"># Mean (average of all squared errors)</span>
-                        <span class="n">loss</span>
-                        = np.mean(
-                        <span class="n">squared_error</span>
-                        )
-                        <span class="c"># loss = (16 + 49 + 100 + 169 + 256) / 5</span>
-                        <span class="c"># loss = 590 / 5</span>
-                        <span class="c">
-                            # loss =
-                            <span class="r">118.0</span>
-                        </span>
-                    </div>
+                    <pre class="code-box">
+<span class="c"># Mean (average of all squared errors)</span>
+<span class="n">loss</span> = np.mean(<span class="n">squared_error</span>)
+<span class="c"># loss = (16 + 49 + 100 + 169 + 256) / 5</span>
+<span class="c"># loss = 590 / 5</span>
+<span class="c"># loss = </span><span class="r">118.0</span>
+</pre>
 
                     <div class="loss-display">
                         <div class="loss-label">Loss at step 0</div>
@@ -2743,36 +2696,13 @@
                         recompute the squared error for the same point:
                     </p>
 
-                    <div class="code-box">
-                        <span class="n">y_pred</span>
-                        =
-                        <span class="v">0.001</span>
-                        *
-                        <span class="v">1</span>
-                        +
-                        <span class="v">0</span>
-                        =
-                        <span class="v">0.001</span>
-                        <span class="n">error</span>
-                        =
-                        <span class="v">0.001</span>
-                        -
-                        <span class="v">4</span>
-                        =
-                        <span class="v">-3.999</span>
-                        <span class="n">squared_error</span>
-                        = (
-                        <span class="v">-3.999</span>
-                        )
-                        <span class="v">²</span>
-                        =
-                        <span class="v">15.992</span>
-                        <span class="c"># went from 16 to 15.992 → change of -0.008</span>
-                        <span class="c">
-                            # Δ(squared_error) / Δw = -0.008 / 0.001 =
-                            <span class="r">-8</span>
-                        </span>
-                    </div>
+                    <pre class="code-box">
+<span class="n">y_pred</span> = <span class="v">0.001</span> * <span class="v">1</span> + <span class="v">0</span> = <span class="v">0.001</span>
+<span class="n">error</span> = <span class="v">0.001</span> - <span class="v">4</span> = <span class="v">-3.999</span>
+<span class="n">squared_error</span> = (<span class="v">-3.999</span>)<span class="v">²</span> = <span class="v">15.992</span>
+<span class="c"># went from 16 to 15.992 → change of -0.008</span>
+<span class="c"># Δ(squared_error) / Δw = -0.008 / 0.001 = </span><span class="r">-8</span>
+</pre>
 
                     <p>
                         Same answer —
@@ -3016,55 +2946,19 @@
 
                     <p>Plug in:</p>
 
-                    <div class="code-box">
-                        <span class="c"># Starting point</span>
-                        <span class="n">w</span>
-                        =
-                        <span class="v">0.0</span>
-                        ,
-                        <span class="n">b</span>
-                        =
-                        <span class="v">0.0</span>
-                        <span class="n">lr</span>
-                        =
-                        <span class="v">0.01</span>
+                    <pre class="code-box">
+<span class="c"># Starting point</span>
+<span class="n">w</span> = <span class="v">0.0</span>, <span class="n">b</span> = <span class="v">0.0</span>
+<span class="n">lr</span> = <span class="v">0.01</span>
 
-                        <span class="c"># Gradients (computed via chain rule)</span>
-                        <span class="n">dw</span>
-                        =
-                        <span class="v">-72</span>
-                        <span class="n">db</span>
-                        =
-                        <span class="v">-20</span>
+<span class="c"># Gradients (computed via chain rule)</span>
+<span class="n">dw</span> = <span class="v">-72</span>
+<span class="n">db</span> = <span class="v">-20</span>
 
-                        <span class="c"># Update</span>
-                        <span class="n">w_new</span>
-                        =
-                        <span class="v">0</span>
-                        -
-                        <span class="v">0.01</span>
-                        * (
-                        <span class="v">-72</span>
-                        ) =
-                        <span class="v">0</span>
-                        +
-                        <span class="v">0.72</span>
-                        =
-                        <span class="r">0.72</span>
-                        <span class="n">b_new</span>
-                        =
-                        <span class="v">0</span>
-                        -
-                        <span class="v">0.01</span>
-                        * (
-                        <span class="v">-20</span>
-                        ) =
-                        <span class="v">0</span>
-                        +
-                        <span class="v">0.20</span>
-                        =
-                        <span class="r">0.20</span>
-                    </div>
+<span class="c"># Update</span>
+<span class="n">w_new</span> = <span class="v">0</span> - <span class="v">0.01</span> * (<span class="v">-72</span>) = <span class="v">0</span> + <span class="v">0.72</span> = <span class="r">0.72</span>
+<span class="n">b_new</span> = <span class="v">0</span> - <span class="v">0.01</span> * (<span class="v">-20</span>) = <span class="v">0</span> + <span class="v">0.20</span> = <span class="r">0.20</span>
+</pre>
 
                     <p>
                         After one training step, our model went from
@@ -3094,73 +2988,47 @@
                             <div class="step-num">1</div>
                             <div class="step-content">
                                 <strong style="color: var(--accent); font-size: 0.92rem">Forward Pass</strong>
-                                <div class="code-box" style="margin: 6px 0 0; padding: 14px 18px; font-size: 0.82rem">
-                                    y_pred =
-                                    <span class="v">0.00</span>
-                                    × X +
-                                    <span class="v">0.00</span>
-                                    = [0.0, 0.0, 0.0, 0.0, 0.0]
-                                </div>
+                                <pre class="code-box" style="margin: 6px 0 0; padding: 14px 18px; font-size: 0.82rem">
+y_pred = <span class="v">0.00</span> × X + <span class="v">0.00</span> = [0.0, 0.0, 0.0, 0.0, 0.0]
+</pre>
                             </div>
                         </div>
                         <div class="step-row">
                             <div class="step-num">2</div>
                             <div class="step-content">
                                 <strong style="color: var(--accent); font-size: 0.92rem">Compute Error</strong>
-                                <div class="code-box" style="margin: 6px 0 0; padding: 14px 18px; font-size: 0.82rem">
-                                    error = y_pred − y = [
-                                    <span style="color: var(--danger)">-4, -7, -10, -13, -16</span>
-                                    ]
-                                </div>
+                                <pre class="code-box" style="margin: 6px 0 0; padding: 14px 18px; font-size: 0.82rem">
+error = y_pred − y = [<span style="color: var(--danger)">-4, -7, -10, -13, -16</span>]
+</pre>
                             </div>
                         </div>
                         <div class="step-row">
                             <div class="step-num">3</div>
                             <div class="step-content">
                                 <strong style="color: var(--accent); font-size: 0.92rem">Compute Gradients</strong>
-                                <div class="code-box" style="margin: 6px 0 0; padding: 14px 18px; font-size: 0.82rem">
-                                    ∂L/∂w = mean(2 × error × X) =
-                                    <span style="color: var(--danger)">-72.0000</span>
-                                    ∂L/∂b = mean(2 × error) =
-                                    <span style="color: #ffb546">-20.0000</span>
-                                </div>
+                                <pre class="code-box" style="margin: 6px 0 0; padding: 14px 18px; font-size: 0.82rem">
+∂L/∂w = mean(2 × error × X) = <span style="color: var(--danger)">-72.0000</span>
+∂L/∂b = mean(2 × error)     = <span style="color: #ffb546">-20.0000</span>
+</pre>
                             </div>
                         </div>
                         <div class="step-row">
                             <div class="step-num">4</div>
                             <div class="step-content">
                                 <strong style="color: var(--accent); font-size: 0.92rem">Update Weights</strong>
-                                <div class="code-box" style="margin: 6px 0 0; padding: 14px 18px; font-size: 0.82rem">
-                                    w =
-                                    <span class="v">0.0000</span>
-                                    −
-                                    <span class="v">0.0100</span>
-                                    ×
-                                    <span style="color: var(--danger)">-72.0000</span>
-                                    =
-                                    <span style="color: var(--good)">0.7200</span>
-                                    b =
-                                    <span class="v">0.0000</span>
-                                    −
-                                    <span class="v">0.0100</span>
-                                    ×
-                                    <span style="color: #ffb546">-20.0000</span>
-                                    =
-                                    <span style="color: var(--good)">0.2000</span>
-                                </div>
+                                <pre class="code-box" style="margin: 6px 0 0; padding: 14px 18px; font-size: 0.82rem">
+w = <span class="v">0.0000</span> − <span class="v">0.0100</span> × <span style="color: var(--danger)">-72.0000</span> = <span style="color: var(--good)">0.7200</span>
+b = <span class="v">0.0000</span> − <span class="v">0.0100</span> × <span style="color: #ffb546">-20.0000</span> = <span style="color: var(--good)">0.2000</span>
+</pre>
                             </div>
                         </div>
                         <div class="step-row">
                             <div class="step-num">5</div>
                             <div class="step-content">
                                 <strong style="color: var(--accent); font-size: 0.92rem">Loss Change</strong>
-                                <div class="code-box" style="margin: 6px 0 0; padding: 14px 18px; font-size: 0.82rem">
-                                    118.0000 →
-                                    <span style="color: var(--good)">68.7664</span>
-                                    (
-                                    <span style="color: var(--good)">↓ 49.2336</span>
-                                    )
-                                </div>
+                                <pre class="code-box" style="margin: 6px 0 0; padding: 14px 18px; font-size: 0.82rem">
+118.0000 → <span style="color: var(--good)">68.7664</span> (<span style="color: var(--good)">↓ 49.2336</span>)
+</pre>
                             </div>
                         </div>
                     </div>
@@ -3391,122 +3259,42 @@
                     <h2>💻 The whole thing in numpy — 25 lines</h2>
                     <p>Everything we derived — forward pass, loss, gradients via chain rule, update — in one file:</p>
 
-                    <div class="code-box">
-                        <span class="c">#!/usr/bin/python3</span>
-                        <span class="k">import</span>
-                        numpy
-                        <span class="k">as</span>
-                        np
+                    <pre class="code-box">
+<span class="c">#!/usr/bin/python3</span>
+<span class="k">import</span> numpy <span class="k">as</span> np
 
-                        <span class="c"># Single linear neuron: y = w·x + b</span>
-                        <span class="c"># Training data: y = 3x + 1</span>
-                        <span class="n">X</span>
-                        = np.array([
-                        <span class="v">1</span>
-                        ,
-                        <span class="v">2</span>
-                        ,
-                        <span class="v">3</span>
-                        ,
-                        <span class="v">4</span>
-                        ,
-                        <span class="v">5</span>
-                        ], dtype=np.float32)
-                        <span class="n">y</span>
-                        = np.array([
-                        <span class="v">4</span>
-                        ,
-                        <span class="v">7</span>
-                        ,
-                        <span class="v">10</span>
-                        ,
-                        <span class="v">13</span>
-                        ,
-                        <span class="v">16</span>
-                        ], dtype=np.float32)
+<span class="c"># Single linear neuron: y = w·x + b</span>
+<span class="c"># Training data: y = 3x + 1</span>
+<span class="n">X</span> = np.array([<span class="v">1</span>, <span class="v">2</span>, <span class="v">3</span>, <span class="v">4</span>, <span class="v">5</span>], dtype=np.float32)
+<span class="n">y</span> = np.array([<span class="v">4</span>, <span class="v">7</span>, <span class="v">10</span>, <span class="v">13</span>, <span class="v">16</span>], dtype=np.float32)
 
-                        <span class="c"># Initialize parameters</span>
-                        <span class="n">w</span>
-                        =
-                        <span class="v">0.0</span>
-                        <span class="n">b</span>
-                        =
-                        <span class="v">0.0</span>
-                        <span class="n">lr</span>
-                        =
-                        <span class="v">0.01</span>
+<span class="c"># Initialize parameters</span>
+<span class="n">w</span> = <span class="v">0.0</span>
+<span class="n">b</span> = <span class="v">0.0</span>
+<span class="n">lr</span> = <span class="v">0.01</span>
 
-                        <span class="c"># Training loop</span>
-                        <span class="k">for</span>
-                        epoch
-                        <span class="k">in</span>
-                        range(
-                        <span class="v">100</span>
-                        ):
-                        <span class="c"># Forward pass</span>
-                        <span class="n">y_pred</span>
-                        =
-                        <span class="n">w</span>
-                        *
-                        <span class="n">X</span>
-                        +
-                        <span class="n">b</span>
+<span class="c"># Training loop</span>
+<span class="k">for</span> epoch <span class="k">in</span> range(<span class="v">100</span>):
+    <span class="c"># Forward pass</span>
+    <span class="n">y_pred</span> = <span class="n">w</span> * <span class="n">X</span> + <span class="n">b</span>
 
-                        <span class="c"># Loss (MSE)</span>
-                        <span class="n">loss</span>
-                        = np.mean((
-                        <span class="n">y_pred</span>
-                        -
-                        <span class="n">y</span>
-                        ) **
-                        <span class="v">2</span>
-                        )
+    <span class="c"># Loss (MSE)</span>
+    <span class="n">loss</span> = np.mean((<span class="n">y_pred</span> - <span class="n">y</span>) ** <span class="v">2</span>)
 
-                        <span class="c"># Gradients (by hand)</span>
-                        <span class="n">dw</span>
-                        = np.mean(
-                        <span class="v">2</span>
-                        * (
-                        <span class="n">y_pred</span>
-                        -
-                        <span class="n">y</span>
-                        ) *
-                        <span class="n">X</span>
-                        )
-                        <span class="n">db</span>
-                        = np.mean(
-                        <span class="v">2</span>
-                        * (
-                        <span class="n">y_pred</span>
-                        -
-                        <span class="n">y</span>
-                        ))
+    <span class="c"># Gradients (by hand)</span>
+    <span class="n">dw</span> = np.mean(<span class="v">2</span> * (<span class="n">y_pred</span> - <span class="n">y</span>) * <span class="n">X</span>)
+    <span class="n">db</span> = np.mean(<span class="v">2</span> * (<span class="n">y_pred</span> - <span class="n">y</span>))
 
-                        <span class="c"># Update</span>
-                        <span class="n">w</span>
-                        -=
-                        <span class="n">lr</span>
-                        *
-                        <span class="n">dw</span>
-                        <span class="n">b</span>
-                        -=
-                        <span class="n">lr</span>
-                        *
-                        <span class="n">db</span>
+    <span class="c"># Update</span>
+    <span class="n">w</span> -= <span class="n">lr</span> * <span class="n">dw</span>
+    <span class="n">b</span> -= <span class="n">lr</span> * <span class="n">db</span>
 
-                        <span class="k">if</span>
-                        epoch %
-                        <span class="v">20</span>
-                        ==
-                        <span class="v">0</span>
-                        : print(
-                        <span class="s">f"epoch {epoch}: loss={loss:.4f}, w={w:.4f}, b={b:.4f}"</span>
-                        ) print(
-                        <span class="s">f"\nLearned: y = {w:.2f}x + {b:.2f}"</span>
-                        ) print(
-                        <span class="s">f"Target: y = 3.00x + 1.00"</span>
-                        )
-                    </div>
+    <span class="k">if</span> epoch % <span class="v">20</span> == <span class="v">0</span>:
+        print(<span class="s">f"epoch {epoch}: loss={loss:.4f}, w={w:.4f}, b={b:.4f}"</span>)
+
+print(<span class="s">f"\nLearned: y = {w:.2f}x + {b:.2f}"</span>)
+print(<span class="s">f"Target:  y = 3.00x + 1.00"</span>)
+</pre>
 
                     <p>
                         After 100 epochs this script prints
@@ -3532,103 +3320,36 @@
                         — applies the chain rule for you across the entire graph.
                     </p>
 
-                    <div class="code-box">
-                        <span class="c">#!/usr/bin/python3</span>
-                        <span class="k">import</span>
-                        torch
+                    <pre class="code-box">
+<span class="c">#!/usr/bin/python3</span>
+<span class="k">import</span> torch
 
-                        <span class="c"># Same data</span>
-                        <span class="n">X</span>
-                        = torch.tensor([
-                        <span class="v">1</span>
-                        ,
-                        <span class="v">2</span>
-                        ,
-                        <span class="v">3</span>
-                        ,
-                        <span class="v">4</span>
-                        ,
-                        <span class="v">5</span>
-                        ], dtype=torch.float32)
-                        <span class="n">y</span>
-                        = torch.tensor([
-                        <span class="v">4</span>
-                        ,
-                        <span class="v">7</span>
-                        ,
-                        <span class="v">10</span>
-                        ,
-                        <span class="v">13</span>
-                        ,
-                        <span class="v">16</span>
-                        ], dtype=torch.float32)
+<span class="c"># Same data</span>
+<span class="n">X</span> = torch.tensor([<span class="v">1</span>, <span class="v">2</span>, <span class="v">3</span>, <span class="v">4</span>, <span class="v">5</span>], dtype=torch.float32)
+<span class="n">y</span> = torch.tensor([<span class="v">4</span>, <span class="v">7</span>, <span class="v">10</span>, <span class="v">13</span>, <span class="v">16</span>], dtype=torch.float32)
 
-                        <span class="c"># requires_grad=True tells PyTorch to track gradients</span>
-                        <span class="n">w</span>
-                        = torch.tensor(
-                        <span class="v">0.0</span>
-                        , requires_grad=
-                        <span class="v">True</span>
-                        )
-                        <span class="n">b</span>
-                        = torch.tensor(
-                        <span class="v">0.0</span>
-                        , requires_grad=
-                        <span class="v">True</span>
-                        )
-                        <span class="n">lr</span>
-                        =
-                        <span class="v">0.01</span>
+<span class="c"># requires_grad=True tells PyTorch to track gradients</span>
+<span class="n">w</span> = torch.tensor(<span class="v">0.0</span>, requires_grad=<span class="v">True</span>)
+<span class="n">b</span> = torch.tensor(<span class="v">0.0</span>, requires_grad=<span class="v">True</span>)
+<span class="n">lr</span> = <span class="v">0.01</span>
 
-                        <span class="k">for</span>
-                        epoch
-                        <span class="k">in</span>
-                        range(
-                        <span class="v">100</span>
-                        ):
-                        <span class="c"># Forward pass</span>
-                        <span class="n">y_pred</span>
-                        =
-                        <span class="n">w</span>
-                        *
-                        <span class="n">X</span>
-                        +
-                        <span class="n">b</span>
-                        <span class="n">loss</span>
-                        = torch.mean((
-                        <span class="n">y_pred</span>
-                        -
-                        <span class="n">y</span>
-                        ) **
-                        <span class="v">2</span>
-                        )
+<span class="k">for</span> epoch <span class="k">in</span> range(<span class="v">100</span>):
+    <span class="c"># Forward pass</span>
+    <span class="n">y_pred</span> = <span class="n">w</span> * <span class="n">X</span> + <span class="n">b</span>
+    <span class="n">loss</span> = torch.mean((<span class="n">y_pred</span> - <span class="n">y</span>) ** <span class="v">2</span>)
 
-                        <span class="c"># Backward pass — PyTorch runs the chain rule for us</span>
-                        <span class="n">loss</span>
-                        .backward()
+    <span class="c"># Backward pass — PyTorch runs the chain rule for us</span>
+    <span class="n">loss</span>.backward()
 
-                        <span class="c"># Update (no_grad: don't track this as part of the graph)</span>
-                        <span class="k">with</span>
-                        torch.no_grad():
-                        <span class="n">w</span>
-                        -=
-                        <span class="n">lr</span>
-                        *
-                        <span class="n">w</span>
-                        .grad
-                        <span class="n">b</span>
-                        -=
-                        <span class="n">lr</span>
-                        *
-                        <span class="n">b</span>
-                        .grad
+    <span class="c"># Update (no_grad: don't track this as part of the graph)</span>
+    <span class="k">with</span> torch.no_grad():
+        <span class="n">w</span> -= <span class="n">lr</span> * <span class="n">w</span>.grad
+        <span class="n">b</span> -= <span class="n">lr</span> * <span class="n">b</span>.grad
 
-                        <span class="c"># Zero the gradients (they accumulate by default)</span>
-                        <span class="n">w</span>
-                        .grad.zero_()
-                        <span class="n">b</span>
-                        .grad.zero_()
-                    </div>
+    <span class="c"># Zero the gradients (they accumulate by default)</span>
+    <span class="n">w</span>.grad.zero_()
+    <span class="n">b</span>.grad.zero_()
+</pre>
 
                     <p>
                         Notice what disappeared: the hand-derived
