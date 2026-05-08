@@ -1841,6 +1841,37 @@
                         </div>
                     </div>
 
+                    <div class="story warn">
+                        <div class="story-icon">🌀</div>
+                        <div class="story-text">
+                            <strong>
+                                What McCulloch–Pitts left out: a way to
+                                <em>learn</em>
+                                the weights.
+                            </strong>
+                            The 1943 neuron is a one-way street — signals flow forward, weights are hand-set, and
+                            there's no machinery that lets a mistake at the output reach back and adjust earlier
+                            weights. A young
+                            <strong style="color: var(--text)">Paul Werbos</strong>
+                            read Sigmund Freud as a teenager and decided the missing piece was a
+                            <em>backwards flow of credit assignment</em>
+                            — what Freud called the flow of psychic energy (
+                            <em>cathexis</em>
+                            ), translated into math. Werbos later wrote (
+                            <a
+                                href="https://www.werbos.com/AD2004.pdf"
+                                target="_blank"
+                                rel="noopener"
+                                style="color: var(--accent2)"
+                            >
+                                AD2004
+                            </a>
+                            ): "In 1968, I proposed that we somehow imitate Freud's concept of a backwards flow of
+                            credit assignment." That intuition is what eventually becomes backpropagation — see the
+                            history in Tab 6 (Gradient Descent).
+                        </div>
+                    </div>
+
                     <div class="lab">
                         <h3>Build your own McCulloch–Pitts neuron</h3>
                         <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 12px">
@@ -3411,11 +3442,15 @@ print(<span class="s">f"Target:  y = 3.00x + 1.00"</span>)
                             The reverse-mode automatic differentiation math was developed by
                             <strong>Seppo Linnainmaa</strong>
                             , a Finnish mathematician, in his 1970 master's thesis — without any neural-network
-                            application in mind. The famous
+                            application in mind. Two years later
+                            <strong>Paul Werbos</strong>
+                            proposed essentially the same algorithm at Harvard and explicitly aimed it at training
+                            multi-layer neural nets — calling it
+                            <em>dynamic feedback</em>
+                            , with motivation borrowed from Freud rather than from optimization theory. The famous
                             <strong>Rumelhart, Hinton &amp; Williams 1986</strong>
-                            paper is what made "backprop" the de-facto training algorithm for multi-layer networks.
-                            Between those dates: decades of slow acceptance, an "AI winter," and a few patient
-                            researchers.
+                            paper is what made "backprop" the de-facto training algorithm. Between those dates: decades
+                            of slow acceptance, an "AI winter," and a few patient researchers.
                         </div>
                     </div>
 
@@ -3446,6 +3481,28 @@ print(<span class="s">f"Target:  y = 3.00x + 1.00"</span>)
                                 master's thesis — without any neural-network application in mind.
                             </div>
                         </div>
+                        <div class="tl-item danger">
+                            <div class="tl-date">1968 idea · 1972 proposal · 1974 thesis · Werbos</div>
+                            <div class="tl-title">"Dynamic feedback" — backprop, aimed at neural nets</div>
+                            <div class="tl-body">
+                                Paul Werbos has the algorithm and a proof in his Harvard PhD,
+                                <em>Beyond Regression</em>
+                                (1974), with the original idea — explicitly imitating "Freud's concept of a backwards
+                                flow of credit assignment" (
+                                <a
+                                    href="https://www.werbos.com/AD2004.pdf"
+                                    target="_blank"
+                                    rel="noopener"
+                                    style="color: var(--danger)"
+                                >
+                                    AD2004
+                                </a>
+                                ) — going back to 1968. He calls it
+                                <em>dynamic feedback</em>
+                                ; nobody calls it backpropagation yet. The committee makes him narrow the scope to
+                                pattern recognition to get the PhD; the broader theory of intelligence sits dormant.
+                            </div>
+                        </div>
                         <div class="tl-item three">
                             <div class="tl-date">1986 · Rumelhart, Hinton &amp; Williams</div>
                             <div class="tl-title">"Learning representations by back-propagating errors"</div>
@@ -3469,6 +3526,132 @@ print(<span class="s">f"Target:  y = 3.00x + 1.00"</span>)
                             </div>
                         </div>
                     </div>
+
+                    <h4
+                        style="
+                            font-family: &quot;Fraunces&quot;, serif;
+                            font-weight: 700;
+                            font-size: 1rem;
+                            margin: 22px 0 8px;
+                        "
+                    >
+                        The episode the textbooks skip — Werbos &amp; Minsky
+                    </h4>
+
+                    <p>
+                        Werbos got the math first, but the field didn't pick it up for another twelve years. The reason
+                        is closer to a soap opera than to a research narrative. Werbos walked the algorithm in to
+                        <strong style="color: var(--text)">Marvin Minsky</strong>
+                        — whose 1969
+                        <em>Perceptrons</em>
+                        book had argued that multi-layer learning was a dead end and helped trigger the first AI winter:
+                    </p>
+
+                    <div class="story warn">
+                        <div class="story-icon">🎭</div>
+                        <div class="story-text">
+                            <strong>
+                                From the
+                                <a
+                                    href="https://mindmatters.ai/podcast/ep137/"
+                                    target="_blank"
+                                    rel="noopener"
+                                    style="color: var(--accent)"
+                                >
+                                    Mind Matters podcast (#137, 2021)
+                                </a>
+                                — Werbos in his own words:
+                            </strong>
+                            <blockquote
+                                style="
+                                    border-left: 2px solid var(--accent);
+                                    margin: 10px 0;
+                                    padding: 4px 14px;
+                                    color: var(--text);
+                                    font-style: italic;
+                                "
+                            >
+                                "The real history has never been written. It's like a soap opera you wouldn't believe.
+                                So one episode of the soap opera, I needed support to do a thesis. And I had taken
+                                independent studies with Marvin Minsky. I knew his way of thinking, and I walked in and
+                                said, 'Marvin, you've got this great book, but the thing is, the problem can be solved.
+                                Here's how to solve it. Why don't we become co-authors so that you don't be embarrassed
+                                when it comes out? I'm willing to share, I'm not trying to own all this. Here's how you
+                                solve the problem that you described in your book.'"
+                            </blockquote>
+                            Minsky's answer, in Werbos's recollection: "if I do this, the modelers will all kill me, and
+                            I have to deal with my reputation." So the field waited until 1986 for Rumelhart, Hinton
+                            &amp; Williams to publish the same idea on a bigger stage.
+                        </div>
+                    </div>
+
+                    <p>
+                        On where the math actually came from, Werbos is unusually direct. He read Freud as a teenager —
+                        long before he ever read von Neumann — and decided the
+                        <em>shape</em>
+                        of the missing algorithm was the one Freud had described informally: the mind allocates and
+                        re-allocates "psychic energy" (
+                        <em>cathexis</em>
+                        ) to optimize outcomes (the
+                        <em>pleasure principle</em>
+                        ). Translating that picture into a quantifiable framework — a backwards flow of partial
+                        derivatives that assigns blame for the loss back to every weight — is the path that produced the
+                        chain rule for ordered derivatives. As Werbos puts it in the same interview:
+                    </p>
+
+                    <div class="story">
+                        <div class="story-icon">🧠</div>
+                        <div class="story-text">
+                            <blockquote
+                                style="
+                                    border-left: 2px solid var(--accent2);
+                                    margin: 0 0 8px;
+                                    padding: 4px 14px;
+                                    color: var(--text);
+                                    font-style: italic;
+                                "
+                            >
+                                "The most important part of my PhD thesis, some people say, is I translated
+                                backpropagation. First, it was Freud, then it was an algorithm, and then it was
+                                mathematics. So I translated it into something I called the chain rule for ordered
+                                derivatives… So I translated Freud into math, von Neumann translated Fourier into math."
+                            </blockquote>
+                            That's a one-line summary of where the
+                            <em>backwards</em>
+                            in backpropagation comes from. Not from optimization theory. From psychoanalysis, re-derived
+                            as calculus.
+                        </div>
+                    </div>
+
+                    <p style="font-size: 0.85rem; color: var(--muted); margin-top: 14px">
+                        Sources used in this section:
+                        <a
+                            href="https://mindmatters.ai/wp-content/uploads/sites/2/2021/06/Transcript-Mind-Matters-137-Paul-Werbos.pdf"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            Mind Matters #137 transcript
+                        </a>
+                        ·
+                        <a href="https://www.werbos.com/AD2004.pdf" target="_blank" rel="noopener">Werbos AD2004</a>
+                        ·
+                        <a
+                            href="https://exopixelist.substack.com/p/backpropagation-and-freuds-psychic"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            Backpropagation and Freud's psychic energy
+                        </a>
+                        ·
+                        <a
+                            href="https://cosmosandhistory.org/index.php/journal/article/download/785/1549/3892"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            Werbos on noosphere species theory
+                        </a>
+                        .
+                    </p>
                 </div>
 
                 <div class="card at">
